@@ -6,7 +6,7 @@ title: 0_deploy
 
 # 0_deploy
 
-创建时间: 2015/06/26 12:35:00  修改时间: 2015/06/26 14:03:50 作者:lijiao
+创建时间: 2015/06/26 12:35:00  修改时间: 2015/06/26 14:37:33 作者:lijiao
 
 ----
 
@@ -15,6 +15,10 @@ title: 0_deploy
 这里介绍下HoneyComb中是如何编排集群,并进行统一部署。
 
 每一节开始处的v0.0.1表示后续的内容适用于版本v0.0.1。
+
+本文档只关注HoneyComb如何使用, 不会涉及到HoneyComb是如何实现的等内容。
+
+(0.0.1版本中, HoneyComb自身的内容全部是Shell脚本, 所以待后续放出源码后，一切了然)
 
 ## 拓扑
 
@@ -53,7 +57,7 @@ v0.0.1
 
 v0.0.1
 
-在HoneyComb的v0.0.1中, 集群的编排工作在脚本Shell/base.sh中完成, 这个脚本中详细描述每个机器的角色, 约定各项服务的端口。
+在HoneyComb的v0.0.1中, 集群的编排工作在脚本Shell/base.sh中完成, 这个脚本中详细描述了每个机器的角色, 约定了各项服务的端口。
 
 	#!/bin/bash
 
@@ -167,13 +171,32 @@ v0.0.1
 	#API_SERVER="http://192.168.13.86:8080"
 	API_SERVERS=`func_join_array "," "http://" ARRAY_API_SERVER_NODES ":${API_PORT}"`
 
+## Flannel规划
+
+v0.0.1
+
+Flannel是一个开源的SDN项目。HoneyComb的0.0.1版本中使用了Flannel。
+
+在Shell/flannel.json中进行Flannel的设置。
+
+	{
+		"Network":"172.16.0.0/16",
+		"Subnetlen":24,
+		"SubnetMin":"172.16.100.100",
+		"SubnetMax":"172.16.254.254",
+		"Backend":{
+			"Type":"udp",
+			"Port":7890
+		}
+	}
+
 ## 编译打包
 
 v0.0.1
 
 >注意运行gen.sh的机器上需要安装有Go, 且版本为1.1以上。
 
-脚本gen.sh运行时从github上下载相关项目(kubernetes、flannel、etcd)的源码并编译制定的版本。
+脚本gen.sh运行时会从github上下载相关项目(kubernetes、flannel、etcd)的源码, 然后将指定的版本编译后得到文件打包。
 
 gen.sh中指定的项目地址与版本:
 
@@ -192,28 +215,28 @@ gen.sh中指定的项目地址与版本:
 	Etcd_Dir="Etcd"
 	Etcd_Tag="v2.0.11"
 
-gen.sh运行时会从version文件中读取一个版本号,作为本次编译后的发布包的版本。
+gen.sh运行时会从version文件中读取一个版本号,作为本次编译得到的发布包的版本。
 
 	0.0.1
 
-gen.sh运行结束后将得到一个名为FinalPackage的目录,其中存放完整HoneyComb发布包。
+gen.sh运行结束后将得到一个名为FinalPackage的目录,HoneyComb发布包被存放在这里。
 
 	FinalPackage/
-	|-- 0.0.1
+	|-- 0.0.1                  --- 版本v0.0.1
 	|   |-- base.sh
 	|   |-- base_version
 	|   |-- export.tar.gz
 	|   `-- export_version
 	|-- first_install.sh
-	`-- lastest
-	|-- base.sh
-	|-- base_version
-	|-- export.tar.gz
-	`-- export_version
+	`-- lastest                --- 最新版本
+		|-- base.sh
+		|-- base_version
+		|-- export.tar.gz
+		`-- export_version
 
-将FinalPackage中的内容直接复制到一个WebServer的文件目录后, 可以直接使用first_install.sh脚本完成首次安装。
+将FinalPackage中的内容直接复制到一个WebServer的目录中后, 可以直接使用first_install.sh脚本完成首次安装。
 
-在我自己的环境将发布包放在192.168.202.240的Web根目录下的HoneyComb目录中, 在first_install.sh中相映的配置了要安装的版本。
+在我自己的环境将发布包拷贝到了192.168.202.240的Web根目录下的HoneyComb目录中, 在first_install.sh中相映的配置了要安装的版本。
 
 	#!/bin/bash
 	CENTER_SERVER="http://192.168.202.240/HoneyComb/lastest/"
@@ -221,31 +244,31 @@ gen.sh运行结束后将得到一个名为FinalPackage的目录,其中存放完�
 安装完成后, 会创建如下目录, HoneyComb的组件分布在这些目录中。
 
 	/export/
-	|-- App
-	|-- Data
-	|-- Logs
-	|-- Shell
-	|-- Version
+	|-- App          -- 二进制程序
+	|-- Data         -- 数据文件
+	|-- Logs         -- 日志
+	|-- Shell        -- 服务的管理脚本等
+	|-- Version      -- 版本信息
 
->HoneyComb的v0.0.1中没有包含Docker,所以Kubernetes的Node上需要单独安装Docker。
+>HoneyComb的v0.0.1中没有包含Docker,所以Kubernetes的Node上还需要单独安装Docker。
 
 ## 启动
 
 v0.0.1 
 
->注意: /export/Shell中的脚本的包含使用的都是相对路径,所以运行其中的脚本时,当前目录必须是/export/Shell。
+>注意: /export/Shell中的脚本使用的都是相对路径,所以运行其中的脚本时,当前目录必须是/export/Shell。
 
-在所有的机器上到/export/Shell目录中运行脚本run.sh, run.sh在运行时会自动发现自己角色, 启动相应的服务。
+在所有的机器上到/export/Shell目录中运行脚本run.sh, run.sh在运行时会自动发现自己角色, 然后启动相应的HoneyComb服务。
 
-服务的日志将记录在/export/Logs中。
+服务的日志被记录在/export/Logs中。
 
 ## 管理
 
 v0.0.1 
 
-在任意一台机器上只要可以访问Kubernetes的ApiServer，就可以使用kubectl管理这个kubernetes集群。
+在任意一台可以访问Kubernetes的ApiServer机器上，使用kubectl进行管理。
 
-	$ ./kubectl -s 192.168.202.244:8080 get nodes
+	$ ./kubectl -s 192.168.202.244:8080 get nodes     <-- 需要指定ApiServer的地址
 	NAME              LABELS    STATUS
 	192.168.200.164   <none>    Ready
 	192.168.200.165   <none>    NotReady
@@ -257,7 +280,7 @@ v0.0.1
 
 v0.0.1 
 
-在/export/Shell中运行stop.sh脚本就可以将这台机器上的与HoneyComb有关的服务关闭。
+在/export/Shell中运行stop.sh脚本就可以将这台机器上与HoneyComb有关的服务关闭。
 
 将所有的机器关闭后， 整个集群关闭。
 
