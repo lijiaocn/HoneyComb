@@ -5,7 +5,7 @@
 PASSWORD=""
 
 install(){
-	dish -e "curl -o /root/first_install.sh http://192.168.202.240/HoneyComb-K/first_install.sh && bash /root/first_install.sh" -g machines.lst -p ${PASSWORD}
+	dish -e "curl -o /root/first_install.sh http://192.168.202.240/HoneyComb/first_install.sh && bash /root/first_install.sh" -g machines.lst -p ${PASSWORD}
 }
 
 start(){
