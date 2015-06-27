@@ -6,7 +6,7 @@ title: README
 
 # README
 
-创建时间: 2015/06/26 11:43:54  修改时间: 2015/06/26 15:01:42 作者:lijiao
+创建时间: 2015/06/26 11:43:54  修改时间: 2015/06/27 11:28:05 作者:lijiao
 
 ----
 
@@ -34,6 +34,52 @@ HoneyComb想成为一套简单、高效的Kubernetes的部署系统。
 2015-06-26 15:01:24
 
 技术的发展意味着越来越少的人可以做越来越多的工作了, 请为自己的10年以后早做储备, 虽然将会有各种各种新的岗位涌现出来, 那时的你将会如何呢?
+
+## 目录说明
+
+v0.0.1
+
+运行gen.sh后,整个目录结构将如下:
+
+	HoneyComb/
+	|-- batch.sh                  -- 批量执行远程操作的工具
+	|-- doc                       -- 文档
+	|   |-- 0_deploy.md
+	|   `-- pic
+	|-- examples                  -- Kubernetes的一些使用示例
+	|   `-- 1
+	|-- first_install.sh          -- 首次安装HoneyComb使用的脚本
+	|-- gen.sh                    -- HoneyComb的编译、打包脚本
+	|-- kubectl.sh                -- 便捷使用kubctl程序
+	|-- machines.lst              -- 集群机器的列表
+	|-- OutPut                    -- HoneyComb编译、打包后的输出
+	|   |-- base_version          -- [中间文件] base.sh文件的Sha1Num
+	|   |-- export                -- [中间文件] HoneyComb的主体
+	|   |-- export.tar.gz         -- [中间文件] HoneyComb的主体的压缩包
+	|   |-- export_version        -- [中间文件] HoneyComb的主体压缩包的Sha1Num
+	|   `-- FinalPackage          -- HoneyComb的发布包
+	|-- README.md                 -- Readme
+	|-- Shell                     -- HoneyComb的代码
+	|   |-- apiserver.sh
+	|   |-- base.sh
+	|   |-- docker.sh
+	|   |-- etcd.sh
+	|   |-- flanneld.sh
+	|   |-- flannel.json
+	|   |-- kubelet.sh
+	|   |-- kube-proxy.sh
+	|   |-- library.sh
+	|   |-- manager.sh
+	|   |-- run.sh
+	|   |-- scheduler.sh
+	|   |-- stop.sh
+	|   `-- update.sh
+	|-- ThirdParty                -- HoneyComb中使用的第三方项目
+	|   |-- Etcd
+	|   |-- Flannel
+	|   `-- Kubernetes
+	|-- TODO                      -- 待办事项
+	`-- version                   -- 当前版本
 
 ## 文献
 

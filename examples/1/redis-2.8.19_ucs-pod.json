@@ -1,0 +1,23 @@
+{
+   "kind":"Pod",
+   "apiVersion":"v1beta3",
+   "id": "redis",
+   "metadata":{
+      "name":"redis-test-pod"
+   },
+   "spec":{
+      "containers":[
+          {
+                  "name":"redis-test1-pod",
+                  "image":"192.168.202.240:5000/redis:2.8.19_ucs",
+                  "imagePullPolicy":"IfNotPresent",
+                  "args":[
+                     "--port",
+                     "1889"
+                  ]
+       }
+            ],
+            "restartPolicy": "Always",
+            "dnsPolicy":"ClusterFirst"
+         }
+}

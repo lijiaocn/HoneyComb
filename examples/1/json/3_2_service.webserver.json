@@ -1,0 +1,23 @@
+{
+   "kind":"Service",
+   "apiVersion":"v1beta3",
+   "metadata":{
+      "name":"webserver",
+      "labels":{
+         "name":"webserver"
+      }
+   },
+   "spec":{
+      "createExternalLoadBalancer": true,
+      "ports": [
+         {
+           "port":80,
+           "targetPort":"http-server",
+           "protocol":"TCP"
+         }
+      ],
+      "selector":{
+         "name":"webserver"
+      }
+   }
+}
