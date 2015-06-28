@@ -6,7 +6,7 @@ title: 0_deploy
 
 # 0_deploy
 
-创建时间: 2015/06/26 12:35:00  修改时间: 2015/06/26 14:37:33 作者:lijiao
+创建时间: 2015/06/26 12:35:00  修改时间: 2015/06/27 18:02:16 作者:lijiao
 
 ----
 
@@ -283,6 +283,12 @@ v0.0.1
 在/export/Shell中运行stop.sh脚本就可以将这台机器上与HoneyComb有关的服务关闭。
 
 将所有的机器关闭后， 整个集群关闭。
+
+## Docker Registry
+
+v0.0.1
+
+Tools/Registry目录中提供了一个Docker Registry。可以按照里面Readme.md文件的说明进行安装。
 
 ## 存在的问题
 
