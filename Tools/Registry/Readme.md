@@ -5,7 +5,7 @@ title: Readme
 ---
 
 # Readme
-创建时间: 2015/06/17 14:36:18  修改时间: 2015/06/27 17:45:38 作者:lijiao
+创建时间: 2015/06/17 14:36:18  修改时间: 2015/07/01 13:49:13 作者:lijiao
 
 ----
 
@@ -17,21 +17,18 @@ Registry用来部署一个Docker Registry。
 
 ## 安装
 
-目标机器: 192.168.202.240
+使用docker pull直接拉去registry镜像:
 
-目标机上需要已经安装有docker，并启动:
+	$ docker search registry
+	NAME                                    DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED
+	registry                                Containerized docker registry                   306       [OK]       
+	atcol/docker-registry-ui                A web UI for easy private/local Docker Reg...   53                   [OK]
+	konradkleine/docker-registry-frontend   Browse and modify your Docker registry in ...   37                   [OK]
+	samalba/docker-registry                                                                 35                   [OK]
 
-	service docker start
+	$ docker pull registry
 
-将./registry.tar.gz复制到目标机:
-
-	scp registry.tar.gz  root@192.168.202.240:/root/
-
-在目标机上导入registry.tar.gz
-
-	dpcker load -i registry.tar.gz
-
-导入结束后，可以看到新增加的registry
+可以看到新增加的registry
 
 	[root@localhost ~]# docker images 
 	REPOSITORY          TAG                 IMAGE ID            CREATED                  VIRTUAL SIZE
