@@ -5,7 +5,7 @@ title: 1_example_redis
 ---
 
 # 1_example_redis
-创建时间: 2015/07/01 09:53:14  修改时间: 2015/07/01 12:58:09 作者:lijiao
+创建时间: 2015/07/01 09:53:14  修改时间: 2015/07/01 14:35:28 作者:lijiao
 
 ----
 
@@ -52,11 +52,15 @@ title: 1_example_redis
 	   | redis slave 1 |             | redis slave 2 |   <--- RC,Service
 	   +---------------+             +---------------+
 
-Web Server依赖Redis Master和Reids Slave, Reids Slave依赖Redis Master。首先部署Redis Master。
+Web Server--(依赖)-->Redis Master&&Reids Slave；Reids Slave--(依赖)-->Redis Master。
 
-这里有一个很重要的问题，Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如何知晓Redis Master的地址。
+首先部署Redis Master，然后部署Redis Slave，最后部署Web Server.
 
-Kubernetes中有两种方案，一种是通过环境变量通知(下面采用的方案),另一种通过DNS(Kubernetes还在开发中)。
+Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如何知晓Redis Master的地址。
+
+	Kubernetes中有两种方案，一种是通过环境变量通知(下面采用的方案),另一种通过DNS(Kubernetes还在开发此功能)。
+
+在下面的示例中，还使用了一个名为Sleep的Pod，这个Pod用来辅助查看容器可见的环境变量, 不依赖上述的任何服务，可以随时启用
 
 ## 准备镜像
 
@@ -235,6 +239,11 @@ Sleep运行时将能够看到环境变量保存到了/export/Data/env.log中, �
 	$./4_1_sleep_pod.sh
 
 然后重新查看,应该可以看到REDIS_SLAVE_PORT等环境变量.
+
+最后可以启动Web Server:
+
+	$./3_1_webserver_controller.sh
+	$./3_2_webserver_service.sh
 
 ## 文献
 
