@@ -3,7 +3,7 @@
    "apiVersion":"v1beta3",
    "id":"redis_slave",
    "metadata":{
-      "name":"redis_slave",
+      "name":"redis-slave",
       "labels":{
          "name":"redis",
          "role":"slave"
@@ -25,11 +25,11 @@
          "spec":{
             "containers":[
                {
-                  "name":"redis_slave",
-                  "image":"192.168.202.240:5000/lijiao/example-1-redis_slave:2.8.19",
+                  "name":"redis-slave",
+                  "image":"192.168.202.240:5000/lijiao/example-1-redis-slave:2.8.19",
                   "ports":[
                      {
-                        "name":"redis_server",
+                        "name":"redisserver",
                         "containerPort":6379,
                         "protocol":"TCP"
                      }

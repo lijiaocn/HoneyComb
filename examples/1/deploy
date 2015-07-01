@@ -1,7 +1,7 @@
-Service:  redis_master (labels: name=redis role=master ports:6379 selector: name=redis role=master)
-	#REDIS_MASTER_SERVICE_HOST -- "redis_master"'s virtual ip address  eg. 10.0.0.11
-	#REDIS_MASTER_SERVICE_PORT -- "redis_master"'s service port        eg. 6379
-	#REDIS_MASTER_PORT         -- "redis_master"'s service address     eg. tcp://10.0.0.11:6379
+Service:  redis-master (labels: name=redis role=master ports:6379 selector: name=redis role=master)
+	#REDIS_MASTER_SERVICE_HOST -- "redis-master"'s virtual ip address  eg. 10.0.0.11
+	#REDIS_MASTER_SERVICE_PORT -- "redis-master"'s service port        eg. 6379
+	#REDIS_MASTER_PORT         -- "redis-master"'s service address     eg. tcp://10.0.0.11:6379
 
 	#if the service port is 6379:
 	#REDIS_MASTER_PORT_6379_TCP        -- eg. tcp://10.0.0.11:6379
@@ -9,12 +9,12 @@ Service:  redis_master (labels: name=redis role=master ports:6379 selector: name
 	#REDIS_MASTER_PORT_6379_TCP_PORT   -- eg. 6379
 	#REDIS_MASTER_PORT_6379_TCP_ADDR   -- eg. 10.0.0.11
 
-	Pod: redis_master (labels: name=redis role=master ports:6379)
+	Pod: redis-master (labels: name=redis role=master ports:6379)
 	
-Service: redis_slave (labels: name=redis role=slave  port:6379 selector: name=redis role=slave)
-	#REDIS_SLAVE_SERVICE_HOST -- "redis_slave"'s virtual ip address  eg. 10.0.0.11
-	#REDIS_SLAVE_SERVICE_PORT -- "redis_slave"'s service port        eg. 6379
-	#REDIS_SLAVE_PORT         -- "redis_slave"'s service address     eg. tcp://10.0.0.11:6379
+Service: redis-slave (labels: name=redis role=slave  port:6379 selector: name=redis role=slave)
+	#REDIS_SLAVE_SERVICE_HOST -- "redis-slave"'s virtual ip address  eg. 10.0.0.11
+	#REDIS_SLAVE_SERVICE_PORT -- "redis-slave"'s service port        eg. 6379
+	#REDIS_SLAVE_PORT         -- "redis-slave"'s service address     eg. tcp://10.0.0.11:6379
 
 	#if the service port is 6379:
 	#REDIS_SLAVE_PORT_6379_TCP        -- eg. tcp://10.0.0.11:6379
@@ -22,12 +22,12 @@ Service: redis_slave (labels: name=redis role=slave  port:6379 selector: name=re
 	#REDIS_SLAVE_PORT_6379_TCP_PORT   -- eg. 6379
 	#REDIS_SLAVE_PORT_6379_TCP_ADDR   -- eg. 10.0.0.11
 
-	RC: redis_slave (labels: name=redis role=slave selector: name=redis role=slave)
+	RC: redis-slave (labels: name=redis role=slave selector: name=redis role=slave)
 
 Service: webserver (labels: name=webserver selector: name=webserver)
-	#WEBSERVER_SERVICE_HOST -- "redis_slave"'s virtual ip address  eg. 10.0.0.11
-	#WEBSERVER_SERVICE_PORT -- "redis_slave"'s service port        eg. 80
-	#WEBSERVER_PORT         -- "redis_slave"'s service address     eg. tcp://10.0.0.11:80
+	#WEBSERVER_SERVICE_HOST -- "redis-slave"'s virtual ip address  eg. 10.0.0.11
+	#WEBSERVER_SERVICE_PORT -- "redis-slave"'s service port        eg. 80
+	#WEBSERVER_PORT         -- "redis-slave"'s service address     eg. tcp://10.0.0.11:80
 
 	#if the service port is 80:
 	#WEBSERVER_PORT_80_TCP        -- eg. tcp://10.0.0.11:80

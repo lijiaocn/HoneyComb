@@ -47,7 +47,7 @@ Configs[port]="--port=${KUBELET_PORT}"
 Configs[api_servers]="--api_servers=${API_SERVERS}"
 
 #Configs[pod-infra-container-image]="--pod-infra-container-image=docker.io/kubernetes/pause:latest"
-Configs[pod-infra-container-image]="--pod-infra-container-image=${DOCKER_REGISTRYS}/pause:latest"
+Configs[pod-infra-container-image]="--pod-infra-container-image=${DOCKER_REGISTRYS}/kubernetes/pause:latest"
 
 ################################################################################
 #

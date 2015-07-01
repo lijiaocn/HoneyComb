@@ -18,13 +18,13 @@ echo "Note, if you get errors below indicate kubernetes env injection could be f
 echo "env vars ="
 env
 echo "CHECKING ENVS BEFORE STARTUP........"
-if [ ! "$REDISMASTER_SERVICE_HOST" ]; then
+if [ ! "$REDIS_MASTER_SERVICE_HOST" ]; then
     echo "Need to set REDIS_MASTER_SERVICE_HOST" && exit 1;
 fi
-if [ ! "$REDISMASTER_PORT" ]; then
+if [ ! "$REDIS_MASTER_PORT" ]; then
     echo "Need to set REDIS_MASTER_PORT" && exit 1;
 fi
 
 echo "ENV Vars look good, starting !"
 
-redis-server --slaveof ${REDISMASTER_SERVICE_HOST:-$SERVICE_HOST} $REDISMASTER_SERVICE_PORT
+redis-server --slaveof ${REDIS_MASTER_SERVICE_HOST:-$SERVICE_HOST} $REDIS_MASTER_SERVICE_PORT

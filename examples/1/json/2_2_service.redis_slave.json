@@ -2,7 +2,7 @@
    "kind":"Service",
    "apiVersion":"v1beta3",
    "metadata":{
-      "name":"redis_slave",
+      "name":"redis-slave",
       "labels":{
          "name":"redis",
          "role":"slave"
@@ -12,7 +12,7 @@
       "ports": [
         {
           "port":6379,
-          "targetPort":"redis_server",
+          "targetPort":"redisserver",
           "protocol":"TCP"
         }
       ],

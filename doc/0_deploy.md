@@ -6,7 +6,7 @@ title: 0_deploy
 
 # 0_deploy
 
-创建时间: 2015/06/26 12:35:00  修改时间: 2015/06/27 18:02:16 作者:lijiao
+创建时间: 2015/06/26 12:35:00  修改时间: 2015/06/30 13:43:00 作者:lijiao
 
 ----
 
@@ -289,6 +289,16 @@ v0.0.1
 v0.0.1
 
 Tools/Registry目录中提供了一个Docker Registry。可以按照里面Readme.md文件的说明进行安装。
+
+## kubernetes/pause
+
+kubelet使用到镜像kubernetes/pause，在Shell/kubelete.sh中可以看到：
+
+	Configs[pod-infra-container-image]="--pod-infra-container-image=${DOCKER_REGISTRYS}/kubernetes/pause:latest"
+
+因为功夫墙的原因,kubelet可能不能从默认地址获得pasue镜像。这里下载到一个pause镜像，将其push到了私有的Docker Registry中。
+
+见Tools/Pause。
 
 ## 存在的问题
 
