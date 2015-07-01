@@ -5,7 +5,7 @@ title: 1_example_redis
 ---
 
 # 1_example_redis
-创建时间: 2015/07/01 09:53:14  修改时间: 2015/07/01 15:15:36 作者:lijiao
+创建时间: 2015/07/01 09:53:14  修改时间: 2015/07/01 15:27:40 作者:lijiao
 
 ----
 
@@ -42,33 +42,35 @@ Service: 多个Pod的组合，Service有自己的一个IP，对Service的IP的�
 
 ## 规划
 
-[deploy](../examples/1/deploy)
+[deploy](../examples/1/deploy):
 
 	      +--------------+      +--------------+
-	      | Web Server 1 |      | Web Server 2 |   <--- Service
+	      | Web Server 1 |      | Web Server 2 |   <--- Web Server Service(包含Web Server RC中的Pods)
 	      +--------------+      +--------------+
 	          |   |
 	          |   -----------+
 	          |             _|_
 	          |             \ /
 	          |       +------'------+
-	          |       | redis master|              <--- Service
+	          |       | redis master|              <--- Redis Master Service(只包含一个Redis Master Pod)
 	          |       +-------------+
 	         _|_
 	         \ /
 	   +------'--------+             +---------------+
-	   | redis slave 1 |             | redis slave 2 |   <--- RC,Service
+	   | redis slave 1 |             | redis slave 2 |   <--- Redis Slave Service(包含Redis Slave RC中的Pods)
 	   +---------------+             +---------------+
 
-Web Server--(依赖)-->Redis Master&&Reids Slave；Reids Slave--(依赖)-->Redis Master。
+Web Server Service --(依赖)-->Redis Master Service & Reids Slave Service 。
 
-首先部署Redis Master，然后部署Redis Slave，最后部署Web Server.
+Reids Slave Service --(依赖)-->Redis Master Service 。
 
-Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如何知晓Redis Master的地址?
+所以首先部署Redis Master Service，然后部署Redis Slave Service，最后部署Web Server Service。
+
+Web Server Service 如何知晓Redis Master Service 和Redis Slave Service 的地址，以及Redis Slave Service 如何知晓Redis Master Service的地址?
 
 	Kubernetes中有两种方案，一种是通过环境变量通知(下面采用的方案),另一种通过DNS(Kubernetes还在开发此功能)。
 
-在下面的示例中，还使用了一个名为Sleep的Pod，这个Pod用来辅助查看容器可见的环境变量, 不依赖上述的任何服务，可以随时启用
+在下面的示例中，还使用了一个名为Sleep的Pod，这个Pod用来辅助查看容器可见的环境变量, 不依赖上述的任何服务，可以随时启用。
 
 ## 准备镜像
 
@@ -133,11 +135,11 @@ Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如
 
 	redis-server --slaveof ${REDIS_MASTER_SERVICE_HOST:-$SERVICE_HOST} $REDIS_MASTER_SERVICE_PORT
 
->注意: 在run.sh中redis slave通过读取环境变量REDIS_MASTER_SERVICE_HOST,得知Master的地址。
+>注意: 在run.sh中通过读取环境变量REDIS_MASTER_SERVICE_HOST,得知Master的地址, 注意，这是在容器内。
 
 [Redis Slave Service](../examples/1/json/2_2_service.redis_slave.json)由一个[Redis Slave RC](../examples/1/json/2_1_controller.redis_slave.json)组成。
 
-而Redis Slave RC由两个Redis Slave Pod组成(在RC的创建文件里指明)，Kubernetes保证始终有两个Redis Slave Pod存在，这两个Pod共同承担用户请求。
+而Redis Slave RC由两个Redis Slave Pod组成(在RC的创建文件里指明)，Kubernetes保证始终有两个Redis Slave Pod存在，这两个Pod共同承担用户的请求。
 
 ### Sleep
 
@@ -223,7 +225,7 @@ Sleep运行时将能够看到的环境变量保存到了/export/Data/env.log中,
 	HOSTNAME=sleep
 	HOME=/root
 	REDIS_MASTER_SERVICE_PORT=6379                          
-	REDIS_MASTER_PORT=tcp://172.16.23.190:6379           <--- 注意到了没有？这就是MASTER Service的地址
+	REDIS_MASTER_PORT=tcp://172.16.23.190:6379           <--- 注意到了没有？这就是Redis Master Service的地址
 	REDIS_MASTER_PORT_6379_TCP_ADDR=172.16.23.190
 	REDIS_MASTER_PORT_6379_TCP_PORT=6379
 	REDIS_MASTER_PORT_6379_TCP_PROTO=tcp
@@ -242,9 +244,9 @@ Sleep运行时将能够看到的环境变量保存到了/export/Data/env.log中,
 	KUBERNETES_RO_PORT_80_TCP_PROTO=tcp
 	PWD=/data
 
->注意区别redis-master service的地址和redis-master pod的地址，这两个地址是不同的, 对redis-master service的访问按照一定策略被转发给redis-master pod。(Kubernetes就是这样实现了负载均衡)
+>注意区别Redis Master Service的地址和Redis Master Pod的地址，这两个地址是不同的, 对Redis Master Service的访问按照一定策略被转发给Redis Master Pod。(Kubernetes就是这样实现了负载均衡)
 
-然后可以把Sleep Pod删除，在Redis Slave创建后重建:
+然后可以把Sleep Pod删除，在Redis Slave Service创建后重建:
 
 	$./kubectl.sh delete pods sleep
 	$./2_1_redis_slave_controller.sh
