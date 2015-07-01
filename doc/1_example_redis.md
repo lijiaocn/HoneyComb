@@ -5,7 +5,7 @@ title: 1_example_redis
 ---
 
 # 1_example_redis
-创建时间: 2015/07/01 09:53:14  修改时间: 2015/07/01 15:04:34 作者:lijiao
+创建时间: 2015/07/01 09:53:14  修改时间: 2015/07/01 15:15:36 作者:lijiao
 
 ----
 
@@ -14,6 +14,14 @@ title: 1_example_redis
 这里介绍了如何在Kubernetes中部署使用Redis.
 
 资料: [example1](../examples/1/)
+
+## 名词
+
+Pod: 在一台宿主机上运行的一组容器， Pod内容器共用一个Net Namespace, 也就是说每个Pod才有一个独立的IP。 
+
+RC: 多个Pod的组合，Kubernetes保证一个RC中Pod的数量，如果某个Pod丢失，自动新建一个Pod保证Pod总数不变。
+
+Service: 多个Pod的组合，Service有自己的一个IP，对Service的IP的访问，将被转发组成Service的Pod上。
 
 ## 检查
 
@@ -129,7 +137,7 @@ Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如
 
 [Redis Slave Service](../examples/1/json/2_2_service.redis_slave.json)由一个[Redis Slave RC](../examples/1/json/2_1_controller.redis_slave.json)组成。
 
-而Redis RC由两个Redis Slave Pod组成(在RC的创建文件里指明)，Kubernetes保证始终有两个Redis Slave Pod存在，这两个Pod均分用户请求。
+而Redis Slave RC由两个Redis Slave Pod组成(在RC的创建文件里指明)，Kubernetes保证始终有两个Redis Slave Pod存在，这两个Pod共同承担用户请求。
 
 ### Sleep
 
@@ -140,9 +148,9 @@ Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如
 	FROM 192.168.202.240:5000/lijiao/base-os:1.0
 	CMD env 1>/export/Data/env.log 2>&1 && sleep 1000000
 
-Sleep运行时能够看到环境变量保存到了/export/Data/env.log中, 在创建Sleep Pod时，可以将宿主机上的一个目录挂载到容器内部的/export/Data,这样就可以直接在宿主机上查看env.log。Pod如下:
+Sleep运行时将能够看到的环境变量保存到了/export/Data/env.log中, 在创建Sleep Pod时，可以将宿主机上的一个目录挂载到容器内部的/export/Data，这样就可以直接在宿主机上查看env.log。Pod如下:
 
->这也代表了Kubernetes中存储的使用的方式，Kubernetes已经支持挂载多种文件系统(gce、aws、nfs、iscsi、glusterfs等等)。
+>这也代表了Kubernetes中存储的使用方式。Kubernetes已经支持挂载多种文件系统(gce、aws、nfs、iscsi、glusterfs等)。
 
 [Sleep Pod](../examples/1/json/4_1_sleep.json):
 
@@ -171,7 +179,7 @@ Sleep运行时能够看到环境变量保存到了/export/Data/env.log中, 在�
 				"name":"sleep",
 				"image":"192.168.202.240:5000/lijiao/example-1-sleep",
 				"imagePullPolicy":"IfNotPresent",
-				"volumeMounts":[
+				"volumeMounts":[         <-- 容器内的挂载
 				{
 					"name":"exportdata",
 					"readOnly":false,
@@ -184,7 +192,6 @@ Sleep运行时能够看到环境变量保存到了/export/Data/env.log中, 在�
 			"dnsPolicy":"ClusterFirst"
 		}
 	}
-
 
 ## 提交到Kubernetes
 
@@ -216,7 +223,7 @@ Sleep运行时能够看到环境变量保存到了/export/Data/env.log中, 在�
 	HOSTNAME=sleep
 	HOME=/root
 	REDIS_MASTER_SERVICE_PORT=6379                          
-	REDIS_MASTER_PORT=tcp://172.16.23.190:6379           <--- 注意到了没有？这就是MASTER的地址
+	REDIS_MASTER_PORT=tcp://172.16.23.190:6379           <--- 注意到了没有？这就是MASTER Service的地址
 	REDIS_MASTER_PORT_6379_TCP_ADDR=172.16.23.190
 	REDIS_MASTER_PORT_6379_TCP_PORT=6379
 	REDIS_MASTER_PORT_6379_TCP_PROTO=tcp
