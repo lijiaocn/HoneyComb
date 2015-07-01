@@ -5,7 +5,7 @@ title: 1_example_redis
 ---
 
 # 1_example_redis
-创建时间: 2015/07/01 09:53:14  修改时间: 2015/07/01 14:35:28 作者:lijiao
+创建时间: 2015/07/01 09:53:14  修改时间: 2015/07/01 14:49:34 作者:lijiao
 
 ----
 
@@ -86,7 +86,7 @@ Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如
 
 在Kubernetes中创建一个[Redis Master Service](../examples/1/json/1_2_service.redis_master.json)。
 
-之后我们应当能够在容器看到Reddis Master Service相关的环境变量(服务名称为redis-master):
+之后我们应当能够在容器中看到Reddis Master Service相关的环境变量(服务名称为redis-master):
 
 	REDIS_MASTER_SERVICE_HOST -- "redis-master"'s virtual ip address  eg. 10.0.0.11
 	REDIS_MASTER_SERVICE_PORT -- "redis-master"'s service port        eg. 6379
@@ -100,7 +100,7 @@ Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如
 
 ### Redis Slave
 
-[Redis Slave](../examples/1/redis-slave)作为Redis Master的Salve。
+[Redis Slave](../examples/1/redis-slave)作为Redis Master的Slave。
 
 [Dockerfile](../examples/1/redis-slave/Dockerfile):
 
@@ -136,11 +136,11 @@ Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如
 	FROM 192.168.202.240:5000/lijiao/base-os:1.0
 	CMD env 1>/export/Data/env.log 2>&1 && sleep 1000000
 
-Sleep运行时将能够看到环境变量保存到了/export/Data/env.log中, 在创建Sleep Pod时，可以将宿主机上的一个目录挂在到容器内部的的/export/Data,这样就可以直接在宿主机上查看env.log.Pod如下:
+Sleep运行时能够看到环境变量保存到了/export/Data/env.log中, 在创建Sleep Pod时，可以将宿主机上的一个目录挂载到容器内部的/export/Data,这样就可以直接在宿主机上查看env.log。Pod如下:
 
->这也代表了Kubernetes中存储的使用的方式,Kubernetes已经支持挂载多种文件系统(gce、aws、nfs、iscsi、glusterfs等等), 
+>这也代表了Kubernetes中存储的使用的方式，Kubernetes已经支持挂载多种文件系统(gce、aws、nfs、iscsi、glusterfs等等)。
 
-[Slepp Pod](../examples/1/json/4_1_sleep.json):
+[Sleep Pod](../examples/1/json/4_1_sleep.json):
 
 	{
 		"kind": "Pod",
@@ -231,7 +231,9 @@ Sleep运行时将能够看到环境变量保存到了/export/Data/env.log中, �
 	KUBERNETES_RO_PORT_80_TCP_PROTO=tcp
 	PWD=/data
 
-然后可以把Sleep Pod删除，在创建了Redis Slave后再重建:
+>注意区别redis-master service的地址和redis-master pod的IP地址是不同的, 对redis-master service的访问按照一定策略被转发给redis-master pod。(Kubernetes就是实现了负载均衡)
+
+然后可以把Sleep Pod删除，在Redis Slave创建后重建:
 
 	$./kubectl.sh delete pods sleep
 	$./2_1_redis_slave_controller.sh
