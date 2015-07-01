@@ -5,7 +5,7 @@ title: 1_example_redis
 ---
 
 # 1_example_redis
-创建时间: 2015/07/01 09:53:14  修改时间: 2015/07/01 14:49:34 作者:lijiao
+创建时间: 2015/07/01 09:53:14  修改时间: 2015/07/01 15:04:34 作者:lijiao
 
 ----
 
@@ -56,7 +56,7 @@ Web Server--(依赖)-->Redis Master&&Reids Slave；Reids Slave--(依赖)-->Redis
 
 首先部署Redis Master，然后部署Redis Slave，最后部署Web Server.
 
-Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如何知晓Redis Master的地址。
+Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如何知晓Redis Master的地址?
 
 	Kubernetes中有两种方案，一种是通过环境变量通知(下面采用的方案),另一种通过DNS(Kubernetes还在开发此功能)。
 
@@ -86,7 +86,7 @@ Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如
 
 在Kubernetes中创建一个[Redis Master Service](../examples/1/json/1_2_service.redis_master.json)。
 
-之后我们应当能够在容器中看到Reddis Master Service相关的环境变量(服务名称为redis-master):
+之后我们应当能够在容器中看到Redis Master Service相关的环境变量(服务名称为redis-master):
 
 	REDIS_MASTER_SERVICE_HOST -- "redis-master"'s virtual ip address  eg. 10.0.0.11
 	REDIS_MASTER_SERVICE_PORT -- "redis-master"'s service port        eg. 6379
@@ -126,6 +126,10 @@ Web Server如何知晓Redis Master和Redis Slave的地址，以及Redis Slave如
 	redis-server --slaveof ${REDIS_MASTER_SERVICE_HOST:-$SERVICE_HOST} $REDIS_MASTER_SERVICE_PORT
 
 >注意: 在run.sh中redis slave通过读取环境变量REDIS_MASTER_SERVICE_HOST,得知Master的地址。
+
+[Redis Slave Service](../examples/1/json/2_2_service.redis_slave.json)由一个[Redis Slave RC](../examples/1/json/2_1_controller.redis_slave.json)组成。
+
+而Redis RC由两个Redis Slave Pod组成(在RC的创建文件里指明)，Kubernetes保证始终有两个Redis Slave Pod存在，这两个Pod均分用户请求。
 
 ### Sleep
 
@@ -231,7 +235,7 @@ Sleep运行时能够看到环境变量保存到了/export/Data/env.log中, 在�
 	KUBERNETES_RO_PORT_80_TCP_PROTO=tcp
 	PWD=/data
 
->注意区别redis-master service的地址和redis-master pod的IP地址是不同的, 对redis-master service的访问按照一定策略被转发给redis-master pod。(Kubernetes就是实现了负载均衡)
+>注意区别redis-master service的地址和redis-master pod的地址，这两个地址是不同的, 对redis-master service的访问按照一定策略被转发给redis-master pod。(Kubernetes就是这样实现了负载均衡)
 
 然后可以把Sleep Pod删除，在Redis Slave创建后重建:
 
@@ -240,9 +244,9 @@ Sleep运行时能够看到环境变量保存到了/export/Data/env.log中, 在�
 	$./2_2_redis_slave_service.sh
 	$./4_1_sleep_pod.sh
 
-然后重新查看,应该可以看到REDIS_SLAVE_PORT等环境变量.
+重新查看,应该可以看到REDIS_SLAVE_PORT等环境变量.
 
-最后可以启动Web Server:
+最后启动Web Server:
 
 	$./3_1_webserver_controller.sh
 	$./3_2_webserver_service.sh
