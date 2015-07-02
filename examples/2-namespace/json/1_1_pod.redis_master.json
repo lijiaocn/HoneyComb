@@ -1,0 +1,27 @@
+{
+	"kind": "Pod",
+	"apiVersion": "v1beta3",
+	"id": "redis-master",
+	"metadata":{
+		"name":"redis-master",
+		"labels":{
+			"name":"redis",
+			"role":"master"
+		}
+	},
+	"spec":{
+		"containers":[
+		{
+			"name":"redis-master",
+			"image":"192.168.202.240:5000/lijiao/example-1-redis-master:2.8.19",
+			"imagePullPolicy":"IfNotPresent",
+			"ports": [{
+				"containerPort": 6379,
+				"hostPort": 6379
+			}]
+		}
+		],
+		"restartPolicy": "Always",
+		"dnsPolicy":"ClusterFirst"
+	}
+}

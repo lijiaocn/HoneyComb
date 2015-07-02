@@ -1,0 +1,38 @@
+{
+	"kind": "Pod",
+	"apiVersion": "v1beta3",
+	"id": "sleep",
+	"metadata":{
+		"name":"sleep",
+		"labels":{
+			"name":"sleep"
+		}
+	},
+	"spec":{
+		"volumes":[
+		{
+			"name":"exportdata",
+			"hostPath":
+			{
+				"path":"/export/Data/"
+			}
+		}
+		],
+		"containers":[
+		{
+			"name":"sleep",
+			"image":"192.168.202.240:5000/lijiao/example-1-sleep",
+			"imagePullPolicy":"IfNotPresent",
+			"volumeMounts":[
+			{
+				"name":"exportdata",
+				"readOnly":false,
+				"mountPath":"/export/Data"
+			}
+			]
+		}
+		],
+		"restartPolicy": "Always",
+		"dnsPolicy":"ClusterFirst"
+	}
+}

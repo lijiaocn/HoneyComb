@@ -5,7 +5,7 @@ title: 1_example_redis
 ---
 
 # 1_example_redis
-创建时间: 2015/07/01 09:53:14  修改时间: 2015/07/01 15:27:40 作者:lijiao
+创建时间: 2015/07/01 09:53:14  修改时间: 2015/07/02 19:35:51 作者:lijiao
 
 ----
 
@@ -13,7 +13,7 @@ title: 1_example_redis
 
 这里介绍了如何在Kubernetes中部署使用Redis.
 
-资料: [example1](../examples/1/)
+资料: [example1](../examples/1-redis/)
 
 ## 名词
 
@@ -42,7 +42,7 @@ Service: 多个Pod的组合，Service有自己的一个IP，对Service的IP的�
 
 ## 规划
 
-[deploy](../examples/1/deploy):
+[deploy](../examples/1-redis/deploy):
 
 	      +--------------+      +--------------+
 	      | Web Server 1 |      | Web Server 2 |   <--- Web Server Service(包含Web Server RC中的Pods)
@@ -74,15 +74,15 @@ Web Server Service 如何知晓Redis Master Service 和Redis Slave Service 的�
 
 ## 准备镜像
 
-[build](../examples/1/build.sh)中创建了所有需要的镜像。镜像的细节在下面相关章节展开。
+[build](../examples/1-redis/build.sh)中创建了所有需要的镜像。镜像的细节在下面相关章节展开。
 
 ## 镜像说明
 
 ### Redis Master
 
-[Redis Master](../examples/1/redis-master)的就是单纯的启动一个redis-server。
+[Redis Master](../examples/1-redis/redis-master)的就是单纯的启动一个redis-server。
 
-[Dockerfile](../examples/1/redis-master/Dockerfile):
+[Dockerfile](../examples/1-redis/redis-master/Dockerfile):
 
 	FROM 192.168.202.240:5000/lijiao/example-1-redis:2.8.19
 
@@ -92,9 +92,9 @@ Web Server Service 如何知晓Redis Master Service 和Redis Slave Service 的�
 	# Expose ports.
 	EXPOSE 6379
 
-在Kubernetes中创建一个[Redis Master Pod](../examples/1/json/1_1_pod.redis_master.json)。
+在Kubernetes中创建一个[Redis Master Pod](../examples/1-redis/json/1_1_pod.redis_master.json)。
 
-在Kubernetes中创建一个[Redis Master Service](../examples/1/json/1_2_service.redis_master.json)。
+在Kubernetes中创建一个[Redis Master Service](../examples/1-redis/json/1_2_service.redis_master.json)。
 
 之后我们应当能够在容器中看到Redis Master Service相关的环境变量(服务名称为redis-master):
 
@@ -110,15 +110,15 @@ Web Server Service 如何知晓Redis Master Service 和Redis Slave Service 的�
 
 ### Redis Slave
 
-[Redis Slave](../examples/1/redis-slave)作为Redis Master的Slave。
+[Redis Slave](../examples/1-redis/redis-slave)作为Redis Master的Slave。
 
-[Dockerfile](../examples/1/redis-slave/Dockerfile):
+[Dockerfile](../examples/1-redis/redis-slave/Dockerfile):
 
 	FROM 192.168.202.240:5000/lijiao/example-1-redis:2.8.19
 	ADD run.sh /run.sh
 	CMD /run.sh
 
-[run.sh](../examples/1/redis-slave/run.sh):
+[run.sh](../examples/1-redis/redis-slave/run.sh):
 
 	echo "Note, if you get errors below indicate kubernetes env injection could be faliing..."
 	echo "env vars ="
@@ -137,15 +137,15 @@ Web Server Service 如何知晓Redis Master Service 和Redis Slave Service 的�
 
 >注意: 在run.sh中通过读取环境变量REDIS_MASTER_SERVICE_HOST,得知Master的地址, 注意，这是在容器内。
 
-[Redis Slave Service](../examples/1/json/2_2_service.redis_slave.json)由一个[Redis Slave RC](../examples/1/json/2_1_controller.redis_slave.json)组成。
+[Redis Slave Service](../examples/1-redis/json/2_2_service.redis_slave.json)由一个[Redis Slave RC](../examples/1/json/2_1_controller.redis_slave.json)组成。
 
 而Redis Slave RC由两个Redis Slave Pod组成(在RC的创建文件里指明)，Kubernetes保证始终有两个Redis Slave Pod存在，这两个Pod共同承担用户的请求。
 
 ### Sleep
 
-[Sleep](../examples/1/sleep)用来帮助我们查看容器内的环境变量:
+[Sleep](../examples/1-redis/sleep)用来帮助我们查看容器内的环境变量:
 
-[Dockerfile](../examples/1/sleep/Dockerfile)
+[Dockerfile](../examples/1-redis/sleep/Dockerfile)
 
 	FROM 192.168.202.240:5000/lijiao/base-os:1.0
 	CMD env 1>/export/Data/env.log 2>&1 && sleep 1000000
@@ -154,7 +154,7 @@ Sleep运行时将能够看到的环境变量保存到了/export/Data/env.log中,
 
 >这也代表了Kubernetes中存储的使用方式。Kubernetes已经支持挂载多种文件系统(gce、aws、nfs、iscsi、glusterfs等)。
 
-[Sleep Pod](../examples/1/json/4_1_sleep.json):
+[Sleep Pod](../examples/1-redis/json/4_1_sleep.json):
 
 	{
 		"kind": "Pod",
@@ -197,7 +197,7 @@ Sleep运行时将能够看到的环境变量保存到了/export/Data/env.log中,
 
 ## 提交到Kubernetes
 
-依次执行[example1](../examples/1)中的脚本:
+依次执行[example1](../examples/1-redis)中的脚本:
 
 	$./1_1_redis_master_pod.sh
 	$./1_2_redis_master_service.sh

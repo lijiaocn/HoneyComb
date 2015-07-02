@@ -40,16 +40,18 @@ Service: webserver (labels: name=webserver selector: name=webserver)
 Enviroment1:  example-1-dev  (labels: name=example-1-dev)
 Enviroment2:  example-1-prod (labels: name=example-1-prod)
 
-	          +--------------+      +--------------+
-	          | Web Server 1 |      | Web Server 2 |   <--- Service
-	          +--------------+      +--------------+
-
-
-	                      +-------------+
-	                      | redis master|        <--- Service
-	                      +-------------+
-
-
-	       +---------------+             +---------------+
-	       | redis slave 1 |             | redis slave 2 |   <--- RC,Service
-	       +---------------+             +---------------+
+	      +--------------+      +--------------+
+	      | Web Server 1 |      | Web Server 2 |   <--- Web Server Service(包含Web Server RC中的Pods)
+	      +--------------+      +--------------+
+	          |   |
+	          |   -----------+
+	          |             _|_
+	          |             \ /
+	          |       +------'------+
+	          |       | redis master|              <--- Redis Master Service(只包含一个Redis Master Pod)
+	          |       +-------------+
+	         _|_
+	         \ /
+	   +------'--------+             +---------------+
+	   | redis slave 1 |             | redis slave 2 |   <--- Redis Slave Service(包含Redis Slave RC中的Pods)
+	   +---------------+             +---------------+
