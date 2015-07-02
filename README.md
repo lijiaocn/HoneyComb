@@ -6,7 +6,7 @@ title: README
 
 # README
 
-创建时间: 2015/06/26 11:43:54  修改时间: 2015/07/02 18:39:32 作者:lijiao
+创建时间: 2015/06/26 11:43:54  修改时间: 2015/07/02 19:39:27 作者:lijiao
 
 ----
 
@@ -31,7 +31,7 @@ HoneyComb想成为一套简单、高效的Kubernetes的部署系统。
 
 [第一篇 在Kubernetes中使用Redis](./doc/1_example_redis.md)
 
-[第二篇 使用Namespace](./doc/2_example_namespace.md)
+[第二篇 Namespace的使用](./doc/2_example_namespace.md)
 
 ## 目录说明
 
