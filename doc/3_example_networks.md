@@ -5,7 +5,7 @@ title: 3_example_networks
 ---
 
 # 3_example_networks
-创建时间: 2015/07/12 09:52:53  修改时间: 2015/07/12 11:11:58 作者:lijiao
+创建时间: 2015/07/12 09:52:53  修改时间: 2015/07/12 11:16:18 作者:lijiao
 
 ----
 
@@ -21,7 +21,7 @@ title: 3_example_networks
 
 ## Service的类型
 
-这里先只列出v1.0中，Service的三种类型:
+这里先只列出v1.0中Service的三种类型:
 
 	// ServiceTypeClusterIP means a service will only be accessible inside the
 	// cluster, via the cluster IP.
@@ -36,9 +36,9 @@ title: 3_example_networks
 	// to 'NodePort' type.
 	ServiceTypeLoadBalancer ServiceType = "LoadBalancer"
 
-各个类型的含义，上面的注释中已经说明了。我们真正关心的不是有多杀类型，而是要怎样实现我们要求。所以这里我们不对这些类型做比较分析，而是直接在后续的章节中讨论“我们需要的各种场景要如何实现”。
+各个类型的含义，上面的注释中已经说明了。我们真正关心的不是有多少种类型，而是要怎样实现我们要求。所以这里我们不对这些类型做比较分析，而是直接在后续的章节中讨论“我们需要的各种场景要如何实现”。
 
-## 场景1 - Service如何暴露到Internet
+## 场景1 - Service如何发布到公网
 
 这是最重要的场景，如果Service无法对外服务，那么这就只能是个内部自娱自乐的东西。
 
@@ -50,7 +50,7 @@ title: 3_example_networks
 
 仔细观察：
 
-![k8s-architecture](./pic/pic_3_1_K8s_architecture)
+![k8s-architecture](./pic/pic_3_1_K8s_architecture.png)
 
 >注意:只有Node是必须与公网联通，而承担etcd、manager、scheduler的结点不需要。
 
@@ -64,16 +64,12 @@ title: 3_example_networks
 	 -----------------------
 	 ServiceA      30000
 	 ServiceB      30001
-
-	  Node         PublicIP
-	 -----------------------
+                                    当公网用户要使用ServiceA时，使用地址[IP1|IP2|IP3]:30000。
+	  Node         PublicIP           
+	 -----------------------        当公网用户要使用ServiceB时，使用地址[IP1|IP2|IP3]:30001。
 	  Node1         IP1
 	  Node2         IP2
 	  Node3         IP3
-
-当公网用户要使用ServiceA时，使用地址[IP1|IP2|IP3]:30000。
-
-当公网用户要使用ServiceB时，使用地址[IP1|IP2|IP3]:30001。
 
 >这里最直接的一个问题就是：可以公布的Service的数量受限于端口数！I think this is a problem，this soluation is not graceful.
 
