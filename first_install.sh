@@ -34,7 +34,7 @@ fi
 cur=`pwd`
 cd ${VERSION_DIR}
 tar -xvf $EXPORT_FILE
-/bin/cp  -rf  export/*   /export/
+/bin/cp  -rf  OutPut/export/*   /export/
 cd $cur
 
 echo  -n -e "\e[32m"
