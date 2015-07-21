@@ -1,5 +1,5 @@
 *.swp
 *.
-OutPut/*
+Release/*
 ThirdParty/*
 Tools/Registry/registry.tar.gz

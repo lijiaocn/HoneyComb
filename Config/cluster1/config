@@ -1,0 +1,10 @@
+SelfVersion=0.0.2
+
+K8sUrl=https://github.com/GoogleCloudPlatform/kubernetes.git
+K8sTag=v1.0.0
+
+FlannelUrl=https://github.com/coreos/flannel.git
+FlannelTag=v0.4.1
+
+EtcdUrl=https://github.com/coreos/etcd.git
+EtcdTag=v2.0.11

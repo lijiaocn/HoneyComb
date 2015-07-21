@@ -1,6 +1,9 @@
 #!/bin/bash
 
 #########################################################
+#   deploy example: 
+#   6 machines ,ip range 192.168.202.[241-246]
+#   5 machines ,ip range 192.168.200.[164-168]
 
 . ./library.sh
 
