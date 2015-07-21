@@ -168,7 +168,7 @@ func_prepare_release(){
 }
 
 CurPath=`pwd`
-func_yellow_str "`ls ${CurPath}/Config`"
+func_yellow_str "`ls ${CurPath}/Config|grep -v *.sh`"
 echo -n "Choose the Cluster:"
 read Cluster
 
