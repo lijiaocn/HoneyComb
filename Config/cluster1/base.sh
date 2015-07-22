@@ -53,7 +53,7 @@ ARRAY_KUBE_NODES[4]="192.168.183.65"
 #kubenetes master
 #TODO
 #It should be a api server list. but kubernete maybe haven't finish this work
-MASTER_SERVER="http://192.168.202.243:8080"
+MASTER_SERVER="http://192.168.183.59:8080"
 
 App=/export/App
 Logs=/export/Logs/

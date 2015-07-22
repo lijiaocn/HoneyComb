@@ -1,32 +1,47 @@
 #!/bin/bash
 
-. ./Shell/library.sh
+. ../Shell/library.sh
 
 PASSWORD=""
-
-install(){
-	dish -e "curl -o /root/first_install.sh http://192.168.202.240/HoneyComb/first_install.sh && bash /root/first_install.sh" -g machines.lst -p ${PASSWORD}
-}
+MACHINES_LST=""
+Cluster=""
 
 start(){
-	dish -e "cd /export/Shell && /bin/bash ./run.sh" -g machines.lst -p ${PASSWORD}
+	./dish -e "cd /export/Shell && /bin/bash ./run.sh" -g ${MACHINES_LST} -p ${PASSWORD}
 }
 
 stop(){
-	dish -e "cd /export/Shell && /bin/bash ./stop.sh" -g machines.lst -p ${PASSWORD}
+	./dish -e "cd /export/Shell && /bin/bash ./stop.sh" -g ${MACHINES_LST} -p ${PASSWORD}
 }
 
 update(){
-	dish -e "cd /export/Shell && /bin/bash ./update.sh" -g machines.lst -p ${PASSWORD}
+	./dish -e "cd /export/Shell && /bin/bash ./update.sh" -g ${MACHINES_LST} -p ${PASSWORD}
 }
 
 upload(){
-	machines=`cat ./machines.lst |grep -v "#"`
+	machines=`cat ./${MACHINES_LST} |grep -v "#"`
 	for i in $machines
 	do
 		func_cmd_need_password $PASSWORD "scp -r $* $i:/root/upload/"
 	done
 }
+
+
+if [[ ! $1 == "-c" ]];then
+	func_yellow_str "`ls ../Config`"
+	echo -n "Choose the Cluster:"
+	read Cluster
+else 
+	shift 1
+	Cluster=$1
+	shift 1
+fi
+
+MACHINES_LST="../Config/$Cluster/machines.lst"
+if [ ! -e ${MACHINES_LST} ];then
+	func_red_str "Not found: ${MACHINES_LST}"
+	exit
+fi
 
 func_secret_input PASSWORD "PASSWORD:"
 
@@ -37,11 +52,9 @@ case $1 in
 		stop;;
 	(update)
 		update;;
-	(install)
-		install;;
 	(upload)
 		shift 1
 		upload $* ;;
 	(*)
-		dish -e "$*" -g machines.lst -p ${PASSWORD}
+		./dish -e "$*" -g ${MACHINES_LST} -p ${PASSWORD}
 esac

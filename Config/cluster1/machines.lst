@@ -1,9 +1,9 @@
-#CentOS 6.4 CPU 4 Memory 8G Disk 100G
-#root@192.168.202.240
-#root@192.168.202.241
-#root@192.168.202.242
+#CentOS 6.4 VM CPU 4 Memory 8G Disk 100G
+root@192.168.202.240
+root@192.168.202.241
+root@192.168.202.242
 
-#New Phy 
+#CentOS 7.1 PHY CPU 32 Memeory 32G Disk 792G
 root@192.168.183.59
 root@192.168.183.60
 root@192.168.183.61

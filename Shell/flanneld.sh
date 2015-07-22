@@ -3,6 +3,8 @@
 . ./library.sh
 . ./base.sh
 
+source ./config
+
 declare -A Configs
 Configs[iface]="-iface=eth0"
 

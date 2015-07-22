@@ -1,0 +1,1969 @@
+#!/usr/bin/expect --
+set VERSION 1.18.3
+set LICENSE_TEXT "Copyright (C) 2003-2012 Dimitar Ivanov
+
+License: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law."
+#
+################################################################################
+#
+# dish - diligence/distributed shell for executing commands simultaneously
+#        on several hosts via ssh/rsh/telnet/mysql
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+################################################################################
+#
+exp_version -exit 5.0
+#
+### Set up some reasonable defaults
+#
+set t1 [time {set MYNAME [exec basename $argv0]}] ;# My exec name
+set t2 [time {set user [exec whoami]}]            ;# Default username for login
+set HOME           "$env(HOME)"  ;# User home directory
+set MYNAME_SH          "dish"    ;# Script name
+set MYNAME_CP          "dicp"    ;# Enter copy mode if called by this name
+set CONNECTOR          "ssh"     ;# Program (incl. options) used for connecting
+set CONNECTOR_CP       "scp"     ;# Program (incl. options) used for copying
+set COMMAND            ""        ;# Command(s) to execute on remote host(s)
+set COMMAND_FULL       ""        ;# Command including connection part
+set REMOTE_COMMAND     ""        ;# Remote command without connection part
+set LOGFILE            ""        ;# Log file
+set MANY_LOGS          0         ;# Log to separate log files (false)
+set SP "(%|\\\$|#|\\\>) ?$"      ;# Default shell prompt (regexp)
+set TOT_EXEC_TIME(0) [timestamp] ;# Total exec time for already processed hosts
+set TIMEOUT_ALL       300        ;# Timeout for execution over all hosts
+set TIMEOUT_HOST       30        ;# Timeout for execution on single host
+set timeout $TIMEOUT_HOST
+set verbose            1         ;# Echo spawn and login output (true)
+set VERBOSE            1         ;# Echo command output (true)
+set BAD_LOGINS         ""        ;# List of hosts/accounts where login failed
+set MAGIC_WORD   "Password: *$"  ;# The magic word we expect as password prompt
+set EMPTY_PASSWORD $MAGIC_WORD   ;# The same as the default password prompt
+set ACCOUNTS_DONE(@)   ""        ;# List of processed hosts/accounts
+set ACCOUNTS_TOTAL    -1         ;# Total number of processed hosts/accounts
+set LOGIN_PROMPT_NO "slogin|ssh|rsh|scp|rcp"      ;# Don't expect prompt there
+# List state after or before proc _Read_Hosts_():
+#  0 = default overridden : "override initial"
+# -1 = default loaded     : "initial"
+# -2 = try to find default
+# -3 = default not found
+set HLISTS(0)         -2         ;# ListStatus default hosts
+set HOSTS_REST(0)     -2         ;# ListStatus resting hosts (for exclude)
+set HOSTS_OVER(0)      0         ;# ListStatus overlapping hosts (for intersect)
+set INTER_HOSTS        0         ;# Overlapping host mode (false)
+set HOST               ""        ;#
+set USER               ""        ;#
+set PASS(,)            ""        ;# The default password is kept in PASS(,)
+set PASSWORD(login)    ""        ;# a0 Zero authentic password (login)
+set PASSWORD(a1)       ""        ;# a1 First authentic password
+set PASSWORD(a2)       ""        ;# a2 Second authentic password
+set PASSWORD(new)      ""        ;# New password
+set PASSWORD(newcheck) ""
+set PASSWORD(inside)   ""        ;# Password asked after login - inside command
+set PASS_LOGIN_SET     0         ;# Login password set (false)
+set PASS_NEW_SET       0         ;# New password set (false)
+set PASS_LOGIN_PRO     0         ;# Flag is !=0 when '-p' was explicitly used
+set PASS_A1_PRO        0         ;# Flag is !=0 when '-a' was explicitly used
+set PASS_A1_EQ_A0      0         ;# Flag to force a1=a0 (option -p1)
+set PIN_USED           0         ;# Password-inside-used (false)
+set SPAWN_SLEEP        0         ;# Sleep between process spawns
+set PASS_SLEEP         0         ;# Sleep time when asked for password
+set HOSTS_withPASS()   0         ;# Hosts for which an entry in PASSFILE exists
+set SSH_PTTY_OPT       ""        ;# Option to force ssh pseudo-tty allocation
+set SSH_ANH_PROMPT "connecting (yes/no)?.*"
+       ;# Regex to expect when ssh prompts to add a new host key
+set SSH_ANH_ANSWER "yes"
+       ;# String with the answer to the ssh-prompt to add a new host key
+set SSH_RES_ERR    "Could not resolve hostname"
+       ;# Regexp to expect if ssh exit with error that the hostname is unknown
+set BG_MODE            0         ;# Background processing / fork (false)
+set FORK_PID           ""
+set KIDS_PIDS          ""        ;# List with children pids
+set PBOX "/tmp/$MYNAME"          ;# Base file name of IPC pipe (see also CID)
+set LOGFILE_MODE       600       ;# Set file mode for log files
+set PAFI_MODE "^100\[4567\]00"   ;# Password file access mode
+set JOUR_MODE          0         ;# Write history into journal (false)
+set hsep               " -"      ;# Text separator in the help section
+set D(DISH_CONF)       ""        ;# ENV var defining program's config dir
+set D(DISH_PASS)       ""        ;# ENV var defining login password
+set D(DISH_USER)       ""        ;# ENV var defining user name
+set D(DISH_HOSTS)      ""        ;# ENV var defining hosts
+set D(DISH_RESTS)      ""        ;# ENV var defining resting hosts
+set D(Dish_Over)       ""        ;# Int var defining overlapping hosts
+set D(Use_Defaults)    0         ;# Int var - fallback to default files (false)
+set DEBUG              0         ;# Dry run, print command for debug (false)
+   # Init DISH_* variables
+if [info exists env(DISH_CONF)]  { set D(DISH_CONF)  "$env(DISH_CONF)"  }
+if [info exists env(DISH_PASS)]  { set D(DISH_PASS)  "$env(DISH_PASS)"  }
+if [info exists env(DISH_USER)]  { set D(DISH_USER)  "$env(DISH_USER)"  }
+if [info exists env(DISH_HOSTS)] { set D(DISH_HOSTS) "$env(DISH_HOSTS)" }
+if [info exists env(DISH_RESTS)] { set D(DISH_RESTS) "$env(DISH_RESTS)" }
+set N(OPFINAME)        "options" ;# Default options file name
+set N(HOFINAME)        "hosts"   ;# Default hosts file name
+set N(REFINAME)        "rests"   ;# Default resting hosts file name
+set N(PAFINAME)        "pass"    ;# Default password file name
+set N(JOURNAME)        "journal" ;# Default journal/history file name
+   # Following variables will be evaluated later
+set OPTSFILE "\$D(DISH_CONF)/$N(OPFINAME)" ;# Default file with options
+set HOSTFILE "\$D(DISH_CONF)/$N(HOFINAME)" ;# Default file with list of hosts
+set RESTFILE "\$D(DISH_CONF)/$N(REFINAME)" ;# Default file of resting hosts
+set PASSFILE "\$D(DISH_CONF)/$N(PAFINAME)" ;# Default file with passwords
+set JOURFILE "\$D(DISH_CONF)/$N(JOURNAME)" ;# Default journal file
+   # Options that could be inserted before the (main) loop reading the
+   # command line arguments: used to evaluate the environment and to
+   # redefine the programs behavior. Not nice, but skips the tcllib,
+   # and allows some funny constructs instead of ::getopt
+array set Ol {
+C  Confdir
+D  DEBUG
+}
+array set Os {
+C  C
+CC CC
+p  p
+P  P
+o  o
+r  r
+g  g
+D  D
+}
+#
+################################################################################
+#
+# Procedures
+#
+
+### Reconfigure some variables if in copy mode
+#
+proc _Reconfig_Copy_Mode_ {_myname _con _opfile _finame} {
+     global MYNAME_SH MYNAME_CP CONNECTOR_CP OPFINAME D
+     upvar $_myname myname
+     upvar $_con con
+     upvar $_opfile opfile
+     upvar $_finame finame
+
+        # Re-define the default connector as the default copy command
+     set con $CONNECTOR_CP
+        # Re-define the default options file
+     set finame(OPFINAME) $finame(OPFINAME).$MYNAME_CP
+     set opfile "\$D(DISH_CONF)/$finame(OPFINAME)"
+        # And set my name back to default in order to find other default configs
+     set myname "$MYNAME_SH"
+
+return 1
+}
+
+### Clean up
+#
+proc _Clean_Up_ {} {
+   global PBOX
+  
+   exec rm -f $PBOX
+
+return 1
+}
+
+### Trap some signals, clean up, and exit in case of parallel mode:
+#   single ^C-interrupt kills parent and children
+#
+proc _Traps_Clean_ {} {
+   global PBOX
+
+   trap { _Clean_Up_
+          exit [trap -number] } { HUP INT QUIT TERM ABRT }
+}
+
+### Simple print if existing tty
+#
+proc _msend_ {mytext} {
+   global tty_spawn_id
+
+   if [info exists tty_spawn_id] { send_user $mytext }
+}
+
+### Re-arrange command line arguments
+#
+proc _adjust_argv_ {opt value act} {
+   global argv argc I
+
+   if { $act eq "replace" } {
+        set argv [lreplace $argv $I $I "$value"]
+        set argv [linsert $argv $I $opt]
+        incr argc +1
+        incr I -1
+   } elseif { $act eq "insert" } {
+        set argv [linsert $argv $I $opt "$value"]
+        incr argc +2
+   }
+
+return 1
+}
+
+### Check for default files in the config directory and insert them in argv
+#
+proc _Process_Confdir_And_DishVars_ {confdir} {
+   global argv argc I HOME MYNAME Os Ol D N HLISTS HOSTS_REST
+   global OPTSFILE HOSTFILE RESTFILE PASSFILE
+
+      # If this option used, it must be the first one in the command line string
+   if { $I ne 1 } {
+        send_error "Error: `[lindex $argv [expr $I -1]]' should be the first option in the command line string\n"
+exit 14
+   }
+   if { ![file isdirectory $D(DISH_CONF)] } {
+        send_error "Error: no such directory '$D(DISH_CONF)'\n"
+exit 16
+   }
+
+   incr I
+
+      # Check for host file or shell variable DISH_HOSTS
+   if { [file exists $HOSTFILE] && $D(DISH_HOSTS) eq "" } {
+         _adjust_argv_ "-$Os(g)" "$HOSTFILE" insert
+   } elseif { $D(DISH_HOSTS) ne "" } {
+         _adjust_argv_ "-$Os(g)" "$D(DISH_HOSTS)" insert
+   } else {
+         set HLISTS(0) -3
+   }
+
+      # Check for resting hosts file or shell variable DISH_RESTS
+      # Fallback to default (in case -CC used)
+   if { [file exists $RESTFILE] && $D(DISH_RESTS) eq "" } {
+         _adjust_argv_ "-$Os(r)" "$RESTFILE" insert
+   } elseif { $D(DISH_RESTS) ne "" } {
+         _adjust_argv_ "-$Os(r)" "$D(DISH_RESTS)" insert
+   } elseif { [file exists $HOME/.$MYNAME/$N(REFINAME)] && $D(Use_Defaults) } {
+         set RESTFILE $HOME/.$MYNAME/$N(REFINAME)
+         _adjust_argv_ "-$Os(r)" "$RESTFILE" insert
+   } else {
+         set HOSTS_REST(0) -3
+   }
+
+      # Check for password file or shell variable DISH_PASS
+      # Fallback to default (in case -CC used)
+   if { [file exists $PASSFILE] && $D(DISH_PASS) eq "" } {
+         _adjust_argv_ "-$Os(P)" "$PASSFILE" insert
+   } elseif { $D(DISH_PASS) ne "" } {
+         _adjust_argv_ "-$Os(p)" "$D(DISH_PASS)" insert
+   } elseif { [file exists $HOME/.$MYNAME/$N(PAFINAME)] && $D(Use_Defaults) } {
+         set PASSFILE $HOME/.$MYNAME/$N(PAFINAME)
+         _adjust_argv_ "-$Os(P)" "$PASSFILE" insert
+   }
+
+      # Check for options file
+      # Fallback to default (in case -CC used)
+   if { [file exists $OPTSFILE] } {
+         _adjust_argv_ "-$Os(o)" "$OPTSFILE" insert
+   } elseif { [file exists $HOME/.$MYNAME/$N(OPFINAME)] && $D(Use_Defaults) } {
+         set OPTSFILE $HOME/.$MYNAME/$N(OPFINAME)
+         _adjust_argv_ "-$Os(o)" "$OPTSFILE" insert
+   }
+
+return 1
+}
+
+### Process the default options file
+#
+proc _Read_Opts_File_ {optsfile} {
+   global argv argc I DEBUG
+
+   set all_my_options ":"
+   set j [expr $I + 1]
+      # Open file and, after squeezing blanks, process every none empty line :
+      # one option (?+ its value) per line OR two options without value per line
+   if ![catch {open $optsfile} fid ] {
+        if { $DEBUG } { _DEBUG_ "options in" "$optsfile" "" 1 }
+        foreach line [split [read $fid] "\n"] {
+           if { [string compare $line ""] != 0 && \
+                [regexp {^[[:space:]]*\#} $line] != 1 } {
+                 regsub -all {\s+} $line { } line
+
+                    # Delete unescaped ' and " (?regexp?)
+                 set del_quote [split $line {}]
+                 set l [llength $del_quote]
+                 set m ""
+                 for { set k 0 } { $k < $l } { incr k } {
+                       set char [lindex $del_quote $k]
+                       if { "$char" == "\"" || "$char" == "'" } {
+                         if { "$m" != "\\" } {
+                              set del_quote [lreplace $del_quote $k $k ""]
+                         }
+                       }
+                       set m $char ;# Remember previous character
+                 }
+                 set line [join $del_quote {}]
+
+                    # Insert options into argv
+                 set blankopt [split $line " "]
+                 set k 0
+                 while { [string match [lindex $blankopt $k] ""] } { incr k ; }
+                 set opt [lindex $blankopt $k]
+                 set opt_val [join [lrange $blankopt [expr $k+1] end] " "]
+                 set all_my_options "$all_my_options $opt $opt_val"
+                    # All array elements after the first one are treated as
+                    # option value and together represent one argv
+                 if { $opt_val ne "" } {
+                       set k 2
+                       set argv [linsert $argv $j $opt]
+                       incr j
+                       set argv [linsert $argv $j $opt_val]
+                 } else {
+                       set k 1
+                       set argv [linsert $argv $j $opt]
+                 }
+                 incr j
+                 incr argc +$k
+           }
+        }
+        if { $DEBUG } { puts "Options to insert $all_my_options" }
+        close $fid
+   } else {
+        send_error "Error: $fid\n"
+exit 13
+   }
+
+return 1
+}
+
+### Wrap proc _Read_Host_() with some adds
+#
+proc _Enlist_Hosts_ {optv dishvar hostfile list_array action dbgtext} {
+   global DEBUG
+   upvar $hostfile _hostfile
+   upvar $dishvar _dishvar
+   upvar $list_array _list
+
+   _Choose_Hostfile_Or_DishVar_ _dishvar _hostfile $optv
+   _Read_Hosts_ $_hostfile $action $_dishvar _list
+   if { $DEBUG } { _DEBUG_ "$dbgtext" "$_hostfile" "$dishvar" $_list(0) }
+   if { $_list(0) == 0 } { set _list(0) 1 }
+
+return 1
+}
+
+### Read resting||active hosts/accounts from file or env DISH_HOSTS||DISH_RESTS
+#
+proc _Read_Hosts_ {hostfile action dishvar hosts_list_array} {
+   global user
+   upvar $hosts_list_array HLA
+
+   set hosts_list {}
+   set hosts ""
+
+   if { $hostfile eq "" } {
+        foreach host [split $dishvar] {
+           if { $host ne "" } { lappend  hosts_list $host } \
+           else               { continue                  }
+           set hosts [join $hosts_list "\n"]
+        }
+   } else {
+           # Open file and read it as single string
+        if { [catch {open $hostfile} fid ] == 0 } {
+              set hosts [read $fid]
+              close $fid
+        } else {
+              send_error "Error: $fid\n"
+exit 4
+        }
+   }
+
+      # Override previous list: it was the initial default one
+   if { $HLA(0) == -1 } { unset HLA ; set HLA(0) -1 }
+      # Initialize the list because there is no default
+   if { $HLA(0) == -3 } { set HLA(0) 0 }
+
+      # Insert hosts into and array of host lists
+   set i [array size HLA]
+   foreach line [split $hosts "\n"] {
+      if { [string compare "$line" ""] != 0 && \
+           [regexp {^[[:space:]]*\#} $line] != 1 } {
+         set line [_First_Field_ $line]
+         if { $action eq "include" } {
+              set HLA($i) $line
+              incr i
+         } else {      # "exclude"
+              _Find_User_Host_ $user $line luser lhost
+              set i "$luser@$lhost"
+              set HLA($i) $line
+         }
+      }
+   }
+   incr HLA(0)
+
+return 1
+}
+
+### Insert the host lists into argv
+#
+proc _Insert_Host_Lists_ {_HLISTS _I _argc} {
+   global argv D
+   upvar $_HLISTS HLISTS
+   upvar $_I I
+   upvar $_argc argc
+
+      # Insert hosts from lists into argv
+   set j [array size HLISTS]
+   for { set i 0; set k 1; } { $k < $j } { incr k } {
+      set argv [linsert $argv [expr $I + $i] $HLISTS($k)]
+      incr argc
+      incr i
+   }
+      # Finally, reset the list
+   unset HLISTS
+   set HLISTS(0) 0
+   incr I -1
+
+return 1
+}
+
+### Override fast mode by slow in case only a single host will be processed
+#
+proc _Check_Single_Host_ {host _bg} {
+   global argc argv I HLISTS HOSTFILE D
+   upvar $_bg bgmode
+
+   set nextHOST $host
+   set nextI $I
+
+      # Inspect hosts/accounts in argv
+   while { 1 } {
+      set nextI [expr $nextI +1]
+      if { $nextI > $argc } { break }
+      set nextHOST [lindex $argv $nextI]
+      if { $nextHOST ne $host } { break }
+   }
+
+   while { $nextHOST eq $host } {
+      if { $HLISTS(0) == 1 && \
+           ![file exists $HOSTFILE] && \
+           $D(DISH_HOSTS) eq "" } { ;
+      } else {
+           set bgmode 0
+      }
+      break
+   }
+
+return 1
+}
+
+### Do once at the beginning: _Check_Single_Host_ + _Journal_Record_
+#
+proc _Check_Single__Write_Journal_ {host cmd} {
+   global DEBUG HLISTS JOUR_MODE BG_MODE D
+
+   if { !$DEBUG } {
+           # Try to find out whether only one host is specified and
+           # in such case override mode 'fast' by 'slow'
+        if { $BG_MODE > 1 && $HLISTS(0) < 2 } {
+            _Check_Single_Host_ $host BG_MODE
+        }
+           # Write a history record of the command (line) '-j'
+        if { $JOUR_MODE } {
+              _Journal_Record_ [eval concat "\"$cmd\""]
+        }
+   } else {
+           # DEBUG: Print out DISH_*
+        foreach dish_env [lsort [array names D]] {
+           puts "$dish_env=$D($dish_env)"
+        }
+   }
+
+return 1
+}
+
+### Find out command if not explicitly specified
+#
+proc _Find_Command_ {_cmd _i} {
+   global argc argv HLISTS 
+   upvar $_i i
+   upvar $_cmd cmd
+
+      # Assume that the rest of argv is the command
+   set cmd [join [lrange $argv $i $argc] " "]
+   set i [expr $argc -1]
+
+   if { $cmd eq "" } {
+        send_error "Error: command to execute missing\n"
+exit 19
+   }
+
+return 1
+}
+
+### Find out user name and host name if hostname/account has the form user@host
+#
+proc _Find_User_Host_ {username hostname _user _host} {
+   upvar $_user lu
+   upvar $_host lh
+
+   set user_host [split $hostname "@"]
+   set lu [lindex $user_host 0]
+   set lh [lindex $user_host 1]
+   if [ string match "$lu" "$hostname" ] { set lu "$username"     }
+   if [ string match "$lh" ""          ] { set lh "$hostname" }
+      # Host name is case-insensitive
+   set lh [string tolower $lh]
+
+return 1
+}
+
+### Lookup the right password from the table of full login data
+#
+proc _Find_Host_User_Pass_ {username hostname _password} {
+   global PASS HOSTS_withPASS
+   upvar $_password pwd
+
+      # Check for individual password for this account
+   if { [info exists PASS($hostname,$username)] } {
+        set pwd(login) $PASS($hostname,$username)
+return 1
+   }
+
+      # Check for password for target hosts which are defined by regexp
+   foreach hwp [array names HOSTS_withPASS] {
+        if { $hwp ne "" } {
+           if { [regexp "^$hwp$" $hostname,$username] || \
+                [regexp "^$hwp$" $hostname,] } {
+                 set pwd(login) $HOSTS_withPASS($hwp)
+return 1
+           }
+        }
+   }
+
+   if { [info exists PASS(,$username)] } {
+        set pwd(login) $PASS(,$username)
+   } else {
+        set pwd(login) $PASS(,)
+   }
+
+return 1
+}
+
+### Read/adjust the login password
+#
+proc _Ask_Login_Pass_ {_pass _password _empty_password _pass_login_set} {
+   global PASS_LOGIN_PRO PASS_A1_PRO PASS_A1_EQ_A0 DEBUG
+   upvar $_pass pass
+   upvar $_password password
+   upvar $_empty_password empty_password
+   upvar $_pass_login_set pass_login_set
+   
+   if { $password(login) eq "" } {
+        _Pickup_Pass_ "Login password: " login
+        set pass(,) $password(login)
+        set pass_login_set 1
+   }
+      # Arrange for missing authentication
+      # 1. username none, password none
+   if { $password(login) eq "/dev/null" } {
+        set password(login) ""
+        set empty_password "."
+   }
+      # 2. username yes, password none
+   if { $password(login) eq "/dev/empty" } {
+        set password(login) ""
+        set empty_password ".."
+   }
+
+      # In case of password change, the a1-password (if not explicitly defined)
+      # is the same as the login password. The only exception is when
+      # "-p" option hasn't been explicitly specified at command line - then
+      # a1 is not set - typically the user is 'root' in such case.
+   if { ! $PASS_A1_PRO && $password(a1) eq "" } {
+        if { $PASS_LOGIN_PRO && $password(new) ne "" } {
+             set password(a1) $password(login)
+        }
+   }
+
+      # Force a1=a0
+   if {  $PASS_A1_EQ_A0 } {
+         set password(a1) $password(login)
+   }
+
+return 1
+}
+
+
+### Ask new password in case of password change, e.g. by 'passwd'
+#
+proc _Ask_New_Pass_ {pass} {
+   global PASS PASSWORD PASS_SLEEP SSH_PTTY_OPT PASS_LOGIN_PRO
+
+   if { $pass ne "" } {
+        set PASSWORD(new) "$pass"
+   } else {
+        _Pickup_Pass_ "New password: " new
+        _Pickup_Pass_ "Retype the new password: " newcheck
+        if ![string match $PASSWORD(new) $PASSWORD(newcheck)] {
+             send_error "\n     Passwords don't match!\n\n"
+exit 7 
+        }
+   }
+      # Force a login password to be requested, if still not specified by
+      # '-p'. In this case we also want to ignore the password file
+   if { ! $PASS_LOGIN_PRO } {
+        set PASSWORD(login) ""
+        set PASS(,) ""
+   }
+   set PASS_SLEEP 0.5
+   set SSH_PTTY_OPT "yes"
+
+return 1
+}
+
+### Request a password
+#
+proc _Pickup_Pass_ {greeting pass} {
+   global PASSWORD DEBUG TIMEOUT_HOST
+
+   if { $DEBUG } {
+        _DEBUG_ "" "" "asking for $pass password" 1
+return 1
+}
+   set timeout_tmp $TIMEOUT_HOST
+   set timeout -1
+   stty -echo
+   send_user "$greeting"
+   expect_user -re "(.*)\n"
+   send_user "\n"
+   set PASSWORD($pass) $expect_out(1,string)
+   stty echo
+   set timeout $timeout_tmp
+
+return 1
+}
+
+### Read a password file
+#
+proc _Read_Pass_File_ {passfile} {
+   global user PASS PAFI_MODE HOSTS_withPASS
+
+   if { [file exists $passfile] && [file isfile $passfile] } {
+         file stat $passfile iinfo
+            # Convert to Unix-readable
+         set urmode [format %o $iinfo(mode)]
+            # Check for ignore-file-access-mode command line option used
+         if { [string match $PAFI_MODE "ignore"] } { set urmode $PAFI_MODE }
+
+         if { ! [regexp "$PAFI_MODE" $urmode] } {
+              send_error "Error: file '$passfile' should be accessible only for user '$user'\n"
+exit 9
+         }
+         if { [catch {open $passfile} fid] == 0 } {
+            while {1} { ;# Read a full password string
+               if {-1 == [gets $fid PASS_STR]} { close $fid; break }
+               if {1 == [regexp {^[[:space:]]*\#} $PASS_STR]} continue ;
+               if { $PASS_STR eq "" } continue ;
+
+               set PASS_STR [_First_Field_ $PASS_STR]
+                  # Split passwd:user:host
+               set FULLP [split $PASS_STR :]
+               set lpass [lindex $FULLP 0]
+               set luser [lindex $FULLP 1]
+                  # Convert to lower case - host name is case-insensitive
+               set lhost [string tolower [lindex $FULLP 2]]
+
+               if { $lhost ne "" } {
+                       # Split in case of comma separated list of hosts
+                    foreach lh [split $lhost ",;"] {
+                          # Sanity check to exclude empty hostnames
+                       if { $lh eq "" } { continue }
+                       set PASS($lh,$luser) $lpass
+                       set HOSTS_withPASS($lh,$luser) $lpass
+                    }
+               } else {
+                       # Any account with the particular user name
+                    set PASS(,$luser) $lpass
+               }
+            }
+         } else {
+	           send_error "Error: $fid\n"
+         }
+   }
+
+return 1
+}
+
+### Read all known/provided password files
+#
+proc _Read_All_Pass_Files_ {_pass_files} {
+   upvar $_pass_files pass_files
+
+   foreach file [lsort [array names pass_files]] {
+      _Read_Pass_File_ $pass_files($file)
+   }
+   unset pass_files
+
+return 1
+}
+
+### Sending a password without echo
+#
+proc _Send_Pass_ {pass flag} {
+   global MAGIC_WORD PASS_SLEEP VERBOSE verbose
+
+   if { $flag == 0 } { expect -nocase -re "$MAGIC_WORD" }
+      # 1. switch off echo
+   log_user 0
+      # 2. wait, then
+   if { $PASS_SLEEP > 0 } { sleep 0.1 }
+      # 3. send password
+   send -- "$pass\r"
+      # 4. switch on echo after passwd change
+   if { $flag == 0 && $VERBOSE } {
+        log_user 1
+   }
+   expect "\r" { 
+           # 5. switch on echo in any verbose case
+        if { $VERBOSE } { log_user 1 }
+           # 6. send new line chars when verbose and not changing password
+        if { $verbose && $flag != 0 } { _msend_ "\n" }
+   }
+      # Without sleep changing password works badly on some systems
+   sleep $PASS_SLEEP
+
+return 1
+}
+
+### Sending inside password and switch to next (inside password)
+#
+proc _Send_Pass_Inside_Take_Next_ {_pass_inside _pin_used} {
+     global PASS_NEW_SET PASSWORD
+     upvar $_pass_inside pass_inside
+     upvar $_pin_used pin_used
+
+     _Send_Pass_ $pass_inside 1
+          # If a2 not empty use it on next inside authentication
+     if { $PASSWORD(a2) ne "" } {
+          if { $pin_used || ! $PASS_NEW_SET } {
+               set pass_inside $PASSWORD(a2)
+          }
+     }
+     set pin_used [expr $pin_used + 1]
+
+return 1
+}
+
+### Sending confirmation when ssh asks to add a new host to '~/.ssh/known_hosts'
+#
+proc _Handle_SSH_Add_New_Host_ {} {
+     global SSH_ANH_ANSWER SSH_ANH_WARN
+
+     send "$SSH_ANH_ANSWER\r"
+     expect "$SSH_ANH_ANSWER\r\n"
+     expect -re ".*"
+
+return 1
+}
+
+### Find out whether account user@host should be processed
+#   (consider HOSTS_REST, HOSTS_OVER, and ACCOUNTS_DONE)
+#
+proc _Check_Account_Qualified_ {lhost luser} {
+   global ACCOUNTS_DONE HOSTS_REST HOSTS_OVER INTER_HOSTS
+
+      # Don't process accounts repeatedly
+   if { [info exists ACCOUNTS_DONE($luser@$lhost)] } {
+return 0
+   }
+      # Target only not resting accounts
+   if { ![info exists HOSTS_REST($luser@$lhost)] && !$INTER_HOSTS } {
+return 1
+      # Target only accounts on both lists in case of overlapping hosts/accounts
+   } elseif { [info exists HOSTS_OVER($luser@$lhost)] && $INTER_HOSTS } {
+return 1
+   }
+      # Default is false
+return 0
+}
+
+### Prepare the real command to execute
+#
+proc _Prepare_Command_ {_remote_cmd _final_cmd _ssh_ptty_opt} {
+   global COMMAND COMMAND_FULL LOGIN_PROMPT_NO CONNECTOR
+   upvar $_remote_cmd rcmd
+   upvar $_final_cmd fcmd
+   upvar $_ssh_ptty_opt spopt
+
+      # For telnet/mysql/sqlplus send remote command after shell prompt found
+   if { ![regexp "$LOGIN_PROMPT_NO" "$CONNECTOR"] } {
+         set rcmd $COMMAND
+   }  
+      # Format the command string
+   if { "$rcmd" ne "" } { # Remote command is defined
+         set fcmd [format "%s \$host" $CONNECTOR]
+   } elseif { "$COMMAND_FULL" eq "" } {
+         if { [regexp "ssh|slogin" $CONNECTOR] && $spopt ne "" } {
+                 # In case of password change, a1 or a2 authentication inside
+                 # ssh,  make sure that ssh will force pseudo-tty allocation !!
+              set fcmd "-t \$host $COMMAND"
+         } elseif { [regexp "scp|rcp" $CONNECTOR] } { # Copy mode
+                 # Sanity check for the colon character ':'
+              if { ! [regexp {.*:.*} $COMMAND] } {
+                   send_user "Error: wrong command format in copy mode - missing ':' character\n"
+exit 18
+              }
+                 # For copy mode insert the hostname in front of ':' for case
+                 # 1) begin of command string
+                 # 2) end of command string
+                 # 3) preceding blank
+              set fcmd $COMMAND
+              regsub {^\:} $fcmd  "\$host:" fcmd
+              regsub {\:$} $fcmd  "\$host:" fcmd
+              regsub { \:} $fcmd " \$host:" fcmd
+         } else {                                     # Shell mode
+              set spopt ""
+              set fcmd "\$host $COMMAND"
+         }
+         set fcmd [format "%s %s" $CONNECTOR $fcmd]
+   } else {               # Full command string is defined
+         set fcmd [format "%s" $COMMAND_FULL]
+   }
+
+return 1
+}
+
+### Cancel default list of hosts if some provided on command line
+#
+proc _Cancel_Default_Hosts_ {_hlists _argc} {
+   global DEBUG
+   upvar $_hlists hlists
+   upvar $_argc argc
+
+   if { $hlists(0) == -1 } {
+        unset hlists
+        set hlists(0) 0
+        if { $DEBUG } { _DEBUG_ "" "" "hosts on command line" 0 }
+   }
+   incr argc -1
+ 
+return 1
+}
+
+### Start logging on demand
+#
+proc _Start_Logging_ {} {
+   global MANY_LOGS LOGFILE_MODE LOGFILE_NAME LOGFILE USER HOST
+   set logfiles ""
+
+   log_file
+   if { $MANY_LOGS } { # Individual log for every host
+        set LOGFILE_NAME [format "%s_%s@%s.log" $LOGFILE $USER $HOST]
+        log_file $LOGFILE_NAME
+        if { $logfiles eq "" } {
+             set logfiles $LOGFILE_NAME
+        } else {
+             set logfiles "$logfiles $LOGFILE_NAME"
+        }
+   } else {            # One common file
+        log_file $LOGFILE
+        set logfiles $LOGFILE
+   }
+      # Change file mode to the internally defined one
+   exec chmod $LOGFILE_MODE $logfiles
+
+return 1
+}
+
+### Make a record in the journal file putting also a date-time stamp
+#
+proc _Journal_Record_ {record} {
+   global JOURFILE CID
+
+   set date_time [timestamp -format "%y.%m.%d %X"]
+   if ![catch {open $JOURFILE a} fid] {
+        puts $fid "$CID $date_time $record";
+        close $fid
+   } else {
+        send_error "Error: $fid\n"
+exit 12
+   }
+
+return 1
+}
+
+### Keep list of accounts where login failed or command timed out
+#
+proc _Bad_Login_ {account emsg action} {
+   global BAD_LOGINS MANY_LOGS BG_MODE
+
+   if { $action eq "Report" } {
+          # Report it
+        regsub -all { } $BAD_LOGINS "\n" BAD_LOGINS
+        if { ! $BG_MODE } {
+             if { $MANY_LOGS } log_file ;# Stop individual logging
+             send_error "\n-------------------\n"
+             send_error "Command failed for:"
+             send_error "\n-------------------\n"
+        } else {
+             send_error "\nCommand failed for: "
+        }
+        send_error "$BAD_LOGINS\n"
+return 0
+   } elseif { $action eq "publish" } {
+        set BAD_LOGINS [concat "$BAD_LOGINS" $account]
+   }
+
+   send_error "\r\n\007$account - $emsg\n"
+return 1
+}
+
+### Execute procedure _Bad_Login_ and kill spawned process
+#
+proc _Bad_Login_Publish_Pkill_ {account etext kpid} {
+
+     _Bad_Login_ "$account" "Error: $etext" publish
+     exec kill -KILL $kpid
+     expect eof
+
+return 1
+}
+
+### Define fifo name and make denial of service attack a bit more difficult
+#
+proc _Define_Pbox_Name_ {_PBOX _CID} {
+     global t1 t2
+     upvar $_CID cid
+     upvar $_PBOX pbox
+   
+        # Use last two digits of the time
+     set t1 [expr [regsub -all {\D} "$t1" {}] % 100]
+     set t2 [expr [regsub -all {\D} "$t2" {}] % 100]
+        # Define a bad quasi-random number composed of pid/t1/t2
+     set quasi_random [format "%d%02d%02d" [pid] $t1 $t2]
+     set quasi_random [format "%x" $quasi_random]
+        # Define an unique command identifier composed by
+        # date/time of execution / pid / t1 / t2
+     set cid [format "%s" [timestamp -format "%Y%m%d%H%M%S"]]
+     set cid [format "%lx" $cid]
+     set cid [format "%s%s" $cid $quasi_random]
+     set pbox "$pbox.$cid.ipc"
+
+return 1
+}
+
+### Squeeze space characters and return only the first field of the string
+#
+proc _First_Field_ {mytext} {
+
+   regsub -all {\s+} $mytext { } MY_STR ;# Compact spaces
+   set MY_ARR [split $MY_STR " "]       ;# Split on blanks
+   set MY_STR [lindex $MY_ARR 0]        ;# First column only
+
+return $MY_STR
+}
+
+### Test whether file exist, otherwise interpret the string as list
+#
+proc _Choose_Hostfile_Or_DishVar_ {dishvar hostfile value} {
+   upvar $hostfile hf
+   upvar $dishvar dv
+
+   set hf $value
+      # Assume the options value is a list of hosts if file not existing
+   if { ![file exists $hf] } {
+          set dv "$hf"
+          set hf ""
+   }
+
+return 1
+}
+
+### Fork process
+#
+proc _Fork_Proc_ {_fork_pid _kids_pids} {
+   global BG_MODE PBOX
+   upvar $_fork_pid fpid
+   upvar $_kids_pids kpids
+
+   if { $BG_MODE > 1 && $kpids eq "" } { # Create named pipe for IPC
+             if [ catch {system mkfifo -m 600 $PBOX} open_status ] {
+                  send_error "Error: $open_status\n"
+exit 10
+             }
+                # Set traps to catch some interrupts and exit clean
+   _Traps_Clean_
+   }
+   set fpid [fork]
+   set kpids [concat $kpids $fpid]  ;# Remember child pid
+   if { $fpid != 0 } {
+return 1
+   } else {
+        trap SIG_DFL { HUP INT QUIT TERM ABRT }
+        if { $BG_MODE < 2 } disconnect
+return 0
+   }
+}
+
+### Reset some flags and inside passwords
+#
+proc _Reset_Flags_and_Inside_Pass_ {_pass_inside _pin_used} {
+     global PASSWORD
+     upvar $_pass_inside pass_inside
+     upvar $_pin_used pin_used
+
+     set pin_used 0
+        # Use a1 on first inside authentication, and switch to a2 for next
+     set pass_inside $PASSWORD(a1)
+
+return 1
+}
+
+### After executing command on a host update the total execution time
+#
+proc _Update_Total_Exec_Time_ {_tot_exec_time} {
+     upvar $_tot_exec_time TOT_EXEC_TIME
+     global timeout TIMEOUT_ALL
+
+     set TOT_EXEC_TIME(1) [timestamp]
+     set TOT_EXEC_TIME(2) [expr $TOT_EXEC_TIME(1) - $TOT_EXEC_TIME(0)]
+     if { $TOT_EXEC_TIME(2) >= $TIMEOUT_ALL } { set timeout 0 }
+
+return 1
+} 
+
+### Handle timeout
+#
+proc _Handle_Timeout_ {etext ppid} {
+     global timeout USER HOST TIMEOUT_ALL TOT_EXEC_TIME
+
+     if { $TOT_EXEC_TIME(2) >= $TIMEOUT_ALL } {
+          _Bad_Login_ ${USER}@${HOST} "Error: total execution time limit of $TIMEOUT_ALL sec. exceeded" note
+     }
+
+     _Bad_Login_Publish_Pkill_ ${USER}@${HOST} "$etext after $timeout sec." $ppid
+
+return 1
+}
+
+### Print some variables if debug mode
+#
+proc _DEBUG_ {text file var flag} {
+
+   set remark ""
+
+   if { $flag == -1 } {
+        set remark " (initial)"
+   } elseif { $flag == 0 } {
+        set remark " (override initial)"
+   } elseif { $flag > 1 } {
+        set remark " (add to previous)"
+   }
+
+   if { $file ne "" } {
+        puts "Consider $text '$file'$remark"
+   } else {
+        puts "Consider $var$remark"
+   }
+
+return 1
+}
+
+### Short help
+#
+proc _Help_ {} {
+   global argv0 N MYNAME_CP
+
+   set UsageText [exec $argv0 -Help]
+   set UsageOutput ""
+   foreach line [split $UsageText "\n"] {
+      if [regexp -line {^(Usage:|^   or:|Options:|  \-\-?\w+.*[eval $hsep] ).*$} \
+          $line theline] {
+          regsub -all {^Options:$} $theline "\nOptions:" theline
+          set UsageOutput "$UsageOutput\n$theline"
+      }
+   }
+             # Check whether called in copy mode to change the output format
+   if { [eval regexp -line {$MYNAME_CP} $N(OPFINAME)] } {
+        regsub -line {^Usage:.*$} $UsageOutput ""           UsageOutput
+        regsub -line {^   or: }   $UsageOutput "ReplaceMe:" UsageOutput
+        regsub -line {^\s*}       $UsageOutput ""           UsageOutput
+        regsub -line {^ReplaceMe:} $UsageOutput "Usage: "   UsageOutput
+        regsub -line {^ReplaceMe:} $UsageOutput "   or: "   UsageOutput
+   }
+   puts "\n$UsageOutput\n"
+
+return 1
+}
+
+### Extended Help (Usage)
+#
+proc _USAGE_ {flag} {
+   global MYNAME MYNAME_CP VERSION HOME TIMEOUT_HOST TIMEOUT_ALL CONNECTOR
+   global MAGIC_WORD EMPTY_PASSWORD SP D N hsep SSH_ANH_PROMPT SSH_ANH_ANSWER
+
+   if { $flag } {
+        set prog_ver "- the diligence shell"
+        set promo ", and also makes easy the distribution of files by scp/rcp, a remote password change, etc. It can process hosts in parallel mode."
+        set prog_head_sep ""
+        set ex_sep ""
+        set hsep "  "
+   } else {
+        set prog_ver "(v. $VERSION):"
+        set promo ""
+        set prog_head_sep "--------------------------------------------------------------------------------"
+        set ex_sep "---------"
+   }
+   set d $hsep
+
+   send_user "
+$prog_head_sep
+${MYNAME} $prog_ver executes commands on several hosts via ssh/rsh/telnet$promo
+$prog_head_sep
+Usage: $MYNAME \[option\]... -e command {-g hosts_file | host_1 host_2 ...}
+   or: $MYNAME_CP {-g hosts_file | -g \"user@host_1 ...\"} local_file :remote_file
+   or: $MYNAME_CP {-g hosts_file | -g \"user@host_1 ...\"} :remote_file local_file
+
+Options:
+  -h         $d Print help message describing shortly all command-line options
+  -H, --help $d Comprehensive help including examples
+  --version  $d Print program version and copyright message, then exit
+  -V         $d Display the version number and exit
+  -C <dir>   $d Configuration directory - \$HOME/.$MYNAME is default;
+                In this directory are located following configuration files:
+                '$N(HOFINAME)', '$N(REFINAME)', '$N(PAFINAME)', and '$N(OPFINAME)'. When used, this option
+                must be the first argument in the command line string, or be
+                the second one if `-D' chosen! Alternatively, one can specify
+                the configuration directory by defining the environment
+                variable DISH_CONF.
+  -CC <dir>  $d Same as `-C' with fallback to default if local config not found;
+                This means that, in case the files '$N(PAFINAME)', '$N(OPFINAME)' or '$N(REFINAME)'
+                are absent in the given directory, but such files exist in
+                \$HOME/.$MYNAME, the latter will be considered. The only exception
+                is '\$HOME/.$MYNAME/$N(HOFINAME)' which will be ignored. Using this option
+                is equivalent to changing directory to the opted one and then
+                executing `$MYNAME'.
+  -c <name>  $d Program (alias \"connector\") and its options used for connecting
+                to the remote host(s) - for example `rsh', whereas the spawned
+                process will be \"rsh \$host <cmd>\". Your default connector is
+                `$CONNECTOR'. Furthermore, by using a relevant text-based client
+                as connector, one can access various kinds of hosts - switches,
+                databases, and so on.
+  -e <cmd>   $d Command to execute
+  -E <cmd>   $d Execute command where also the connection part is specified
+                e.g. \"-E '$CONNECTOR \$host date'\" which is equal to \"-e date\".
+                This option is incompatible with `-c' and `-e'.
+  -t         $d Force pseudo-tty allocation in ssh;
+                This happens automatically in case of password change.
+  -T <time>  $d Timeout for command execution - default ${TIMEOUT_HOST}s (per host)
+  -TT <time> $d Total timeout for command execution - default ${TIMEOUT_ALL}s (all hosts);
+                This option is useful only when hosts are processed in sequence
+                and the total processing time should not exceed the specified
+                upper bound.
+  -x <regex> $d Regular expression for the shell prompt;
+                This value specifies which prompt is to be expected in the
+                program's shell after login into a system by `telnet', `mysql',
+                `sqlplus' or other interactive command-line clients (see `-c').
+                The default value is `$SP'.
+  -X <regex> $d Regular expression for the password prompt;
+                It is case-insensitive with default value `$MAGIC_WORD'.
+  -AD <regex>$d Regular expression for the ssh-prompt to add a new host key
+                - `$SSH_ANH_PROMPT' is default
+  -AC <str>  $d String with the answer to the ssh-prompt to add a new host key
+                - `$SSH_ANH_ANSWER' is default
+  -g <file>  $d File with list of hosts/ip's/accounts to target;
+                The command will be executed on these targets. The default
+                host file is '\$HOME/.$MYNAME/$N(HOFINAME)' - normally per line one
+                account of the form \"user@host\" (if ssh is your choice for
+                connector). In order to join lists use the option repeatedly.
+                Alternatively, the environment variable DISH_HOSTS could be
+                used to define the target hosts whereas in the specified string
+                they have to be separated by blanks. By combining this option
+                with `-r' or `-i' you can define various subsets of targeted
+                hosts/accounts.
+  -r <file>  $d File with list of resting hosts/accounts to exclude;
+                The default one is '\$HOME/.$MYNAME/$N(REFINAME)'. A \"resting host\"
+                means one which will be excluded from the targets. The list of
+                resting hosts or the file name could be specified also by the
+                environment variable DISH_RESTS.
+  -i <file>  $d File with list of hosts/accounts to overlap with targeted hosts;
+                There is no default file. Only overlapping hosts, such included
+                in this list and at the same time defined as targets, will be
+                processed.
+  -u <name>  $d User name - default is your local user name;
+                It can be defined also by the environment variable DISH_USER.
+                Internally the value is accessible by the variable \$user (see
+                examples). Further, it is irrelevant in case that accounts of
+                the form \"user@host\" are processed since they include already
+                the user name.
+  -p <passwd>$d Login password (-p \"\" = -pp = -a0)
+                - alias \"login authentic\" or \"a0\"; If no authentication for
+                login is required (no user- and no password-prompt appear), then
+                use `/dev/null' as password. If the user name is requested, yet
+                the password is an empty string, then `/dev/empty' has to be
+                given as password. The value of this option could be also
+                a password file (see `-P'). Eventually, one can define the
+                password by setting an environment variable:
+                export DISH_PASS=<password>
+  -a <passwd>$d Additional password for authentication (-a \"\" = -aa = -a1)
+                - alias \"first authentic\" or \"a1\"; Inside the spawn process,
+                if a program like `smbmount', `su', `ssh', etc. asks for
+                authentication, the a1-password is passed to it.
+  -A <passwd>$d One more password for authentication (-A \"\" = -AA = -a2)
+                - alias \"second authentic\" or \"a2\"; When a spawned process,
+                after one authentication by the a1-password, asks again for
+                a password, then a2 is sent.
+  -n <passwd>$d New password in case of password change (-n \"\" = -nn = -ne)
+  -p0        $d Login without authentication - the same as `-p /dev/null'
+  -p1        $d Set the a1-password to be the same as the login password;
+                This option should not be used together with `-p0' and `-a1'.
+                See example d) bellow.
+  -P <file>  $d File with password(s);
+                The default password file is '\$HOME/.$MYNAME/$N(PAFINAME)'.
+                It must be readable only for the user (file mode 600 or 700),
+                otherwise the program exits with error, but see also next
+                option. Every line in the file can hold a password of the form
+                \"password\[:username\[:host\]\]\". One can specify a list
+                of hosts separated by the `,' or `;' characters. Regular
+                expressions for host names are also allowed (see the example
+                configuration files in the distribution).
+  -m         $d Ignore the access permissions of the password file
+  -s \[<time>\]$d Sequential processing of hosts (default mode);
+                If a time interval (measured in floating seconds) is specified,
+                then the program is waiting this amount of time before starting
+                to process the next host in the sequence.
+  -F         $d Spawn processes in background - fork and disconnect;
+                This way all hosts are processed essentially in parallel!
+                It's a very powerful option - depending on you RAM size and
+                memory utilization, it shouldn't be a problem to process a few
+                hundreds of hosts in parallel. Anyway, be careful - if you have
+                too many hosts on the list, your could put your system under
+                load. The stdout's of the background processes are redirected
+                to '/dev/null', however you can use `-l' or `-L' to write the
+                output to files. See also 'bugs and known problems' in the
+                manual page.
+  -f         $d Spawn processes in background without disconnecting from tty;
+                It's the same as `-F' whereas the stdout's of the spawned
+                processes are sent to the terminal. Also the parent process
+                waits for his children to finish. See also 'bugs and known
+                problems' in the manual page.
+  -q         $d Be quiet - skip output from spawn and login;
+                When working with the secure shell, it is also convenient to
+                use `ssh' with the `-q' option.
+  -Q         $d Be QUIET - skip any output
+  -v         $d Be verbose (default) - overrides `-q' and `-Q'
+  -l <file>  $d Log command output to file;
+                The output of the spawned processes is appended to the file.
+  -L <name>  $d Write a separate log for every host
+                where <name> denotes the base name of the log file. The full
+                name of a log file is defined as \"<name>_<user@host>.log\".
+  -j         $d Record the invoked command into a journal file
+                with the name '\$HOME/.$MYNAME/$N(JOURNAME)'; It keeps the history of
+                the executed commands and their time of execution. An unique
+                identifier is associated with every command.
+  -J         $d Record the invoked command and the spawned processes as well;
+                Write into the journal file the executed command as well as
+                the single processes spawned and their time of execution.
+  -o <file>  $d File with command line options passed to the program
+                - default is '\$HOME/.$MYNAME/$N(OPFINAME)'; The options must be written
+                in the file separated - one per line. By means of this file,
+                one can modify the standard configuration: set up fork mode to
+                be default, change the default connector, and so forth. When
+                working in \"copy mode\", i.e. by invoking the program as '$MYNAME_CP',
+                '\$HOME/.$MYNAME/$N(OPFINAME).$MYNAME_CP' is considered to be the default
+                options file.
+  -d         $d enable expect's diagnostic output (look at `man expect')
+  -D         $d Debug mode (dry-run);
+                Print out environment variables, config file names, and
+                commands to execute, then exit. This option should be used
+                as first in the command line.
+
+Examples:
+$ex_sep
+You should consider that the variables \$host and \$user are evaluated. Thus
+\$host changes dynamically its value to the actual host/account name before
+a new process is spawned. The same is true for \$user.
+
+a) Check the date and uptime on hosts 192.168.0.1 and 192.168.0.2
+
+   $MYNAME -e 'date \\; uptime' root@192.168.0.1 root@192.168.0.2
+
+b) Distribute '.profile' and '.bashrc' to guest accounts on 'host1' and 'host2'
+
+   $MYNAME -E \"scp \$HOME/.profile \$HOME/.bashrc guest@\\\$host:\" host1 host2
+
+   or
+
+   $MYNAME_CP -e \"\$HOME/.profile \$HOME/.bashrc guest@:\" host1 host2
+
+   or
+
+   $MYNAME_CP -g \"host1 host2\" \$HOME/.profile \$HOME/.bashrc guest@:
+
+   or
+
+   $MYNAME_CP -g \"guest@host1 guest@host2\" \$HOME/.profile \$HOME/.bashrc :
+
+c) Copy remote '.profile' files into the local directory on localhost
+
+   $MYNAME_CP -g \"guest@host1 guest@host2 admin@host2\" :.profile .profile.\\\$host
+
+   Here, the name of the target file (local file) will include the remote
+   account name in order that the local files have unique names.
+
+d) Use `ssh' to login on 'host1' and copy from there '.profile' to 'host2'
+
+   Since the list of hosts can not be empty, a dummy host is used to initiate
+   the process. The `-t' option is necessary to force pseudo-tty allocation
+   in `ssh', otherwise `ssh' will fail with error on login. A second password
+   (a1-password) is required for scp-authentication on 'host2':
+
+   $MYNAME -a '' -E 'ssh -t user1@host1 scp .profile user2@host2:' dummy_host
+
+   In case the password of 'user1' and 'user2' is the same, you will be asked
+   only once for a login password for user1@host1 if you use `-p1':
+
+   $MYNAME -p1 -E 'ssh -t user1@host1 scp .profile user2@host2:' dummy_host
+
+   Or equivalently, and more simple:
+
+   $MYNAME -p1 -t -e 'scp .profile user2@host2:' user1@host1
+
+e) Substitute lines with `START_XNTPD=' by `START_XNTPD=\"yes\"' in /etc/rc.config
+
+   This command is executed as root user on every host listed in 'Hosts.root':
+
+   $MYNAME -u root -E 'ssh \$user@\$host \"perl -pi -e \\\"s/^START_XNTPD=.*\\\$/START_XNTPD=\\\\\\\"yes\\\\\\\"/g;\\\" /etc/rc.config\"' -g Hosts.root
+
+f) Freeze accounts of users on a termination list
+
+   By using a script called `FreezeUser.sh', all accounts of users found on
+   'Terminate.User.lst' will be frozen today at 24:00 o'clock on both server
+   groups as defined in files 'Hosts.1' and 'Hosts.2':
+
+   $MYNAME -E 'ssh root@\$host \"cat Terminate.User.lst | while read UN; do echo \\\"su - admin -c \\\\\\\$HOME/bin/FreezeUser.sh \\\$UN\\\" | at 24:00 ; done\"' -g Hosts.1 -g Hosts.2
+
+g) Print out remote configuration file of an automounter
+
+   Login as 'admin' user on host 192.168.0.1, switch to 'root', then cat
+   the file '/etc/auto.net' and print out the date. The `-a' option causes
+   the program to ask you for the root-password on remote host:
+
+   $MYNAME -u admin -a '' -E 'rsh -l \$user \$host su - root -c \\\"cat /etc/auto.net\\\; date\\\"' 192.168.0.1
+
+h) Install a package on Debian GNU/Linux hosts 
+
+   After mounting a fileserver over samba, install from there a debian
+   dish-package on all running servers, yet skip hosts on maintenance.
+   Three different passwords are needed for authentication - one for login,
+   next for su-root, and the last for mounting the fileserver:
+
+   $MYNAME -a0 -a1 -a2 -g Debian.up -r Debian.maint -e 'su - -c \\\"mount -t smbfs //FILESERVER/Packages.Dir /mnt/smb ; dpkg -i /mnt/smb/dish_${VERSION}_all.deb\\\"'
+
+i) Check for system load >2 using default '$N(HOFINAME)' and '$N(PAFINAME)' config files
+
+   dish '\(uptime |egrep \\\" (\\\[2-9\\\]|1\\\[0-9\\\])\\\\.\\\" && hostname) |paste - -'
+
+j) Query a MySQL database on remote host 10.0.0.1
+   dish -pp -c 'mysql -p -u \$user -h' -e 'use mysql; show tables; describe user;' -u root 10.0.0.1
+
+k) Change password concurrently on all hosts/accounts
+
+   We assume that the list of user accounts is contained in file 'Accounts.lst',
+   whereas an entry in the list is of the form \"user@hostname\". After command
+   execution, you will be asked first for the login password (old password),
+   and then for the new password which eventually have to retyped correctly:
+
+   $MYNAME -p '' -n '' -e passwd -g Accounts.lst
+
+   Or alternatively, processing concurrently and quietly all hosts:
+
+   $MYNAME -pp -nn -f -Q -e passwd -g Accounts.lst
+
+   When you want to change password and use `-nn', then the a1-password is
+   implicitly set equal to the login password (a0-password).
+
+l) Change password from 'root' account (don't use the `-a0' option)
+   
+   If you are going to change the root-password on 'remotehost', then try:
+
+   $MYNAME -nn -e passwd root@remotehost
+
+   The same as previous, but login as user 'admin' (login password), then
+   switch to 'root' (a1-password), and finally update the root-password:
+
+   $MYNAME -a1 -nn -e 'su -c passwd' admin@remotehost
+
+   Changing the password for 'admin' on 'localhost', after login as 'root' via
+   `telnet', is done by:
+
+   $MYNAME -nn -c telnet -u root -e 'passwd admin' localhost
+
+Notice that for password change, when `-p \"\"' (or equivalently `-a0' or `-pp')
+is not explicitly used, the assumption is made that `passwd' will not ask for
+the old password, as in case of a password change by 'root'. The same is true
+also if you can login into an account without typing a password, but then
+`passwd' prompts you to type the old one - this situation occurs when one is
+using a ssh-key for login without password-authentication. For such scenario
+the correct choice of options is `-p0 -aa -nn'.
+
+$ex_sep
+In case of properly prepared configuration files in '\$HOME/.$MYNAME',
+one can use $MYNAME as a distributed shell for a virtual cluster of hosts,
+and run it without specifying any program parameters but merely issuing a
+command, as for instance `$MYNAME df -k /' or `$MYNAME_CP .profile :'.
+
+As a very last note, one should be aware that in case of authentication by
+password, dish's automated login process is based on the expectation that
+the login prompt send to the terminal will include the case-insensitive
+regex-string `$MAGIC_WORD' (but see also `-X'). Otherwise the authentication
+procedure will fail.
+
+Report bugs to <gnu@mirendom.net>
+
+";
+
+return 1
+}
+
+
+################################################################################
+#
+# MAIN
+#
+
+expect_before -i $user_spawn_id \003 exit
+
+     # If called as 'dicp' switch to copy mode
+if { $MYNAME == $MYNAME_CP } {
+     _Reconfig_Copy_Mode_ MYNAME CONNECTOR OPTSFILE N
+}
+
+   # Help if no arguments 
+if { $argc == 0 } {
+     set argc 1
+     set argv "-help"
+} else {
+     _Define_Pbox_Name_ PBOX CID
+}
+
+set CMD_LINE "$argv0 $argv"
+set ES 0
+set I 0
+
+   # Try to set user name according to shell variable DISH_USER
+if { $D(DISH_USER) ne "" } { set user "$D(DISH_USER)" }
+
+   # The 1-st option in the command line string could be either Debug or Config
+set arg1 [lindex $argv 0]
+if { $arg1 eq "-$Os(D)" || $arg1 eq "-$Ol(D)" } {
+     set DEBUG 1
+        # Shift
+     set argv [lreplace $argv[set argv {}] 0 0]
+     incr argc -1
+}
+   # Probe 1-st option, and in case it's not a config dir, try to inject
+   # DISH_CONF or the default value $HOME/.$MYNAME in front of the command line
+set arg1 [lindex $argv 0]
+   # Keep these options consistent with the main loop by using `Os'+`Ol' vars
+if { $arg1 ne "-$Os(C)" && $arg1 ne "-$Ol(C)" && $arg1 ne "-$Os(CC)" } {
+     if { $D(DISH_CONF) ne "" } {
+          _adjust_argv_ "-$Os(C)" "$D(DISH_CONF)" insert
+     } elseif { [file exist $N(HOFINAME)] } { # current directory
+          _adjust_argv_ "-$Os(CC)" . insert
+     } elseif { [file isdirectory $HOME/.$MYNAME] } { # default config dir
+          set D(Use_Defaults) 1
+          _adjust_argv_ "-$Os(C)" "$HOME/.$MYNAME" insert
+     }
+}
+
+#
+# Main LOOP
+#
+for { set I 0 } { $I<=$argc } { incr I } {
+
+   set arg [lindex $argv $I]
+
+   switch -regexp -- $arg \
+     "^-(-execute|e)$" {
+        incr I
+        set COMMAND [lindex $argv $I]
+        continue
+   } "^-(-Execute|E)$" {
+        incr I
+        set COMMAND_FULL [lindex $argv $I]
+        set COMMAND "$COMMAND_FULL"
+        continue
+   } "^-(-group|$Os(g))$" {
+        incr I
+        _Enlist_Hosts_ [lindex $argv $I] D(DISH_HOSTS) HOSTFILE HLISTS \
+                       include "hosts in"
+        continue
+   } "^-(-rests|$Os(r))$" {
+        incr I
+        _Enlist_Hosts_ [lindex $argv $I] D(DISH_RESTS) RESTFILE HOSTS_REST \
+                       exclude "resting hosts in"
+        continue
+   } "^-(-intersect|-overlap|i)$" {
+        incr I
+        _Enlist_Hosts_ [lindex $argv $I] D(Dish_Over) OVERFILE HOSTS_OVER \
+                       exclude "overlapping hosts in"
+        if { $DEBUG } { _DEBUG_ "" "" "switching to overlapping host mode" 1 }
+        set INTER_HOSTS 1
+        continue
+   } "^-(-optsfile|$Os(o))$" {
+        incr I
+        set OPTSFILE [lindex $argv $I]
+        _Read_Opts_File_ $OPTSFILE
+        continue
+   } "^-(-logfile|l)$" {
+        incr I
+        set LOGFILE [lindex $argv $I]
+        continue
+   } "^-(-Logfile|L)$" {
+        incr I
+        set LOGFILE [lindex $argv $I]
+        set MANY_LOGS 1
+        continue
+   } "^-(-$Ol(C)|$Os(C)|$Os(CC))$" {
+        if { "-$Os(CC)" eq [lindex $argv 0] } {
+             # Activate flag for fallback to default/global password and options
+             # files in case there are no such in the specified config directory
+             set D(Use_Defaults) 1
+        }
+        incr I
+        set D(DISH_CONF) [lindex $argv $I]
+        eval set OPTSFILE $OPTSFILE
+        eval set HOSTFILE $HOSTFILE
+        eval set RESTFILE $RESTFILE
+        eval set PASSFILE $PASSFILE
+        eval set JOURFILE $JOURFILE
+        _Process_Confdir_And_DishVars_ $D(DISH_CONF)
+        incr I -1
+        continue
+   } "^-(-DEBUG|D)$" {
+        set DEBUG 1      ;# Turn on debug mode = show config and commands to run
+        continue
+   } "^-(-debug|d)$" {
+        exp_internal 1   ;# Turn on expect's diagnostic output
+        continue
+   } "^-(-sequential|slow|s)$" {
+        set BG_MODE 0
+           # This option could have a value specifying time delay between spawns
+        set next_arg [lindex $argv [expr $I + 1]]
+        if [regexp -line {^[0-9.]+$} $next_arg] {
+            set SPAWN_SLEEP $next_arg
+            incr I
+        }
+        continue
+   } "^-(-Fork|-Fast|F)$" {
+        set BG_MODE 1
+        continue
+   } "^-(-fork|-fast|f)$" {
+        set BG_MODE 2
+        continue
+   } "^-(-quiet|q)$" {
+        set verbose 0
+        continue
+   } "^-(-Quiet|Q)$" {
+        set VERBOSE 0
+        set verbose 0
+        continue
+   } "^-(-verbose|v)$" {
+        set VERBOSE 1
+        set verbose 1
+        continue
+   } "^-(-Version|V)$" {
+        puts "$VERSION"
+exit 0
+   } "^-(-version)$" {
+        puts "$MYNAME $VERSION"
+        puts  "$LICENSE_TEXT"
+exit 0
+   } "^-(-user|u)$" {
+        incr I
+        set user [lindex $argv $I]
+        set D(DISH_USER) $user
+        continue
+   } "^-(-connect|c)$" {
+        incr I
+        set CONNECTOR [lindex $argv $I]  ;# Program to use for login or copy
+        continue
+   } "^-(-password|$Os(p))$" {
+        incr I
+        set argument [lindex $argv $I]
+           # Look whether the argument is a passfile
+        if { [file exists $argument] && \
+             ![string match $argument "/dev/null"] } {
+              _adjust_argv_ "-$Os(P)" "$argument" replace
+              continue
+        }
+        set PASSWORD(login) $argument
+        set PASS(,) $argument
+        set D(DISH_PASS) $argument
+        _Ask_Login_Pass_ PASS PASSWORD EMPTY_PASSWORD PASS_LOGIN_SET
+        if { $DEBUG } { _DEBUG_ "" "" "D(DISH_PASS)" [expr $PASS_LOGIN_PRO - 1] }
+        set PASS_LOGIN_PRO [expr $PASS_LOGIN_PRO + 1]
+        continue
+   } "^-(pp|a0)$" {
+        _adjust_argv_ "-$Os(p)" "" replace
+        continue
+   } "^-(p0)$" {
+        _adjust_argv_ "-$Os(p)" "/dev/null" replace
+        continue
+   } "^-(p1)$" {
+        set PASS_A1_EQ_A0 1
+        if { $DEBUG } { _DEBUG_ "" "" "setting a1-password equal to the login password" 1 }
+        continue
+   } "^-(-Passfile|$Os(P))$" {
+        incr I
+        set PASSFILE [lindex $argv $I]
+           # Array of password files to be read as fifo
+        set PASS_FILES([format "%02d" ${I}]${PASSFILE}) $PASSFILE
+           # Read passfile(s) later in order to catch '-m'
+        if { $DEBUG } {
+             set asize [array size PASS_FILES]
+             if { $asize == 1 } { set asize -1 }
+             _DEBUG_ "passwords in" "$PASSFILE" "" $asize
+        }
+        continue
+   } "^-(-authentic|a)$" {
+        incr I
+        set PASSWORD(a1) [lindex $argv $I]
+        if { $PASSWORD(a1) eq "" } {
+              _Pickup_Pass_ "First authentic password: " a1
+        }
+        set PASS_A1_PRO 1
+        set PASS_SLEEP 0.5
+        set SSH_PTTY_OPT "yes"
+        continue
+   } "^-(aa|a1)$" {
+        _adjust_argv_ "-a" "" replace
+        continue
+   } "^-(-Authentic|A)$" {
+        incr I
+        set PASSWORD(a2) [lindex $argv $I]
+        if { $PASSWORD(a2) eq "" } {
+              _Pickup_Pass_ "Second authentic password: " a2
+        }
+        set PASS_SLEEP 0.5
+        set SSH_PTTY_OPT "yes"
+        continue
+   } "^-(AA|a2)$" {
+        _adjust_argv_ "-A" "" replace
+        continue
+   } "^-(-newpass|n)$" {
+        incr I
+        _Ask_New_Pass_ [lindex $argv $I]
+        set PASS_NEW_SET 1
+        continue
+   } "^-(nn|ne)$" {
+        _adjust_argv_ "-n" "" replace
+        continue
+   } "^-(-Timeout|T)$" {
+        incr I
+        set TIMEOUT_HOST [lindex $argv $I]
+        set timeout $TIMEOUT_HOST
+        continue
+   } "^-(-TTimeout|TT)$" {
+        incr I
+        set TIMEOUT_ALL [lindex $argv $I]
+        continue
+   } "^-(-SSH_ANH_PROMPT|AD)$" {
+        incr I
+        set SSH_ANH_PROMPT [lindex $argv $I]
+        continue
+   } "^-(-SSH_ANH_ANSWER|AC)$" {
+        incr I
+        set SSH_ANH_ANSWER [lindex $argv $I]
+        continue
+   } "^-(-tty_ssh|t)$" {
+        set SSH_PTTY_OPT "yes"
+        continue
+   } "^-(-xprompt|x)$" {
+        incr I
+        set SP [lindex $argv $I]
+        continue
+   } "^-(-Xword|X)$" {
+        incr I
+        set MAGIC_WORD [lindex $argv $I]
+        continue
+   } "^-(-journal|j)$" {
+        set JOUR_MODE 1
+        if { $DEBUG } { _DEBUG_ "" "" "journal '$JOURFILE'" 1 }
+        continue
+   } "^-(-Journal|J)$" {
+        set JOUR_MODE 2
+        if { $DEBUG } { _DEBUG_ "" "" "journal '$JOURFILE'" 1 }
+        continue
+   } "^-(-mode|m)$" {
+        set PAFI_MODE "ignore"
+        continue
+   } "^-(-help|Help|H)$" {
+        if { $arg eq "--help" } { _USAGE_ 1
+        } else {                  _USAGE_ 0 }
+exit 0
+   } "^-(help|h)$" {
+        _Help_
+exit 0
+   } "^-" {
+           # Print help if option unknown
+        send_error "Error: option `$arg' unknown\n"
+        _Help_
+exit 5
+   } "^.*" {
+           # Guess command if still unknown
+        if { $COMMAND eq "" } {
+             _Find_Command_ COMMAND I
+             continue
+        }
+
+        if { $I == $argc && $HLISTS(0) } {
+                # Read hosts lists and insert them in argv
+             _Insert_Host_Lists_ HLISTS I argc
+             continue
+        } elseif { $ACCOUNTS_TOTAL == -1 } {
+                # Cancel default list of hosts if target(s) provided on cmd line
+             _Cancel_Default_Hosts_ HLISTS argc
+             set ACCOUNTS_TOTAL 0
+        }
+   }
+   
+      # Read the password file(s) if password not already provided,
+      # however skip reading on password change!
+   if { [info exists PASS_FILES] && $PASSWORD(new) eq "" && !$PASS_LOGIN_PRO } {
+        _Read_All_Pass_Files_ PASS_FILES
+   }
+
+      # Pick up next target
+   set host $arg
+
+      # Search for user and password
+   _Find_User_Host_ $user $host USER HOST
+   _Find_Host_User_Pass_ $USER $HOST PASSWORD
+   _Ask_Login_Pass_ PASS PASSWORD EMPTY_PASSWORD PASS_LOGIN_SET
+
+      # Consider whether account should be processed at all
+   if { [_Check_Account_Qualified_ $HOST $USER] } {
+            # Bookkeeping of accounts and total number of hosts processed
+         set ACCOUNTS_DONE($USER@$HOST) "$USER@$HOST"
+         incr ACCOUNTS_TOTAL
+   } else {
+            # Skip account else
+         continue
+   }
+
+      # Be quiet if not verbose
+   if { !$verbose } { log_user 0 }
+
+      # Start logging
+   if { $LOGFILE ne "" && !$DEBUG } { _Start_Logging_ }
+
+      # Do once before start looping and spawning
+   if { $ACCOUNTS_TOTAL == 1 } {
+           # Prepare the command to execute after spawn
+        _Prepare_Command_ REMOTE_COMMAND REAL_COMMAND SSH_PTTY_OPT
+        _Check_Single__Write_Journal_ $host $CMD_LINE
+   }
+
+      # Print out the commands to be spawned in case of dry-run/debug mode
+   if { $DEBUG } {
+        puts "CMD: [eval concat $REAL_COMMAND] $REMOTE_COMMAND"
+        continue
+   }
+
+      # Don't wait for processing the first host -
+      # the time delay btw. spawns is considered after the first one
+   if { $ACCOUNTS_TOTAL > 1 } { sleep $SPAWN_SLEEP; }
+
+      # Fork processes if in parallel/fast mode
+   if { $BG_MODE && [_Fork_Proc_ FORK_PID KIDS_PIDS] } continue;
+
+      # Spawn command at the end
+   set cpid [eval spawn $REAL_COMMAND]
+     
+      # In case of empty password still show command output if not QUIET
+   if { !$verbose && $VERBOSE } {
+      if { $EMPTY_PASSWORD ne $MAGIC_WORD || $PASSWORD(login) eq "" } {
+           log_user 1
+      }
+   }
+
+   _Reset_Flags_and_Inside_Pass_ PASSWORD(inside) PIN_USED
+
+   _Update_Total_Exec_Time_ TOT_EXEC_TIME
+
+   while {1} {
+        expect \
+          -nocase -re "(login|Username) ?:.*" {
+             send "$user\r"
+             continue
+        } -re "$SSH_ANH_PROMPT" {
+             _Handle_SSH_Add_New_Host_
+             continue
+        } -re "$SSH_RES_ERR" {
+	         _Bad_Login_ ${USER}@${HOST} "Error: $SSH_RES_ERR" publish
+             break
+        } eof {
+             if { [string match $EMPTY_PASSWORD $MAGIC_WORD] } {
+	              _Bad_Login_ ${USER}@${HOST} "Error: spawn failed or password not requested" publish
+             }
+             break
+        } timeout {
+             _Handle_Timeout_ "login timeout" $cpid
+             break
+        } -nocase -re ".+" {
+             if { [string match $EMPTY_PASSWORD "."] 
+                && $PASS_A1_PRO 
+                && !$PASS_NEW_SET } {
+                       # Login authentication when p0 and a1 defined
+                  _Send_Pass_Inside_Take_Next_ PASSWORD(inside) PIN_USED
+             } elseif { [string match $EMPTY_PASSWORD ".."] } {
+                       # Login authentication with prompt but empty password
+                  _Send_Pass_ "" 1
+             } elseif { ![string match $EMPTY_PASSWORD "."] } {
+                       # Login authentication if password != ""
+                  _Send_Pass_ $PASSWORD(login) 1
+             }
+                # Connect with shell prompt (e.g. telnet/mysql/sqlplus)
+             if { $REMOTE_COMMAND ne "" } {
+                  expect -re "$SP"
+                  send "$REMOTE_COMMAND\r"
+             }
+                # Code for password change
+             if { $PASSWORD(new) ne "" } {
+                  if { $PASSWORD(a1) ne "" } {
+                       if { [string match $EMPTY_PASSWORD "."] } {
+                            _Send_Pass_ $PASSWORD(a1) 1
+                       } else {
+                            _Send_Pass_ $PASSWORD(a1) 0
+                       }
+                  }
+                  _Send_Pass_ $PASSWORD(new) 0
+                  _Send_Pass_ $PASSWORD(new) 0
+             }
+             expect {
+                 timeout {
+                    _Handle_Timeout_ "remote command timeout" $cpid
+                    break 
+               } eof {
+                    break
+               } -re "$SSH_ANH_PROMPT" {
+                    _Handle_SSH_Add_New_Host_
+                    exp_continue -continue_timer
+               } -nocase -re "$MAGIC_WORD" {
+                    if { $PASSWORD(inside) eq "" } {
+                         _Bad_Login_Publish_Pkill_ ${USER}@${HOST} "login failed or a1-password needed" $cpid
+                         break
+                    }
+                    _Send_Pass_Inside_Take_Next_ PASSWORD(inside) PIN_USED
+                    exp_continue -continue_timer
+               } -nocase -re "( incorrect|incorrect | invalid|invalid | denied|denied )" {
+                       # Sanity check: it is more secure to say that an account
+                       # is bad only when an error message follows an login
+                       # attempt. The key words "incorrect|invalid|denied" are
+                       # then more unlikely to be encountered by accident in
+                       # the output stream.
+                    if { ! $PIN_USED } { exp_continue ; }
+                    _Bad_Login_Publish_Pkill_ ${USER}@${HOST} "bad password, command not executable, or command failed" $cpid
+                    break
+               } -re "$SP" { ;# connect by program (e.g. telnet/sqlplus) part
+                    if { $REMOTE_COMMAND eq "" } {
+                        exp_continue
+                    }
+                    _msend_ "\n"
+                    break
+               }
+             }
+             continue
+        }
+   }
+
+   log_user 1
+
+      # Write a history record for every processed host '-J'
+   if { $JOUR_MODE > 1 } {
+         _Journal_Record_ [eval concat "$REAL_COMMAND" "$REMOTE_COMMAND"]
+   }
+
+if { $BG_MODE } { break }
+
+}
+#
+# End of MAIN loop
+#
+################################################################################
+
+# Exit if host list empty
+#
+if { $ACCOUNTS_TOTAL == 0 || $COMMAND eq "" } {
+     send_error "Error: target hosts/accounts not specified\n"
+exit 17
+}
+
+# PBOX-IPC works fine when program executed interactively, but it fails from
+# crontab with error message "Tcl_RegisterChannel: duplicate channel names".
+# In this case one can use '-s' or '-F'. It seems to be a general tcl problem
+# when multiple spawned processes deattached from terminal try to open the
+# same file concurrently.
+#
+if { $BG_MODE > 1 && !$DEBUG } {
+        # Sort KIDS_PIDS
+     set KIDS_PIDS [join [lsort -integer [split "$KIDS_PIDS" " "]] " "]
+        # Set up fifo to read (parent) or write (child)
+     if   { $FORK_PID != 0 } {
+            set access {RDONLY NONBLOCK}
+      } else {
+            set access  WRONLY
+      }
+        # Open fifo if existing
+     if { [file exists $PBOX] } {
+        if [ catch { open $PBOX $access } fid ] {
+             send_error "Error: $fid\n"
+exit 11
+        }
+     }
+
+        # If parent, then wait for children to finish in background
+     if { $FORK_PID != 0 } {
+          set kids_ready ""
+          set dt 0.2
+          set waiting_time 0.0
+          set timeout [expr $TIMEOUT_HOST + 2]  ;# Longer timeout then the children!
+
+          while { ! [string match "$KIDS_PIDS" "$kids_ready"] } {
+             sleep $dt
+                # Read from fifo
+             set kids_ready [concat $kids_ready [read $fid]]
+                # Compact spaces
+             regsub -all {\s+} $kids_ready { } kids_ready
+                # Sort list of finished spawned processes
+             set kids_ready [join [lsort -integer [split $kids_ready " "]] " "]
+             set waiting_time [expr $waiting_time + $dt]
+                # Break if timed out after last notice from a child
+             if { $waiting_time > $timeout } {
+                  send_error "\nWarning: after $waiting_time sec. give up waiting for message from child\n"
+                  break
+             }
+          }
+          close $fid
+          _Clean_Up_
+     } else {
+          if [info exists fid] {            ;# Child says goodbye to his parent
+              puts -nonewline $fid "[pid] "
+              close $fid
+          }
+     }
+}
+
+################################################################################
+
+if {[llength $BAD_LOGINS]} {
+     _Bad_Login_ Do Final Report
+exit 8
+}
+
+exit 0

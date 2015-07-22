@@ -17,7 +17,6 @@ Configs[log_level]="--v=0"
 ################################################################################
 
 # Comma separated list of minions
-Configs[machines]="--machines=${NODE_SERVERS}"
 Configs[master]="--master=${MASTER_SERVER}"
 
 ################################################################################
