@@ -5,7 +5,7 @@ title: 0_release_0.0.2
 ---
 
 # 0_release_0.0.2
-创建时间: 2015/07/22 09:45:15  修改时间: 2015/07/23 14:00:44 作者:lijiao
+创建时间: 2015/07/22 09:45:15  修改时间: 2015/07/23 14:47:37 作者:lijiao
 
 ----
 
@@ -67,7 +67,7 @@ machines.lst中只是记录了组成集群的节点的地址, 一些便利工具
 
 cluster1总共有10个节点。
 
-后面章节使用batch.sh对node进行批量操作的时候, 是按照machines.lst中的出现的先后顺序执行的。
+后面章节使用batch.sh对node进行批量操作的时候, 是按照node在machines.lst中的出现的先后顺序执行的。
 
 用batch.sh的start指令启动整个集群的时候，对node启用的先后顺序有要求，所以machine.lst中的地址信息需要按照etcd、apiserver、manager、scheduler、node的顺序排列。
 
@@ -113,6 +113,34 @@ base.sh描述了cluster1的编排。(发布包中, Shell中的base.sh等文件�
 	...(省略)...
 
 把节点的IP填到对应位置即可(1台作为Registry, 2台etcd, 1台apiserver, 1台manager, 1台scheduer, 4台Node)。
+
+这个示例中，cluster1的最终编排如下:
+
+	+-----------------+
+	|     Registry    |
+	| 192.168.202.240 |
+	+-----------------+
+	                       +------------------+      +------------------+
+	                       |       etcd       |      |       etcd       |
+	                       |  192.168.202.241 |      |  192.168.202.242 |
+	                       +------------------+      +------------------+
+	                                   ^                   ^
+	                                   |                   |
+	                                   +----------+--------+
+	                                              |
+	        +------------------+         +------------------+         +------------------+ 
+	        |     master       |------|> |     apiserver    | <|------|    scheduler     | 
+	        |  192.168.183.60  |         |  192.168.183.59  |         |  192.168.183.61  | 
+	        +------------------+         +------------------+         +------------------+ 
+	                                              ^
+	                                              |
+	                                              v      
+	        +-------------------------+-----------------------+----------------------+
+	        |                         |                       |                      |
+	+----------------+       +----------------+      +----------------+      +----------------+
+	|     node       |       |     node       |      |     node       |      |     node       |
+	| 192.168.183.62 |       | 192.168.183.63 |      | 192.168.183.64 |      | 192.168.183.65 |
+	+----------------+       +----------------+      +----------------+      +----------------+
 
 ### 配置config
 
@@ -186,12 +214,12 @@ version中的信息会用来命名发布包。HostSystem是执行编译的机器
 
 ### 安装
 
-将得到的发布包拷贝到要目标机器上后，解压，拷贝到目标机的/export目录中。
+将得到的发布包拷贝到目标机器上后，解压，拷贝到目标机的/export目录中。
 
 	tar -xvf cluster1-0.0.1--CentOS-7.1.1503--HoneyComb-0.0.2.tar.gz 
 	/bin/cp -rf cluster1-0.0.1--CentOS-7.1.1503--HoneyComb-0.0.2/export/*   /export/
 
->在0.0.1中提供了一个自动检测按转更新的脚本, 但是感觉不好。0.0.2中取消了这个功能, 等这方面有想法后在后续版本中再添加。
+>在0.0.1中提供了一个自动检测安装的脚本, 但是感觉不好。0.0.2中取消了这个功能, 等这方面有想法后在后续版本中再添加。
 
 在Tools中提供了一个batch.sh脚本(依赖expect)， 可以对cluster中的所有节点依次进行同样的操作，例如：
 
@@ -206,7 +234,7 @@ version中的信息会用来命名发布包。HostSystem是执行编译的机器
 	Linux localhost.localdomain 2.6.32-358.el6.x86_64 #1 SMP Fri Feb 22 00:31:26 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux
 	...(省略)...
 
-使用batch.sh中的upload命令, 将发行包一同传送到所有的节点的/root/upload目录中:
+使用batch.sh中的upload命令, 将发行包传送到所有节点的/root/upload目录中:
 
 	$./batch.sh upload ../Release/cluster1-0.0.1--CentOS-7.1.1503--HoneyComb-0.0.2.tar.gz   
 	cluster1
@@ -221,7 +249,7 @@ version中的信息会用来命名发布包。HostSystem是执行编译的机器
 
 	./batch.sh "cd /root/upload &&  tar -xvf cluster1-0.0.1--CentOS-7.1.1503--HoneyComb-0.0.2.tar.gz &&/bin/cp -rf  cluster1-0.0.1--CentOS-7.1.1503--HoneyComb-0.0.2/export/* /export/"
 
->注意batch.sh一次只能执行一条指令, 但是可以用"&&"将很多操作融合成一条指令，用";"间隔会报错。
+>注意batch.sh一次只能执行一条指令, 但是可以用"&&"将很多操作融合成一条指令（不能用分号，会报错）。
 
 ### 节点调试
 
@@ -230,7 +258,7 @@ version中的信息会用来命名发布包。HostSystem是执行编译的机器
 	declare -A Configs
 	Configs[iface]="-iface=eth0"   <--- iface需要根据节点情况进行配置
 
-见/export/Shell/中的下列文件检查一遍：
+把/export/Shell/中的下列文件检查一遍：
 
 	apiserver.sh  docker.sh  etcd.sh  flanneld.sh  kubelet.sh  kube-proxy.sh  manager.sh  scheduler.sh
 
@@ -251,14 +279,12 @@ version中的信息会用来命名发布包。HostSystem是执行编译的机器
 	                            +----------+
 	                            |   etcd   |
 	                            +----------+
-	                                  .
-	                                 /_\
+	                                  ^
 	                                  |
 	                            +-----------+
 	                            | apiserver |
 	                            +-----------+
-	                             .     .    .
-	                            /_\   /_\  /_\
+	                             ^     ^    ^
 	                             |     |    |
 	          +------------------+     |    +------------------+
 	          |                        |                       |
@@ -266,7 +292,7 @@ version中的信息会用来命名发布包。HostSystem是执行编译的机器
 	   |    master    |        |   scheduler  |        |     nodes    | 
 	   +--------------+        +--------------+        +--------------+ 
 
->需要加一个stat.sh用来显示节点的状态。
+>0.0.2还缺少一个stat.sh, 用来查看节点的状态。
 
 ### 集群的启动/关闭
 
@@ -279,23 +305,44 @@ version中的信息会用来命名发布包。HostSystem是执行编译的机器
 
 >batch.sh现在通过密码访问节点，要求所有节点的密码相同。以后可以改成用私钥登录。
 
-## 问题
+### 管理K8s集群
 
-需要为宿主机的每个系统版本准备一个编译环境
+Tools/kubectl.sh用来管理K8s集群:
+
+	cd Tools;
+
+	$ ./kubectl.sh get nodes
+	NAME             LABELS                                  STATUS
+	192.168.183.62   kubernetes.io/hostname=192.168.183.62   Ready
+	192.168.183.63   kubernetes.io/hostname=192.168.183.63   Ready
+	192.168.183.64   kubernetes.io/hostname=192.168.183.64   Ready
+	192.168.183.65   kubernetes.io/hostname=192.168.183.65   Ready
+	
+	$ ./kubectl.sh get service
+	NAME         LABELS                                    SELECTOR   IP(S)        PORT(S)
+	kubernetes   component=apiserver,provider=kubernetes   <none>     172.16.0.1   443/TCP
+
+## 存在的问题
+
+问题1 需要为宿主机的每个系统版本准备一个编译环境
 
 	后续版本中可能会将编译环境保存到docker镜像中, 从而可以在一台编译机上编译多个版本。
 
-组件的命令参数随这版本的变化而变化
+问题2 组件的命令参数随这版本的变化而变化
 
 	K8s等还在快速的变化, 不同版本有不同的命令行参数，更换版本后需要重新调试节点。
 
-怎样升级更新
+问题3 怎样升级更新
 
 	在0.0.1中提供了一个自动检测更新的脚本, 但是感觉不好。0.0.2中取消了这个功能, 等这方面有想法后在后续版本中再添加。
 
-batch.sh使用密码登录节点
+问题4 batch.sh使用密码登录节点
 
 	batch.sh现在通过密码访问节点，要求所有节点的密码相同。以后可以改成用私钥登录。
+
+问题5 配置不够精细
+
+	0.0.2中做的配置很少, 主要还是用来搭建一个用来学习、试验的K8s集群。
 
 ## 文献
 
