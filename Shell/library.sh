@@ -196,28 +196,35 @@ func_force_copy(){
 #                                                                             #
 ###############################################################################
 
-#$1: tag
-#$2: local directory
-#$3: respositry url
+#$1: respositry url
+#$2：branch
+#$3: tag
+#$4: local directory
 func_git_check_tag(){
-	if [ ! -e $2 ];then
-		func_error_cmd git clone $3 $2
+	local url=$1
+	local branch=$2
+	local tag=$3
+	local dir=$4
+
+	if [ ! -e $dir ];then
+		func_error_cmd git clone $url $dir
 		if [ ! $?  -eq 0 ];then
 			func_red_str "Something is wrong in cloning"
 			return 1
 		fi
 	fi
 
-	if [ ! -d $2 ];then
+	if [ ! -d $dir ];then
 		func_red_str "The local respositry is not a directory"
 		return 1
 	fi
 
 	local cur=`pwd`
-	cd $2
-		func_error_cmd git checkout master 
+	cd $dir
+		func_error_cmd git checkout master
 		func_error_cmd git pull 
-		func_error_cmd git checkout $1
+		func_error_cmd git checkout $branch
+		func_error_cmd git checkout $tag
 		if [ ! $? -eq 0 ];then
 			return 1
 		fi

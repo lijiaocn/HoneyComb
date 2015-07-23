@@ -28,23 +28,25 @@ func_k8s_clean(){
 	cd $curpath
 }
 
-#$1:git url
-#$2:version
-#$3:Code Dir
+#$1:url
+#$2:branch
+#$3:tag
+#$4:dir
 func_k8s_compile(){
 	local K8sUrl=$1
-	local K8sTag=$2
-	local KubernetesDir=$3
+	local K8sBranch=$2
+	local K8sTag=$3
+	local K8sDir=$4
 
-	func_green_str "Start Compile ${KubernetesDir}: "
+	func_green_str "Start Compile ${K8sDir}: "
 	func_green_str "\t${K8sUrl}"
 	func_green_str "\t${K8sTag}"
-	func_error_cmd func_git_check_tag  $K8sTag $KubernetesDir $K8sUrl
+	func_error_cmd func_git_check_tag  $K8sUrl $K8sBranch $K8sTag $K8sDir
 
-	func_k8s_clean ${KubernetesDir}
+	func_k8s_clean ${K8sDir}
 
 	local curpath=`pwd`
-	cd $KubernetesDir
+	cd $K8sDir
 		cd hack; func_error_cmd ./build-go.sh;cd ..
 	cd $curpath
 }
@@ -70,19 +72,21 @@ func_flannel_clean(){
 	return
 }
 
-#$1:git url
-#$2:version
-#$3:Code Dir
+#$1:url
+#$2:branch
+#$3:tag
+#$4:dir
 func_flannel_compile(){
 
 	local FlannelUrl=$1
-	local FlannelTag=$2
-	local FlannelDir=$3
+	local FlannelBranch=$2
+	local FlannelTag=$3
+	local FlannelDir=$4
 
 	func_green_str "Start Compile ${FlannelDir}: "
 	func_green_str "\t${FlannelUrl}"
 	func_green_str "\t${FlannelTag}"
-	func_error_cmd func_git_check_tag  $FlannelTag $FlannelDir $FlannelUrl
+	func_error_cmd func_git_check_tag  $FlannelUrl $FlannelBranch $FlannelTag $FlannelDir 
 
 	curpath=`pwd`
 	cd $FlannelDir
@@ -106,19 +110,21 @@ func_etcd_clean(){
 	return
 }
 
-#$1:git url
-#$2:version
-#$3:Code Dir
+#$1:url
+#$2:branch
+#$3:tag
+#$4:dir
 func_etcd_compile(){
 
 	local EtcdUrl=$1
-	local EtcdTag=$2
-	local EtcdDir=$3
+	local EtcdBranch=$2
+	local EtcdTag=$3
+	local EtcdDir=$4
 
 	func_green_str "Start Compile ${EtcdDir}: "
 	func_green_str "\t${EtcdUrl}"
 	func_green_str "\t${EtcdTag}"
-	func_error_cmd func_git_check_tag  $EtcdTag $EtcdDir $EtcdUrl
+	func_error_cmd func_git_check_tag  $EtcdUrl $EtcdBranch $EtcdTag $EtcdDir 
 
 	curpath=`pwd`
 	cd $EtcdDir
@@ -193,17 +199,17 @@ func_prepare_release $ReleasePath
 
 K8sDir=./ThirdParty/Kubernetes
 func_k8s_clean      ${K8sDir}
-func_k8s_compile    ${K8sUrl}  ${K8sTag}  ${K8sDir}
+func_k8s_compile    $K8sUrl $K8sBranch $K8sTag $K8sDir
 func_k8s_export     ${K8sDir} $ReleasePath/export/App
 
 FlannelDir=./ThirdParty/Flannel
 func_flannel_clean    ${FlannelDir}
-func_flannel_compile  ${FlannelUrl} ${FlannelTag} ${FlannelDir}
+func_flannel_compile  $FlannelUrl $FlannelBranch $FlannelTag ${FlannelDir}
 func_flannel_export   ${FlannelDir} ${ReleasePath}/export/App
 
 EtcdDir=./ThirdParty/Etcd
 func_etcd_clean      ${EtcdDir}
-func_etcd_compile    ${EtcdUrl}  ${EtcdTag} ${EtcdDir}
+func_etcd_compile    $EtcdUrl $EtcdBranch $EtcdTag $EtcdDir 
 func_etcd_export     ${EtcdDir}  ${ReleasePath}/export/App
 
 func_Shell_export   ./Shell   ${ReleasePath}/export/Shell
