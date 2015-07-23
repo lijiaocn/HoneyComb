@@ -369,7 +369,7 @@ func_join_array(){
 	local len=${#array_doimgaeg3234553[@]}
 
 	if [ $len -eq 1 ];then
-		echo ${array_doimgaeg3234553[@]}
+		echo ${prefix}${array_doimgaeg3234553[@]}${postfix}
 		return 0
 	fi
 
