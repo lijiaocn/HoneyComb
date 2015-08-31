@@ -5,7 +5,7 @@ title: All-in-One 和 Ui
 ---
 
 # All-in-One 和 Ui
-创建时间: 2015/08/31 17:02:07  修改时间: 2015/08/31 23:37:12 作者:lijiao
+创建时间: 2015/08/31 17:02:07  修改时间: 2015/08/31 23:49:07 作者:lijiao
 
 ----
 
@@ -32,7 +32,43 @@ title: All-in-One 和 Ui
 	    |-- flannel.json
 	    `-- machines.lst
 
-[allinone/base.sh](https://github.com/lijiaocn/HoneyComb/blob/master/Config/allinone/base.sh)
+[allinone/base.sh](../Config/allinone/base.sh):
+
+	...省略...
+
+	#docker
+	DOCKER_REGISTRYS="127.0.0.1:5000"
+	DOCKER_INSECURES="0.0.0.0/0"
+	
+	#registry Nodes
+	ARRAY_REGISTRY_NODES[0]="127.0.0.1"
+	
+	#etcd Nodes
+	declare -a ARRAY_ETCD_NODES
+	ARRAY_ETCD_NODES[0]="127.0.0.1"
+	
+	#kubernete ApiServer Nodes
+	declare  -a ARRAY_API_SERVER_NODES
+	ARRAY_API_SERVER_NODES[0]="127.0.0.1"
+	
+	#kubernete controller manager Nodes
+	declare  -a ARRAY_MANAGER_NODES
+	ARRAY_MANAGER_NODES[0]="127.0.0.1"
+	
+	#kubernete  scheduler Nodes
+	declare  -a ARRAY_SCHEDULER_NODES
+	ARRAY_SCHEDULER_NODES[0]="127.0.0.1"
+	
+	#kubernete Nodes
+	declare  -a ARRAY_KUBE_NODES
+	ARRAY_KUBE_NODES[1]="127.0.0.1"
+	
+	#kubenetes master
+	#TODO
+	#It should be a api server list. but kubernete maybe haven't finish this work
+	MASTER_SERVER="http://127.0.0.1:8080"
+
+	...省略...
 
 然后执行release.sh脚本，选择allinone之后，就开始编译打包:
 
@@ -55,7 +91,31 @@ title: All-in-One 和 Ui
 
 到/export/Shell中执行run.sh之后，allinone就开始运行了。
 
-k8s依赖的镜像需要事先在registry中准备好, 通过查看kubelet的日志可以知道缺少哪个镜像。
+	# ./run.sh 
+	/export/App/etcd is running
+	Deleting Flanneld old Config ...
+	{"action":"delete","node":{"key":"/flanneld","dir":true,"modifiedIndex":1785,"createdIndex":1359},"prevNode":{"key":"/flanneld","dir":true,"modifiedIndex":1359,"createdIndex":1359}}
+	Putting Flanneld New Config ...
+	{"action":"set","node":{"key":"/flanneld/config","value":"{
+	\"Network\":\"172.16.0.0/16\",
+	\"Subnetlen\":24,
+	\"SubnetMin\":\"172.16.100.100\",
+	\"SubnetMax\":\"172.16.254.254\",
+	\"Backend\":{
+	\"Type\":\"udp\",
+	\"Port\":7890
+	}
+	}","modifiedIndex":1786,"createdIndex":1786}}
+	/export/App/flanneld is running
+	/usr/bin/docker is running
+	/export/App/kube-apiserver is running
+	/export/App/kube-controller-manager is running
+	/export/App/kube-scheduler is running
+	/export/App/kubelet is running
+	/export/App/kube-proxy is running
+	/export/App/registry is running
+
+k8s依赖的镜像需要事先在registry中准备好, 通过查看kubelet的日志可以知道缺少哪个镜像, 例如:
 
 	Error: image kubernetes/pause:latest not found
 
@@ -71,9 +131,9 @@ k8s依赖的镜像需要事先在registry中准备好, 通过查看kubelet的日
 
 	http://127.0.0.1:8080/api/v1/proxy/namespaces/kube-system/services/kube-ui/#/dashboard/
 
-在文档[ui](https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/user-guide/ui.md)中得知k8s提供了kube-ui服务的创建文件: [addons: kube-ui](https://github.com/kubernetes/kubernetes/tree/release-1.0/cluster/addons/kube-ui)
+在[文档ui](https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/user-guide/ui.md)中得知k8s提供了kube-ui服务的创建文件: [addons: kube-ui](https://github.com/kubernetes/kubernetes/tree/release-1.0/cluster/addons/kube-ui)
 
-创建kube-ui服务的方式在k8s的文档中已经说的很明白了，这里不赘述。[kube-ui](./kube-ui)中是适用于all-in-one的kube-ui。
+创建kube-ui服务的方式在k8s的文档中已经说的很明白了，这里不赘述。[doc/kube-ui](./kube-ui)中是适用于all-in-one的kube-ui。
 
 	cd kube-ui
 	./build.sh
@@ -96,6 +156,8 @@ k8s依赖的镜像需要事先在registry中准备好, 通过查看kubelet的日
 
 这时候访问127.0.0.1:8080/ui/就可以看到界面了。
 
-需要留意的是重定向的地址中有一个"proxy"。看到这个地址后恍然大悟：原来代码中遇到的proxy是这样用的，k8s充当了用户与kube-ui服务之间的代理。
+![kube-ui](./pic/pic_4_1_kube_ui.png)
+
+>需要留意的是重定向的地址中有一个"proxy"。我看到这个地址后恍然大悟：原来代码中遇到的proxy是这样用的，k8s充当了用户与kube-ui服务之间的代理。
 
 ## 文献
