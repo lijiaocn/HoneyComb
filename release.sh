@@ -206,7 +206,7 @@ func_prepare_release(){
 	local Data=${Export}/Data/
 	local Shell=${Export}/Shell
 
-	func_create_dirs ${Export} $App $Logs $Data $Shell
+	func_create_dirs ${Export} $App $Logs $Data $Shell  $Data/registry
 
 }
 
