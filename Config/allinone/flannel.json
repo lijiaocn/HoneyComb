@@ -1,0 +1,10 @@
+{
+	"Network":"172.16.0.0/16",
+	"Subnetlen":24,
+	"SubnetMin":"172.16.100.100",
+	"SubnetMax":"172.16.254.254",
+	"Backend":{
+		"Type":"udp",
+		"Port":7890
+	}
+}
