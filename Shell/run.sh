@@ -16,6 +16,7 @@ start_scheduler=0
 start_kubelet=0
 start_kubeproxy=0
 start_docker=0
+start_registry=0
 
 for ip in $ips
 do
@@ -45,6 +46,11 @@ do
 	func_in_array $ip ARRAY_SCHEDULER_NODES
 	if [ $? == 0 ];then
 		start_scheduler=1
+	fi
+
+	func_in_array $ip ARRAY_REGISTRY_NODES
+	if [ $? == 0 ];then
+		start_registry=1
 	fi
 done
 
@@ -86,4 +92,9 @@ fi
 if [ $start_kubeproxy -eq 1 ];then
 	./kube-proxy.sh start
 	touch ${RUNDIR}/kube-proxy.sh
+fi
+
+if [ $start_registry -eq 1 ];then
+	./registry.sh start
+	touch ${RUNDIR}/registry.sh
 fi

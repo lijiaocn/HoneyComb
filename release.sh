@@ -144,6 +144,43 @@ func_etcd_export(){
 }
 
 #1: CodeDir
+func_registry_clean(){
+	return
+}
+
+#$1:url
+#$2:branch
+#$3:tag
+#$4:dir
+func_registry_compile(){
+
+	local RegistryUrl=$1
+	local RegistryBranch=$2
+	local RegistryTag=$3
+	local RegistryDir=$4
+
+	func_green_str "Start Compile ${RegistryDir}: "
+	func_green_str "\t${RegistryUrl}"
+	func_green_str "\t${RegistryTag}"
+	func_error_cmd func_git_check_tag  $RegistryUrl $RegistryBranch $RegistryTag $RegistryDir 
+
+	curpath=`pwd`
+	cd $RegistryDir
+		func_error_cmd  cd cmd/registry && godep build 
+	cd $curpath
+}
+
+#1: CodeDir
+#2: DestDir
+func_registry_export(){
+	local RegistryDir=$1
+	local DestDir=$2
+
+	local Registry=$RegistryDir/cmd/registry/registry
+	func_force_copy $DestDir $Registry 
+}
+
+#1: CodeDir
 #2: DestDir
 func_Shell_export(){
 	local ShellDir=$1
@@ -211,6 +248,11 @@ EtcdDir=./ThirdParty/Etcd
 func_etcd_clean      ${EtcdDir}
 func_etcd_compile    $EtcdUrl $EtcdBranch $EtcdTag $EtcdDir 
 func_etcd_export     ${EtcdDir}  ${ReleasePath}/export/App
+
+RegistryDir=./ThirdParty/Registry
+func_registry_clean      ${RegistryDir}
+func_registry_compile    $RegistryUrl $RegistryBranch $RegistryTag $RegistryDir 
+func_registry_export     ${RegistryDir}  ${ReleasePath}/export/App
 
 func_Shell_export   ./Shell   ${ReleasePath}/export/Shell
 

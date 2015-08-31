@@ -1,7 +1,19 @@
-1. Docker Registry
-2. Etcd
-3. Flannel
-4. Docker
-5. Kubernetes
-6. Portal
-7. 访问控制/安全策略
+等待走读的程序:
+
+	kube-apiserver
+	kube-controller-manager
+	kube-scheduler
+	kube-proxy
+	kubelet
+
+等待研究的课题:
+
+	sdn网络
+	容器监控(cadvisor)
+	用于服务发现的键值存储系统(etcd)
+	Linux与容器技术(docker、rocket等)
+
+需要关注的问题:
+
+	访问控制/安全策略
+	高效运维(集群状态监测、进程监测、日志汇总等)

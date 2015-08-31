@@ -6,7 +6,7 @@ title: README
 
 # README
 
-创建时间: 2015/06/26 11:43:54  修改时间: 2015/07/22 09:48:51 作者:lijiao
+创建时间: 2015/06/26 11:43:54  修改时间: 2015/08/31 17:01:27 作者:lijiao
 
 ----
 
@@ -36,6 +36,8 @@ HoneyComb想成为一套简单、高效的Kubernetes的部署系统。
 [第二篇 Namespace的使用](./doc/2_example_namespace.md)
 
 [第三篇 Kubernetes的网络](./doc/3_example_networks.md)
+
+[第四篇 Kubernetes All-in-One 和Ui](./doc/4_example_allinone_and_ui.md)
 
 ## 目录说明
 

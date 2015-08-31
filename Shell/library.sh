@@ -239,15 +239,17 @@ func_git_check_tag(){
 
 #$1: pidfile
 #$2: log file
-#$4: commands
+#$3: commands
 func_daemon_cmd(){
 	local sec=`func_since_1970`
 	local pidfile=$1
-	local stdout="$2.$sec.stdout"
-	local stderr="$2.$sec.stderr"
+	#local stdout="$2.$sec.stdout"
+	#local stderr="$2.$sec.stderr"
+	local stdout="$2.stdout"
+	local stderr="$2.stderr"
 	shift 2
 
-	$* 1>$stdout 2>$stderr &
+	$* 1>>$stdout 2>>$stderr &
 	local pid=$!
 	echo $pid >$pidfile
 }

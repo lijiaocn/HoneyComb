@@ -23,8 +23,11 @@ SERVICE_ADDRESSES="172.16.0.0/16"
 FLANNEL_PREFIX="flanneld"
 
 #docker
-DOCKER_REGISTRYS="192.168.202.240:5000"
+DOCKER_REGISTRYS="127.0.0.1:5000"
 DOCKER_INSECURES="0.0.0.0/0"
+
+#registry Nodes
+ARRAY_REGISTRY_NODES[0]="127.0.0.1"
 
 #etcd Nodes
 declare -a ARRAY_ETCD_NODES
@@ -67,6 +70,7 @@ Kubectl=${App}/kubectl
 Kubelet=${App}/kubelet
 Flanneld=${App}/flanneld
 Etcd=${App}/etcd
+Registry=${App}/registry
 Docker=/usr/bin/docker
 
 #etcd addr  for client

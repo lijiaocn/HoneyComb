@@ -47,4 +47,5 @@ if [ -e /etc/init.d/cgconfig ];then
 fi
 
 TARGET=${Docker}
+./cgroupfs-mount.sh
 func_service_template_1 $TARGET $Logs Configs $1
