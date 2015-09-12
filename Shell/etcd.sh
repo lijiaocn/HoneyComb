@@ -3,6 +3,8 @@
 . ./library.sh
 . ./base.sh
 
+source ./config
+
 ip_for_etcd(){
 	for i in ${ARRAY_ETCD_NODES[@]}
 	do
@@ -55,7 +57,7 @@ if [ "$1" == "start" ];then
 	func_red_str $ret
 
 	func_yellow_str  "Putting Flanneld New Config ..."
-	value=`cat ./flannel.json`
+	value=`cat ${FLANNEL_CONFIG}`
 	ret=`curl http://${IP_FOR_ETCD}:${ETCD_PORT}/v2/keys/${FLANNEL_PREFIX}/config -XPUT -d value="$value" 2>/dev/null`
 	func_green_str $ret
 fi

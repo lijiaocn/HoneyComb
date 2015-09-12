@@ -3,9 +3,11 @@
 . ./library.sh
 . ./base.sh
 
+source ./config
+
 declare -A Configs
 # logging to stderr means we get it in the systemd journal
-Configs[config]="registry-config.yml"
+Configs[config]="${REGISTRY_CONFIG}"
 
 ################################################################################
 #

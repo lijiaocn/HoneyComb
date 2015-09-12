@@ -3,6 +3,8 @@
 . ./library.sh
 . ./base.sh
 
+source ./config
+
 if [ "$1" == "start" ];then
 	if [ ! -e /run/flannel/subnet.env ];then
 		func_red_str "Flanneld must start before Docker!"

@@ -1,0 +1,13 @@
+{"user":"admin_cluster", "resource": "nodes"}
+{"user":"admin_project", "resource": "services"}
+
+{"user":"user_alice", "namespace": "user_alice"}
+{"user":"user_bob",   "namespace": "user_bob"}
+{"user":"user_guest", "readonly": true, "namespace":"user_guest"}
+
+{"user":"kube-system_scheduler", "readonly": true, "resource": "pods"}
+{"user":"kube-system_scheduler", "resource": "bindings"}
+{"user":"kube-system_kubelet", "readonly": true, "resource": "pods"}
+{"user":"kube-system_kubelet", "readonly": true, "resource": "services"}
+{"user":"kube-system_kubelet", "readonly": true, "resource": "endpoints"}
+{"user":"kube-system_kubelet", "resource": "events"}

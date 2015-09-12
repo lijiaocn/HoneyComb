@@ -1,0 +1,9 @@
+admin_cluster:
+
+	集群管理员, 负责服务器等物理硬件的管理。
+
+admin_project: 
+
+	应用管理员, 负责管理运行在集群中所有应用。
+
+kube-system_scheduler

@@ -3,6 +3,7 @@
 . ./library.sh
 . ./base.sh
 
+source ./config
 declare -A Configs
 # logging to stderr means we get it in the systemd journal
 Configs[logtostderr]="--logtostderr=true"
