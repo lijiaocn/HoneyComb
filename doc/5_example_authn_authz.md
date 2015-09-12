@@ -6,7 +6,7 @@ title: 5_example_authn&authz
 
 # 5_example_authn&authz
 
-创建时间: 2015/09/07 18:05:54  修改时间: 2015/09/12 10:56:17 作者:lijiao
+创建时间: 2015/09/07 18:05:54  修改时间: 2015/09/12 11:10:06 作者:lijiao
 
 ----
 
@@ -52,7 +52,7 @@ k8s支持三种授权方式:
 
 	--authorization_mode=AlwaysDeny    
 	--authorization_mode=AlwaysAllow   <-- 默认设置
-	--authorization_mode=ABAC           依据属性进行访问控制: Attribute-Based Access Control
+	--authorization_mode=ABAC          <-- 依据属性进行访问控制: Attribute-Based Access Control
 
 ### ABAC授权
 	
@@ -75,7 +75,9 @@ k8s v1.0中ABAC授权策略有四个维度: user、readonly、resource、namespa
 
 	{"resource": "pods"}                    --> 所有的用户都可以操作任意Namespace中的pods。
 
-当存在多条策略的时候, 只要一条策略允许该操作，就会授权为允许。
+	{"readonly": "true"}                    --> 所有的用户只能读取所有的资源
+
+当存在多条策略的时候, 只要一条策略允许该操作，就会授权为允许，即使其它的策略设置为不允许。
 
 授权策略对应的结构, pkg/auth/authorizer/abac/abac.go:policy
 
@@ -185,7 +187,7 @@ k8s v1.0中提供的resource, 可以通过到rest api查找, rest api遵循如�
 
 启动apiserver后，可以直接访问/swagger-ui/查看apiserver提供的所有的api。
 
-[apis](./pic/pic_5_1_apis.png)
+![apis](./pic/pic_5_1_apis.png)
 
 k8s v1中提供的resources:
 
@@ -194,7 +196,7 @@ k8s v1中提供的resources:
 	endpoints
 	events
 	limitranges
-	namespaces              <-- yes, namespace本身也是resource
+	namespaces              <-- namespace本身也是resource
 	persistentvolumeclaims
 	pods
 	podtemplates
@@ -210,7 +212,7 @@ k8s v1中提供的resources:
 	//cluster管理员只能管理计算节点
 	{"user":"admin_cluster", "resource": "nodes"}      
 
-	//应用管理员只能管理集群上的services
+	//project管理员只能管理集群上的services
 	{"user":"admin_project", "resource": "services"}
 
 	//用户只能在自己的namespace中做任何事情
