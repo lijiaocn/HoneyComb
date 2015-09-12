@@ -6,7 +6,7 @@ title: 5_example_authn&authz
 
 # 5_example_authn&authz
 
-创建时间: 2015/09/07 18:05:54  修改时间: 2015/09/12 11:10:06 作者:lijiao
+创建时间: 2015/09/07 18:05:54  修改时间: 2015/09/12 12:06:47 作者:lijiao
 
 ----
 
@@ -227,5 +227,21 @@ k8s v1中提供的resources:
 	{"user":"kube-system_kubelet", "readonly": true, "resource": "services"}
 	{"user":"kube-system_kubelet", "readonly": true, "resource": "endpoints"}
 	{"user":"kube-system_kubelet", "resource": "events"}
+
+## ServiceAccounts
+
+[ServiceAccounts](https://github.com/kubernetes/kubernetes/blob/v1.0.0/docs/service_accounts.md)
+
+[ServiceAccounts Admin](https://github.com/kubernetes/kubernetes/blob/v1.0.0/docs/service_accounts_admin.md)
+
+前面的两大章节是对k8s外部的用户的认证和授权。运行在k8s中的Pod中进程也会访问k8s的apiserver。
+
+Pod中的进程提交的认证资料是ServiceAccounts。ServiceAccounts是k8s中一种资源, 创建Pod的时候可以为Pod设置一个ServiceAccount。
+
+k8s提供的一些插件例如kube-ui、dns等是作为service运行在k8s中的, 这些组件访问apiserver。
+
+用户可能自己开发了一个用于监控其它的k8s应用的应用, 这个应用可以运行在k8s中, 这个应用访问apiserver时需要凭借ServiceAccounts。
+
+>文档中只提到以后会对ServiceAccount设置访问控制, 详情如何还未知, 这部分内容的研究暂且搁置一下。 2015-09-12 12:04:58
 
 ## 文献
