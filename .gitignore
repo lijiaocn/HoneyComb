@@ -1,5 +1,8 @@
 *.swp
 *.
+output
+*.pem
+*.csr
 Release/*
 ThirdParty/*
 Tools/Registry/registry.tar.gz

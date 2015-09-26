@@ -5,7 +5,7 @@ title: 7_example_kubeconf
 ---
 
 # 7_example_kubeconf
-创建时间: 2015/09/10 15:36:40  修改时间: 2015/09/10 16:22:22 作者:lijiao
+创建时间: 2015/09/10 15:36:40  修改时间: 2015/09/21 22:22:50 作者:lijiao
 
 ----
 
@@ -17,6 +17,7 @@ kubectl、kubelet、kube-controller-manager和kube-scheduler在访问kube-apiser
 
 [kubeconf](https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/user-guide/kubeconfig-file.md)
 
+https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/user-guide/kubectl/kubectl_config.md
 ## kubeconf格式
 
 kubeconf是yaml格式, 对应的Object是: pkg/client/clientcmd/api/types.go中的

@@ -180,22 +180,6 @@ func_registry_export(){
 	func_force_copy $DestDir $Registry 
 }
 
-#1: CodeDir
-#2: DestDir
-func_Shell_export(){
-	local ShellDir=$1
-	local DestDir=$2
-	func_force_copy $DestDir $ShellDir/*
-}
-
-#1: CodeDir
-#2: DestDir
-func_Config_export(){
-	local ConfigDir=$1
-	local DestDir=$2
-	func_force_copy $DestDir $ConfigDir/*
-}
-
 #$1: ReleaseName
 #$2: ReleaseDir
 func_prepare_release(){
@@ -215,6 +199,18 @@ func_yellow_str "`ls ${CurPath}/Config`"
 echo -n "Choose the Cluster:"
 read Cluster
 
+echo  "Have you finished these config ?"
+func_red_str  "\t./${Cluster}/config"
+func_red_str  "\t./${Cluster}/Shell/config-global/base.sh"
+func_red_str  "\t./AuthnAuthz/${Cluster}/setup.sh"
+echo  -n "[Y|N]: "
+read  XXXX
+
+if [[ ${XXXX} != "Y" ]];then
+	echo "exit"
+	exit
+fi
+
 ClusterPath=${CurPath}/Config/${Cluster}
 if [ ! -d $ClusterPath ];then
 	func_red_str "Not Find: $ClusterPath"
@@ -232,35 +228,130 @@ source ./version
 ReleaseName="${Cluster}-${SelfVersion}--${HostSystem}--HoneyComb-${HoneyCombVersion}"
 ReleasePath="./Release/$ReleaseName"
 
-func_prepare_release $ReleasePath
-
 K8sDir=./ThirdParty/Kubernetes
 func_k8s_clean      ${K8sDir}
 func_k8s_compile    $K8sUrl $K8sBranch $K8sTag $K8sDir
-func_k8s_export     ${K8sDir} $ReleasePath/export/App
 
 FlannelDir=./ThirdParty/Flannel
 func_flannel_clean    ${FlannelDir}
 func_flannel_compile  $FlannelUrl $FlannelBranch $FlannelTag ${FlannelDir}
-func_flannel_export   ${FlannelDir} ${ReleasePath}/export/App
 
 EtcdDir=./ThirdParty/Etcd
 func_etcd_clean      ${EtcdDir}
 func_etcd_compile    $EtcdUrl $EtcdBranch $EtcdTag $EtcdDir 
-func_etcd_export     ${EtcdDir}  ${ReleasePath}/export/App
 
 RegistryDir=./ThirdParty/Registry
 func_registry_clean      ${RegistryDir}
 func_registry_compile    $RegistryUrl $RegistryBranch $RegistryTag $RegistryDir 
-func_registry_export     ${RegistryDir}  ${ReleasePath}/export/App
 
-func_Shell_export   ./Shell   ${ReleasePath}/export/Shell
+#1: Release Dir
+#2: Cluster Dir
+#3: Prefix
+#4: App
+make_package(){
+	local ReleaseDir=$1
+	local ClusterDir=$2
+	local Prefix=$3
+	local App=$4
+	local PackageName=$Prefix-$App
+	local PackagePath=${ReleaseDir}/${PackageName}
 
-#func_Config_export must be the last
-func_Config_export  ${ClusterPath} ${ReleasePath}/export/Shell
+	if [ ! -d $PackagePath ];then
+		mkdir -p $PackagePath
+	else
+		rm -rf $PackagePath
+	fi
 
-cd ./Release
-	tar -czvf $ReleaseName.tar.gz  $ReleaseName
-	/bin/rm -rf $ReleaseName
-	sha1sum  $ReleaseName.tar.gz  >$ReleaseName.sha1sum
-cd $CurPath
+	local KubeApiserver=$K8sDir/_output/local/go/bin/kube-apiserver
+	local KubeControlerManager=$K8sDir/_output/local/go/bin/kube-controller-manager
+	local KubeProxy=$K8sDir/_output/local/go/bin/kube-proxy
+	local KubeScheduler=$K8sDir/_output/local/go/bin/kube-scheduler
+	local Kubectl=$K8sDir/_output/local/go/bin/kubectl
+	local Kubelet=$K8sDir/_output/local/go/bin/kubelet
+
+	func_prepare_release $PackagePath
+	case "${App}" in
+		(config-global)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/config-global;;
+		(docker)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/docker;;
+		(etcd)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/etcd;
+			func_etcd_export          ${EtcdDir}  ${PackagePath}/export/App;;
+		(flannel)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/flannel;
+			func_flannel_export      ${FlannelDir}  ${PackagePath}/export/App;;
+		(registry)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/registry;
+			func_registry_export     ${RegistryDir}  ${PackagePath}/export/App;;
+		(kube-apiserver)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-apiserver;
+			func_force_copy ${PackagePath}/export/App/  $KubeApiserver;;
+		(kube-cli)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-cli;
+			func_force_copy ${PackagePath}/export/App/  $Kubectl;;
+		(kube-controller-manager)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-controller-manager;
+			func_force_copy ${PackagePath}/export/App/  $KubeControlerManager;;
+		(kube-kubelet)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-kubelet;
+			func_force_copy ${PackagePath}/export/App/  $Kubelet;;
+		(kube-proxy)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-proxy;
+			func_force_copy ${PackagePath}/export/App/  $KubeProxy;;
+		(kube-scheduler)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-scheduler;
+			func_force_copy ${PackagePath}/export/App/  $KubeScheduler;;
+		(allinone)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/config-global;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/docker;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/etcd;
+			func_etcd_export          ${EtcdDir}  ${PackagePath}/export/App;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/flannel;
+			func_flannel_export      ${FlannelDir}  ${PackagePath}/export/App;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/registry;
+			func_registry_export     ${RegistryDir}  ${PackagePath}/export/App;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-apiserver;
+			func_force_copy ${PackagePath}/export/App/  $KubeApiserver;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-cli;
+			func_force_copy ${PackagePath}/export/App/  $Kubectl;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-controller-manager;
+			func_force_copy ${PackagePath}/export/App/  $KubeControlerManager;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-kubelet;
+			func_force_copy ${PackagePath}/export/App/  $Kubelet;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-proxy;
+			func_force_copy ${PackagePath}/export/App/  $KubeProxy;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-scheduler;
+			func_force_copy ${PackagePath}/export/App/  $KubeScheduler;;
+		(*)
+			func_red_str "Unkown compotent: $APP";;
+	esac
+
+	local curpath=`pwd`
+	cd ${ReleaseDir}
+		tar -czvf ${PackageName}.tar.gz  $PackageName
+		/bin/rm -rf $PackageName
+		sha1sum  ${PackageName}.tar.gz  >${PackageName}.sha1sum
+	cd $curpath
+}
+
+make_packages(){
+	for compotent in $*
+	do
+		make_package  ${ReleasePath} ${ClusterPath} ${Cluster}-${SelfVersion}--${HostSystem} "${compotent}"
+	done
+}
+
+make_packages config-global docker etcd flannel registry kube-apiserver kube-cli kube-controller-manager kube-kubelet kube-proxy kube-scheduler  allinone

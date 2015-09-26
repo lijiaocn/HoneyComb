@@ -1,0 +1,17 @@
+{"user":"admin_cluster", "resource": "nodes"}
+{"user":"admin_project", "resource": "services"}
+{"user":"kube-scheduler","resource": "pods"}
+{"user":"kube-scheduler", "resource": "bindings"}
+{"user":"kube-scheduler", "resource": "services"}
+{"user":"kube-scheduler", "resource": "nodes"}
+{"user":"kube-kubelet", "resource": "nodes"}
+{"user":"kube-kubelet", "readonly": true, "resource": "pods"}
+{"user":"kube-kubelet", "readonly": true, "resource": "services"}
+{"user":"kube-kubelet", "readonly": true, "resource": "endpoints"}
+{"user":"kube-kubelet", "resource": "events"}
+{"user":"kube-proxy", "readonly":true, "resource":"services"}
+{"user":"kube-proxy", "readonly":true, "resource":"endpoints"}
+{"user":"kube-controller-manager"}
+{"user":"user_alice", "namespace": "user_alice"}
+{"user":"user_bob",   "namespace": "user_bob"}
+{"user":"user_guest", "readonly": true, "namespace":"user_guest"}

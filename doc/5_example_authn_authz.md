@@ -6,7 +6,7 @@ title: 5_example_authn&authz
 
 # 5_example_authn&authz
 
-创建时间: 2015/09/07 18:05:54  修改时间: 2015/09/12 12:10:08 作者:lijiao
+创建时间: 2015/09/07 18:05:54  修改时间: 2015/09/15 10:22:43 作者:lijiao
 
 ----
 
@@ -221,12 +221,24 @@ k8s v1中提供的resources:
 	{"user":"user_guest", "readonly": true, "namespace":"user_guest"}
 
 	//k8s自身的组件遵循最小权限的原则
-	{"user":"kube-system_scheduler", "readonly": true, "resource": "pods"}
-	{"user":"kube-system_scheduler", "resource": "bindings"}
-	{"user":"kube-system_kubelet", "readonly": true, "resource": "pods"}
-	{"user":"kube-system_kubelet", "readonly": true, "resource": "services"}
-	{"user":"kube-system_kubelet", "readonly": true, "resource": "endpoints"}
-	{"user":"kube-system_kubelet", "resource": "events"}
+	{"user":"system_scheduler", "readonly": true, "resource": "pods"}
+	{"user":"system_scheduler", "resource": "bindings"}
+	{"user":"system_kubelet", "readonly": true, "resource": "pods"}
+	{"user":"system_kubelet", "readonly": true, "resource": "services"}
+	{"user":"system_kubelet", "readonly": true, "resource": "endpoints"}
+	{"user":"system_kubelet", "resource": "events"}
+	{"user":"system_proxy", "readonly":true, "resource":"endpoints"}
+	{"user":"system_proxy", "readonly":true, "resource":"services}
+	{"user":"system_controllermanager", "readonly":true, "resource":"services"}
+	{"user":"system_controllermanager", "readonly":true, "resource":"pods"}
+	{"user":"system_controllermanager", "resource":"endpoints"}
+	{"user":"system_controllermanager", "resource":"nodes"}
+	{"user":"system_controllermanager", "resource":"resourcequotas"}
+	{"user":"system_controllermanager", "resource":"namespaces"}
+	{"user":"system_controllermanager", "resource":"persistentvolumeclaims"}
+	{"user":"system_controllermanager", "resource":"serviceaccounts"}
+
+
 
 ## ServiceAccounts
 

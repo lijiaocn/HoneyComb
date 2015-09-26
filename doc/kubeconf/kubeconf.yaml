@@ -11,6 +11,11 @@ contexts:
     user: k8s_admin
     name: k8s_admin-context
 
+- context:
+    cluster: allinone
+    namespace: default
+    user:
+
 clusters:
 - cluster:
     api-version: v1
