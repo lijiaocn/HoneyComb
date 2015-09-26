@@ -5,7 +5,7 @@ title: 6_example_encryption
 ---
 
 # 6_example_encryption
-创建时间: 2015/09/26 23:17:04  修改时间: 2015/09/27 00:01:28 作者:lijiao
+创建时间: 2015/09/26 23:17:04  修改时间: 2015/09/27 00:14:21 作者:lijiao
 
 ----
 
@@ -18,6 +18,8 @@ k8s自身的安全性非常重要，这一点毫无疑问。
 k8s中有apiserver、kubelet和scheduler(插件)三个组件对外提供服务。
 
 关系如图片:
+
+>Authz和Authn是规划的独立的认证和授权系统, Nodes是运行有kubelet的宿主机, Monitor是规划的监控系统。
 
 ![k8sv1deploy](./pic/k8s_v1_deploy.png)
 
@@ -58,7 +60,7 @@ apiserver涉及到三套证书:
 
 ## kubelet
 
-kubelet具有双重身份, 首先它是apiserver的用户之一, 会使用自己的用户证书访问apiserver的服务, 并受到授权策略的制约, 然后它自身也会对外提供服务，apiserver通过kubelet的服务端口获得相关的信息。
+kubelet具有双重身份, 首先它是apiserver的用户之一, 会使用自己的用户证书访问apiserver的服务, 并受到授权策略的制约, 然后它自身也会对外提供服务，apiserver以及监控系统会通过kubelet的服务端口获得相关的信息。
 
 [配置文件kube-kubelet](./Config/allinone-secure/Shell/kube-kubelet/kube-kubelet.sh)
 
@@ -69,11 +71,11 @@ kubelet具有双重身份, 首先它是apiserver的用户之一, 会使用自己
 
 ## scheduler
 
-scheduler是k8s提供的一个调度插件, 这个插件作为一个独立的程序运行，会开启一个端口对外服务(默认10251)。
+scheduler是k8s提供的一个调度插件, 这个插件作为一个独立的程序运行，会开启一个端口对外提供服务(默认10251)。
 
 k8s 1.0中的scheduler的服务采用http, 没有加密、认证和授权等安全机制。
 
-k8s自带的scheduler只是一个示例, 实战的时候肯定是需要开发自己的调度插件的, 到时候需要注意做好防护。
+这个scheduler只是一个示例, 实战的时候肯定是需要开发自己的调度插件的, 到时候需要注意做好防护。
 
 ## 证书制作示例
 

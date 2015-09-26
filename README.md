@@ -6,7 +6,7 @@ title: README
 
 # README
 
-创建时间: 2015/06/26 11:43:54  修改时间: 2015/09/25 15:36:48 作者:lijiao
+创建时间: 2015/06/26 11:43:54  修改时间: 2015/09/27 00:18:53 作者:lijiao
 
 ----
 
@@ -27,6 +27,10 @@ HoneyComb想成为一套简单、高效的Kubernetes的部署系统。
 
 ## 更新
 
+master branch正在0.0.3的版本的整理过程中, 0.0.3对组件的组织方式、启动脚本、打包方式均做出了很大的变动。
+
+>2015-09-27 00:18:46 现在的代码库中没有做好master分支和开发分支的规划, 在0.0.3结束,0.0.4开始的时候进行规划。
+
 ## 介绍
 
 [Release 0.0.1](./doc/0_release_0.0.1.md)
@@ -44,6 +48,8 @@ HoneyComb想成为一套简单、高效的Kubernetes的部署系统。
 [第四篇 Kubernetes All-in-One 和Ui](./doc/4_example_allinone_and_ui.md)
 
 [第五篇 认证与授权](./doc/5_example_authn_authz.md)
+
+[第六篇 加密](./doc/6_example_encryption.md)
 
 ## 目录说明
 
