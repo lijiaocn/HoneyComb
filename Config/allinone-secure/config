@@ -2,7 +2,7 @@ SelfVersion=0.0.1
 
 K8sUrl=https://github.com/GoogleCloudPlatform/kubernetes.git
 K8sBranch=origin/release-1.0
-K8sTag=v1.0.0
+K8sTag=v1.0.6
 
 FlannelUrl=https://github.com/coreos/flannel.git
 FlannelBranch=master

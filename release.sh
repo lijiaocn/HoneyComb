@@ -271,6 +271,9 @@ make_package(){
 
 	func_prepare_release $PackagePath
 	case "${App}" in
+		(Addons)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/Addons;;
 		(config-global)
 			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
 			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/config-global;;
@@ -314,6 +317,7 @@ make_package(){
 			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-scheduler;
 			func_force_copy ${PackagePath}/export/App/  $KubeScheduler;;
 		(allinone)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/Addons;
 			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
 			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/config-global;
 			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/docker;
@@ -354,4 +358,4 @@ make_packages(){
 	done
 }
 
-make_packages config-global docker etcd flannel registry kube-apiserver kube-cli kube-controller-manager kube-kubelet kube-proxy kube-scheduler  allinone
+make_packages Addons config-global docker etcd flannel registry kube-apiserver kube-cli kube-controller-manager kube-kubelet kube-proxy kube-scheduler  allinone

@@ -32,7 +32,7 @@ gen_client_ca(){
 gen_req_config(){
 	local template=$1
 	local name=$2
-	sed  -e "s/{COMMONNAME}/${name}/" $template >./req.config
+	sed -e "s/{COMMONNAME}/${name}/" $template >./req.config
 	sed -i  -e "s/{SUBDIR}/${SUBDIR}/" ./req.config
 }
 

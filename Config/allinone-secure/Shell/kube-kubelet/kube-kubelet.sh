@@ -9,7 +9,8 @@ Kubelet=${App}/kubelet
 Logs=/export/Logs/
 
 KUBELET_LISTEN=0.0.0.0
-HOSTNAME=`hostname`
+#HOSTNAME=`hostname`
+HOSTNAME=`ip addr show flannel0 |grep inet |awk  '{print $2}'|sed "s/\/.*//"`
 
 declare -A Configs
 # logging to stderr means we get it in the systemd journal

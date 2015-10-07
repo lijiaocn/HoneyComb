@@ -12,6 +12,9 @@ KubeApiserver=${App}/kube-apiserver
 
 declare -A Configs
 
+# serviceAccount
+Configs[service-account-key-file]="--service-account-key-file=./cert-serviceAccount/ca.pem"
+
 # kubelet https
 Configs[kubelet-https]="--kubelet-https=true"
 Configs[kubelet-certificate-authority]="--kubelet-certificate-authority=./cert-kubelet/ca.pem"
@@ -40,7 +43,8 @@ Configs[allow-privileged]="--allow-privileged=false"
 
 # default admission control policies
 #Configs[admission_control]="--admission_control=NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota"
-Configs[admission-control]="--admission-control=NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ResourceQuota"
+#Configs[admission-control]="--admission-control=NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ResourceQuota"
+Configs[admission_control]="--admission_control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota"
 
 
 ################################################################################

@@ -42,7 +42,7 @@ collect_for_kube-controller-manager(){
 	create_dir  $rootCAs
 	create_dir  $certapi
 
-	func_force_copy $certauthn ./authn/output/kube-controller-manager/cert.pem ./authn/output/kube-controller-manager/key.pem  
+	func_force_copy $certauthn ./authn/output/kube-controller-manager/cert.pem ./authn/output/kube-controller-manager/key.pem  ./
 	func_force_copy $certserviceAccount  ./serviceAccount/ca/ca-key.pem
 	func_force_copy $rootCAs   ./apiserver/ca/ca.pem
 	func_force_copy $certapi   ./apiserver/ca/ca.pem

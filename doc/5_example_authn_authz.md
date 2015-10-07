@@ -6,7 +6,7 @@ title: 5_example_authn&authz
 
 # 5_example_authn&authz
 
-创建时间: 2015/09/07 18:05:54  修改时间: 2015/09/15 10:22:43 作者:lijiao
+创建时间: 2015/09/07 18:05:54  修改时间: 2015/09/28 18:08:21 作者:lijiao
 
 ----
 
@@ -221,39 +221,44 @@ k8s v1中提供的resources:
 	{"user":"user_guest", "readonly": true, "namespace":"user_guest"}
 
 	//k8s自身的组件遵循最小权限的原则
-	{"user":"system_scheduler", "readonly": true, "resource": "pods"}
-	{"user":"system_scheduler", "resource": "bindings"}
-	{"user":"system_kubelet", "readonly": true, "resource": "pods"}
-	{"user":"system_kubelet", "readonly": true, "resource": "services"}
-	{"user":"system_kubelet", "readonly": true, "resource": "endpoints"}
-	{"user":"system_kubelet", "resource": "events"}
-	{"user":"system_proxy", "readonly":true, "resource":"endpoints"}
-	{"user":"system_proxy", "readonly":true, "resource":"services}
-	{"user":"system_controllermanager", "readonly":true, "resource":"services"}
-	{"user":"system_controllermanager", "readonly":true, "resource":"pods"}
-	{"user":"system_controllermanager", "resource":"endpoints"}
-	{"user":"system_controllermanager", "resource":"nodes"}
-	{"user":"system_controllermanager", "resource":"resourcequotas"}
-	{"user":"system_controllermanager", "resource":"namespaces"}
-	{"user":"system_controllermanager", "resource":"persistentvolumeclaims"}
-	{"user":"system_controllermanager", "resource":"serviceaccounts"}
+	{"user":"kube-scheduler", "resource": "events"}
+	{"user":"kube-scheduler", "resource": "endpoints"}
+	{"user":"kube-scheduler", "resource": "pods"}
+	{"user":"kube-scheduler", "resource": "bindings"}
+	{"user":"kube-scheduler", "resource": "services"}
+	{"user":"kube-scheduler", "resource": "nodes"}
+	{"user":"kube-kubelet", "resource": "nodes"}
+	{"user":"kube-kubelet", "resource": "pods"}
+	{"user":"kube-kubelet", "readonly": true, "resource": "services"}
+	{"user":"kube-kubelet", "readonly": true, "resource": "endpoints"}
+	{"user":"kube-kubelet", "resource": "events"}
+	{"user":"kube-proxy", "readonly":true, "resource":"services"}
+	{"user":"kube-proxy", "readonly":true, "resource":"endpoints"}
+	{"user":"kube-controller-manager"}
 
+## 准入控制插件
 
+除了需要控制用户的访问权限，还需要对用户发出的请求进行更细力度的控制。
 
-## ServiceAccounts
+k8s的apiserver支持一系列的准入控制插件:[Admission Controllers](https://github.com/kubernetes/kubernetes/blob/v1.0.6/docs/admin/admission-controllers.md)
+
+通过apiserver的--admission_control选项进行开启:
+
+	--admission_control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota
+
+### ServiceAccounts
 
 [ServiceAccounts](https://github.com/kubernetes/kubernetes/blob/v1.0.0/docs/service_accounts.md)
 
 [ServiceAccounts Admin](https://github.com/kubernetes/kubernetes/blob/v1.0.0/docs/service_accounts_admin.md)
 
->文档中只提到以后会对ServiceAccount设置访问控制, 详情如何还未知。 这部分内容的研究暂且搁置一下。 2015-09-12 12:04:58
+## 问题
 
-前面的两大章节是对k8s外部的用户的认证和授权。运行在k8s中的Pod中进程也会访问k8s的apiserver。
+k8s 1.0开启ABAC授权模式的时候, 使用kubectl访问安全的服务端口时候会失败(其它组件: master、kubelet、porxy等访问apiserver时不存在这个问题):
 
-Pod中的进程提交的认证资料是ServiceAccounts。ServiceAccounts是k8s中一种资源, 创建Pod的时候可以为Pod设置一个ServiceAccount。
+	error: couldn't read version from server: the server does not allow access to the requested resource'
 
-k8s提供的一些插件例如kube-ui、dns等是作为service运行在k8s中的, 这些组件会访问apiserver, 需要凭借ServiceAccount。
+这是一个已知的问题: [kubectl does not work with namespace authorization](https://github.com/kubernetes/kubernetes/issues/13097)
 
-用户自己开发了一个用于监控其它的k8s应用的应用, 这个应用可以运行在k8s中, 这个应用访问apiserver时也需要凭借ServiceAccounts。
 
 ## 文献

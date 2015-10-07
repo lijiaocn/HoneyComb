@@ -1,4 +1,8 @@
 #!/bin/bash
 
-curl -L http://192.168.202.241:2379/$1
-echo ""
+case $1 in
+	(get)
+		/export/App/etcdctl --peers 127.0.0.1:2379 $* | python -m json.tool;;
+	(*)
+		/export/App/etcdctl --peers 127.0.0.1:2379 $* ;;
+esac

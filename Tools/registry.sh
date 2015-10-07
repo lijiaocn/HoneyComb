@@ -1,6 +1,7 @@
 #!/bin/bash
 
-ADDR=127.0.0.1:5000/v2
+#ADDR=127.0.0.1:5000/v2
+ADDR=https://localhost:5000/v2
 CURL_OPTIONS="-i"
 
 repo(){
