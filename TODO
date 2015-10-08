@@ -1,23 +1,52 @@
 2015-10-06 12:04:40
 
-1. node的网络规划:
-	node拥有固定的IP, 可以通过hostname直接访问
+探讨是否应该将cluster addons(granfa、influxdb、heapster、es、skydns)移出集群，作成独立的服务
 
+探讨网络隔离的必要性以及实现方式
+	该服务不能被访问
+	该服务只能被指定的pod访问
+	该服务可以被指定的namespace中的所有pod访问
+	该服务可以被集群内的任意pod访问，但是不能从集群外部访问
+	该服务可以被集群内的任意pod访问，也可以从集群外部访问
 
+>服务隔离的必要性:  如果用户采用微服务的设计，有的微服务只能被特定的对象访问，如果用户的这些微服务没有对来访对象进行认证, 就存在被扫描、恶意使用的危险。
+>实现方式1:  服务的访问策略用"namespace+标签"表示, 只有在满足这些条件的pod的才可以访问服务, 守护程序监测这些pod的状态, 实时地向sdn控制器下发acl。
 
+开发认证、授权服务
+	支持子账户
 
+开发dashboard
+	管理员: 管理控制、状态监测
+	用户:   服务管理、pod管理、状态检测、日志查看、子账户授权
 
-1. heapster访问node的10255端口获取状态信息(:10255/stats):
-	10255端口是只读的http端口, 安全方面应该不要紧
+搭建dns服务
+	https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/admin/dns.md
 
+搭建日志服务
+	https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/getting-started-guides/logging-elasticsearch.md
+	https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/getting-started-guides/logging.md
 
+搭建registry服务
+	docker registry
 
+搭建监测系统
+	集群资源使用状况
+	namespace、service的资源占用状况
+	节点状态
 
+HA:
+	https://github.com/kubernetes/kubernetes/blob/release-1.0/docs/admin/high-availability.md
 
+网络性能优化
+	ovs? flannel? or ...?
 
+volume对接存储
 
+将k8s自身的组件容器化
+--------------------
 
-
+kube-apiserver:
+1. 关闭insecure接口
 
 --------------------
 
@@ -41,8 +70,3 @@
 	访问控制/安全策略
 	高效运维(集群状态监测、进程监测、日志汇总等)
 
-
-kube-apiserver:
-1. 命令行增加日志开关
-2. 关闭insecure接口
-3. 将日志写入到专门的日志系统
