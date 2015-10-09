@@ -38,6 +38,9 @@ Configs[tls-private-key-file]="--tls-private-key-file=./cert-self/key.pem"
 #
 ################################################################################
 
+Configs[cluster-dns]="--cluster-dns=${CLUSTER_DNS}"
+Configs[cluster-domain]="--cluster-domain=${CLUSTER_DOMAIN}"
+
 # The address for the info server to serve on (set to 0.0.0.0 or "" for all interfaces)
 Configs[address]="--address=${KUBELET_LISTEN}"
 

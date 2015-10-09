@@ -19,3 +19,4 @@
 {"user":"user-bob",   "namespace": "user_bob"}
 {"user":"user-guest", "readonly": true, "namespace":"user_guest"}
 {"user":"system:serviceaccount:kube-system:default"}
+{"user":"kube2sky", "readonly":true}

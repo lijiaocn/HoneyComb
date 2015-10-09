@@ -79,7 +79,6 @@ collect_for_kube-scheduler(){
 	func_force_copy $certapi ./apiserver/ca/ca.pem
 }
 
-
 collect_for_kube-cli(){
 	local kubecli="output/kube-cli/"
 	create_dir $kubecli
@@ -89,6 +88,14 @@ collect_for_kube-cli(){
 	func_force_copy $kubecli/ca    ./apiserver/ca/ca.pem
 }
 
+collect_for_kube2sky(){
+	local kube2sky="output/kube2sky/"
+	create_dir $kube2sky
+	create_dir $kube2sky/ca
+
+	func_force_copy $kube2sky       ./authn/output/kube2sky
+	func_force_copy $kube2sky/ca    ./apiserver/ca/ca.pem
+}
 
 
 collect_for_apiserver
@@ -97,6 +104,7 @@ collect_for_kube-kubelet
 collect_for_kube-proxy
 collect_for_kube-scheduler
 collect_for_kube-cli
+collect_for_kube2sky
 
 if [[ $? != 0 ]];then
 	func_yellow_str "go to subdir to generate the cert"

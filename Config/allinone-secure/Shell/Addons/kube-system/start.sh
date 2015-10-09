@@ -16,16 +16,14 @@ create(){
 	cd ../../kube-cli/unsecure/
 	for i in ${TARGETS[@]}
 	do
-		echo "create: `basename $i`"
 		../kubectl.sh create -f $i
 	done
 }
 
 delete(){
 	cd ../../kube-cli/unsecure/
-	for i in ${TARGETS[@]}
+	for i in ${TARGETS[0]}
 	do
-		echo "delete: `basename $i`"
 		../kubectl.sh delete -f $i
 	done
 }

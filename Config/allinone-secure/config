@@ -16,3 +16,6 @@ RegistryUrl=https://github.com/docker/distribution.git
 RegistryBranch=master
 RegistryTag=v2.1.1
 
+SkyDnsUrl=https://github.com/skynetservices/skydns.git
+SkyDnsBranch=master
+SkyDnsTag=2.5.2d

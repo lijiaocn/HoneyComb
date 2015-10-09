@@ -48,23 +48,25 @@ func_k8s_compile(){
 	local curpath=`pwd`
 	cd $K8sDir
 		cd hack; func_error_cmd ./build-go.sh;cd ..
+		cd cluster/addons/dns/kube2sky; make kube2sky;cd ../../../../
 	cd $curpath
 }
 
-#1: CodeDir
-#2: DestDir
-func_k8s_export(){
-	local KubernetesDir=$1
-	local DestDir=$2
-
-	local KubeApiserver=$KubernetesDir/_output/local/go/bin/kube-apiserver
-	local KubeManager=$KubernetesDir/_output/local/go/bin/kube-controller-manager
-	local KubeProxy=$KubernetesDir/_output/local/go/bin/kube-proxy
-	local KubeScheduler=$KubernetesDir/_output/local/go/bin/kube-scheduler
-	local Kubectl=$KubernetesDir/_output/local/go/bin/kubectl
-	local Kubelet=$KubernetesDir/_output/local/go/bin/kubelet
-	func_force_copy $DestDir $KubeApiserver $KubeManager $KubeProxy $KubeScheduler $Kubectl $Kubelet
-}
+##1: CodeDir
+##2: DestDir
+#func_k8s_export(){
+#	local KubernetesDir=$1
+#	local DestDir=$2
+#
+#	local KubeApiserver=$KubernetesDir/_output/local/go/bin/kube-apiserver
+#	local KubeManager=$KubernetesDir/_output/local/go/bin/kube-controller-manager
+#	local KubeProxy=$KubernetesDir/_output/local/go/bin/kube-proxy
+#	local KubeScheduler=$KubernetesDir/_output/local/go/bin/kube-scheduler
+#	local Kubectl=$KubernetesDir/_output/local/go/bin/kubectl
+#	local Kubelet=$KubernetesDir/_output/local/go/bin/kubelet
+#	local Kube2sky=$KubernetesDir/cluster/addons/dns/kube2sky/kube2sky
+#	func_force_copy $DestDir $KubeApiserver $KubeManager $KubeProxy $KubeScheduler $Kubectl $Kubelet $Kube2sky
+#}
 
 
 #1: CodeDir
@@ -180,6 +182,43 @@ func_registry_export(){
 	func_force_copy $DestDir $Registry 
 }
 
+#1: CodeDir
+func_skydns_clean(){
+	return
+}
+
+#$1:url
+#$2:branch
+#$3:tag
+#$4:dir
+func_skydns_compile(){
+
+	local SkyDnsUrl=$1
+	local SkyDnsBranch=$2
+	local SkyDnsTag=$3
+	local SkyDnsDir=$4
+
+	func_green_str "Start Compile ${SkyDnsDir}: "
+	func_green_str "\t${SkyDnsUrl}"
+	func_green_str "\t${SkyDnsTag}"
+	func_error_cmd func_git_check_tag  $SkyDnsUrl $SkyDnsBranch $SkyDnsTag $SkyDnsDir 
+
+	curpath=`pwd`
+	cd $SkyDnsDir
+		func_error_cmd  go build
+	cd $curpath
+}
+
+#1: CodeDir
+#2: DestDir
+func_skydns_export(){
+	local SkyDnsDir=$1
+	local DestDir=$2
+
+	local SkyDns=$SkyDnsDir/skydns
+	func_force_copy $DestDir $SkyDns 
+}
+
 #$1: ReleaseName
 #$2: ReleaseDir
 func_prepare_release(){
@@ -193,6 +232,7 @@ func_prepare_release(){
 	func_create_dirs ${Export} $App $Logs $Data $Shell  $Data/registry
 
 }
+
 
 CurPath=`pwd`
 func_yellow_str "`ls ${CurPath}/Config`"
@@ -244,6 +284,10 @@ RegistryDir=./ThirdParty/Registry
 func_registry_clean      ${RegistryDir}
 func_registry_compile    $RegistryUrl $RegistryBranch $RegistryTag $RegistryDir 
 
+SkyDnsDir=./ThirdParty/skydns
+func_skydns_clean      ${SkyDnsDir}
+func_skydns_compile    $SkyDnsUrl $SkyDnsBranch $SkyDnsTag $SkyDnsDir 
+
 #1: Release Dir
 #2: Cluster Dir
 #3: Prefix
@@ -268,9 +312,18 @@ make_package(){
 	local KubeScheduler=$K8sDir/_output/local/go/bin/kube-scheduler
 	local Kubectl=$K8sDir/_output/local/go/bin/kubectl
 	local Kubelet=$K8sDir/_output/local/go/bin/kubelet
+	local Kube2sky=$K8sDir/cluster/addons/dns/kube2sky/kube2sky
 
 	func_prepare_release $PackagePath
 	case "${App}" in
+		(kube2sky)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube2sky;
+			func_force_copy ${PackagePath}/export/App/  $Kube2sky;;
+		(skydns)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/skydns;
+			func_skydns_export          ${SkyDnsDir}  ${PackagePath}/export/App;;
 		(Addons)
 			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
 			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/Addons;;
@@ -317,6 +370,10 @@ make_package(){
 			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube-scheduler;
 			func_force_copy ${PackagePath}/export/App/  $KubeScheduler;;
 		(allinone)
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/kube2sky;
+			func_force_copy ${PackagePath}/export/App/  $Kube2sky;
+			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/skydns;
+			func_skydns_export          ${SkyDnsDir}  ${PackagePath}/export/App;
 			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/Addons;
 			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/*.sh;
 			func_force_copy ${PackagePath}/export/Shell/  $ClusterDir/Shell/config-global;
@@ -358,4 +415,4 @@ make_packages(){
 	done
 }
 
-make_packages Addons config-global docker etcd flannel registry kube-apiserver kube-cli kube-controller-manager kube-kubelet kube-proxy kube-scheduler  allinone
+make_packages kube2sky skydns Addons config-global docker etcd flannel registry kube-apiserver kube-cli kube-controller-manager kube-kubelet kube-proxy kube-scheduler  allinone
