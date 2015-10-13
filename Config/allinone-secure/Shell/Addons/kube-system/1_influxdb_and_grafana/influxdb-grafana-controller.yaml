@@ -46,4 +46,3 @@ spec:
       volumes:
       - name: influxdb-persistent-storage
         emptyDir: {}
-

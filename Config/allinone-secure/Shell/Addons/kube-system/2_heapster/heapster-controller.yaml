@@ -23,9 +23,9 @@ spec:
         - image: localhost:5000/honeycomb/heapster:v0.18.2
           name: heapster
           resources:
-#            limits:
-#              cpu: 100m
-#              memory: 300Mi
+            limits:
+              cpu: 100m
+              memory: 300Mi
           command:
             - /heapster
             - --source=kubernetes:?useServiceAccount=true&kubeletHttps=false

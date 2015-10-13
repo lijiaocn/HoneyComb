@@ -1,0 +1,8 @@
+192.168.183.59  etcd registry kube-apiserver kube-controller-manager kube-scheduler 
+                kube2sky skydns flannel Addons config-global kube-cli
+192.168.183.60  kube-kubelet  kube-proxy  docker  flannel  config-global  etcd
+192.168.183.61  kube-kubelet  kube-proxy  docker  flannel  config-global
+192.168.183.62  kube-kubelet  kube-proxy  docker  flannel  config-global
+192.168.183.63  kube-kubelet  kube-proxy  docker  flannel  config-global
+192.168.183.64  kube-kubelet  kube-proxy  docker  flannel  config-global
+192.168.183.65  kube-kubelet  kube-proxy  docker  flannel  config-global

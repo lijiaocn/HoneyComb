@@ -7,7 +7,7 @@ MACHINES_LST=""
 Cluster=""
 
 start(){
-	./dish -e "cd /export/Shell && /bin/bash ./run.sh" -g ${MACHINES_LST} -p ${PASSWORD}
+	./dish -e "cd /export/Shell && /bin/bash ./start.sh" -g ${MACHINES_LST} -p ${PASSWORD}
 }
 
 stop(){

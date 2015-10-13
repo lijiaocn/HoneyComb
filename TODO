@@ -1,5 +1,13 @@
 2015-10-06 12:04:40
 
+监控、dashboard需要重做，原生的不能正常工作。
+
+认证和授权系统, 没有
+
+审核审批, 没有
+
+------------------
+
 探讨是否应该将cluster addons(granfa、influxdb、heapster、es、skydns)移出集群，作成独立的服务
 
 探讨网络隔离的必要性以及实现方式
@@ -43,6 +51,13 @@ HA:
 volume对接存储
 
 将k8s自身的组件容器化
+	k8s
+
+Node主机加固:
+	iptables设置
+	ssh登录设置
+	Node的OS只需要运行容器，可以对系统进行裁剪。
+
 --------------------
 
 kube-apiserver:

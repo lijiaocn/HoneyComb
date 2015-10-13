@@ -4,7 +4,7 @@
 
 ###################  Docker ####################
 
-CLUSTER_DNS="127.0.0.1:53"
+CLUSTER_DNS="127.0.0.1"
 CLUSTER_DOMAIN="cluster.local"
 DOCKER_REGISTRYS="localhost:5000"
 DOCKER_INSECURES="0.0.0.0/0"

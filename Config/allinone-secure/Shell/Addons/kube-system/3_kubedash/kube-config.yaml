@@ -20,10 +20,10 @@
             name: "kubedash"
             command: 
               - /entrypoint.sh
-#            resources:
-#              limits:
-#                cpu: 50m
-#                memory: 100MB
+            resources:
+              limits:
+                cpu: 50m
+                memory: 100Mi
             volumeMounts: 
               - 
                 name: "ssl-certs"

@@ -1,11 +1,11 @@
 ---
 layout: default
-title: 8_example_basic_operation
+title: a_example_basic_operation
 
 ---
 
-# 8_example_basic_operation
-创建时间: 2015/09/28 13:51:57  修改时间: 2015/09/28 16:07:18 作者:lijiao
+# a_example_basic_operation
+创建时间: 2015/09/28 13:51:57  修改时间: 2015/10/10 17:25:40 作者:lijiao
 
 ----
 
@@ -19,28 +19,90 @@ title: 8_example_basic_operation
 
 k8s的管理员该用户签署一个cn为"user-alice"的证书: [签署用户证书](./AuthnAuthz/allinone-secure/authn/)
 
-k8s的管理员为该用户创建一个同名的namespace(pkg/api/v1/types.go: Namespace):
+k8s管理员将给签署的用户证书发送给用户。
 
-	kubectl create -f namespace-user-alice.yaml
+## 申请namespace
 
-namespace-user-alice.yaml:
+用户申请namespace, 申请中提供:
 
-		kind: Namespace
-		apiVersion: v1
-		metadata:
-		  name: kube-system
+	namespace名称
+	ResoureceQuota(namesapce的资源上限): 
+		pods
+		services
+		replicationcontrollers
+		resourcequotas
+		secrets
+		persistentvolumneclaims
+	Limits(资源单位限制): pod、容器的资源占用范围(不能太小，也不能太大)
 
-k8s管理员为该用户设置操作权限, 在apiserver的policy.json文件中添加:
+[Resource Quota](https://github.com/kubernetes/kubernetes/blob/v1.0.6/docs/admin/resource-quota.md)
+
+[Limits](https://github.com/kubernetes/kubernetes/tree/v1.0.6/docs/user-guide/limitrange)
+
+管理员根据用户要求创建namespace, 设置ResouceQuota和Limits。
+
+Namespace example:
+
+	kind: Namespace
+	apiVersion: v1
+	metadata:
+	  name: user-alice
+
+ResouceQuota example:
+
+	apiVersion: v1
+	kind: ResourceQuota
+	metadata:
+	  name: user-alice-quota
+	spec:
+	  hard:
+	    cpu: "20"
+	    memory: 1Gi
+	    persistentvolumeclaims: "10"
+	    pods: "10"
+	    replicationcontrollers: "20"
+	    resourcequotas: "1"
+	    secrets: "10"
+	    services: "5"
+
+Limit example:
+
+	apiVersion: v1
+	kind: LimitRange
+	metadata:
+	  name: user-alice-limits
+	spec:
+	  limits:
+	  - max:
+	      cpu: "2"
+	      memory: 1Gi
+	      storage: 20Gi
+	    min:
+	      cpu: 50m
+	      memory: 6Mi
+	      storage: 5Gi
+	    type: Pod
+	  - default:
+	      cpu: 250m
+	      memory: 100Mi
+	      storage: 5Gi
+	    max:
+	      cpu: "2"
+	      memory: 1Gi
+	      storage: 20Gi
+	    min:
+	      cpu: 50m
+	      memory: 6Mi
+	      storage: 5Gi
+	    type: Container
+
+然后给用户授予操作该namespace的权限, 在apiserver的policy.json文件中添加(需要重启apiserver):
 
 	{"user":"user-alice", "namespace": "user_alice"}
 
-重启apiserver。
 
-k8s管理员将给签署的用户证书发送给用户。
+## 创建pod、rc和services
 
->k8s的v1.0.0中的授权机制需要重启apiserver。需要将用户管理和授权实现为一个服务。
-
-## 
 
 
 ## 文献

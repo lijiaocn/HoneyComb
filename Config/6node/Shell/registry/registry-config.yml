@@ -1,0 +1,11 @@
+version: 0.1
+log:
+  fields:
+    service: registry
+storage:
+    cache:
+        layerinfo: inmemory
+    filesystem:
+        rootdirectory: /export/Data/registry
+http:
+    addr: 192.168.183.59:5000
