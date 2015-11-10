@@ -2,7 +2,7 @@
 
 #ADDR=127.0.0.1:5000/v2
 ADDR=https://localhost:5000/v2
-CURL_OPTIONS="-i"
+CURL_OPTIONS="-i --insecure"
 
 repo(){
 	curl $CURL_OPTIONS  $ADDR/_catalog
