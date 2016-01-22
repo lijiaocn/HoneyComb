@@ -1,5 +1,6 @@
 *.swp
 *.
+*/out/*
 output
 *.pem
 *.csr
