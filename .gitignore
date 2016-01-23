@@ -1,6 +1,7 @@
 *.swp
+*.gz
 *.
-*/out/*
+out
 output
 *.pem
 *.csr
