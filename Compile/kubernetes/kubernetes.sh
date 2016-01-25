@@ -23,6 +23,11 @@ SUBDIRS="
 
 func_create_dirs $OUT $SUBDIRS
 
+for i in $SUBDIRS
+do
+	cp -f ./kubeconf.yml $i/
+done
+
 go get $REPO 2>/dev/null
 cd $GOPATH/src/$REPO; git pull; git checkout  $TAG
 cd $GOPATH/src/$REPO/hack; ./build-go.sh; \

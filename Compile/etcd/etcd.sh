@@ -26,20 +26,22 @@ cd $GOPATH/src/${REPO}; ./build; \
 
 config=${OUT}/etcd/config
 echo "declare -A CONFIGS" >$config
-echo "CONFIGS[name]='--name='"  >>$config
-echo "CONFIGS[data-dir]='--data-dir='"  >>$config
-echo "CONFIGS[wal-dir]='--wal-dir='"  >>$config
-echo "CONFIGS[snapshot-count]='--snapshot-count='"  >>$config
-echo "CONFIGS[heartbeat-interval]='--heartbeat-interval='"  >>$config
-echo "CONFIGS[election-timeout]='--election-timeout='"  >>$config
-echo "CONFIGS[listen-peer-urls]='--listen-peer-urls='"  >>$config
-echo "CONFIGS[listen-client-urls]='--listen-client-urls='"  >>$config
+echo "CONFIGS[name]='--name="default"'"  >>$config
+echo "CONFIGS[data-dir]='--data-dir="./log/localnode.etcd"'"  >>$config
+echo "CONFIGS[wal-dir]='--wal-dir="./log/localnode.wal"'"  >>$config
+echo "CONFIGS[snapshot-count]='--snapshot-count="10000"'"  >>$config
+echo "CONFIGS[heartbeat-interval]='--heartbeat-interval="100"'"  >>$config
+echo "CONFIGS[election-timeout]='--election-timeout="1000"'"  >>$config
+echo "CONFIGS[listen-peer-urls]='--listen-peer-urls="http://localhost:2380"'"  >>$config
+echo "CONFIGS[listen-client-urls]='--listen-client-urls="http://localhost:2379"'"  >>$config
+echo "CONFIGS[max-snapshots]='--max-snapshots="5"'" >>$config
+echo "CONFIGS[max-wals]='--max-wals="5"'" >>$config
 echo "CONFIGS[cors]='-cors='"  >>$config
-echo "CONFIGS[initial-advertise-peer-urls]='--initial-advertise-peer-urls='"  >>$config
-echo "CONFIGS[initial-cluster]='--initial-cluster='"  >>$config
-echo "CONFIGS[initial-cluster-state]='--initial-cluster-state='"  >>$config
-echo "CONFIGS[initial-cluster-token]='--initial-cluster-token='"  >>$config
-echo "CONFIGS[advertise-client-urls]='--advertise-client-urls='"  >>$config
+echo "CONFIGS[initial-advertise-peer-urls]='--initial-advertise-peer-urls="http://localhost:2380"'"  >>$config
+echo "CONFIGS[initial-cluster]='--initial-cluster="default=http://localhost:2380"'"  >>$config
+echo "CONFIGS[initial-cluster-state]='--initial-cluster-state="new"'"  >>$config
+echo "CONFIGS[initial-cluster-token]='--initial-cluster-token="etcd-localhost"'"  >>$config
+echo "CONFIGS[advertise-client-urls]='--advertise-client-urls="http://localhost:2379"'"  >>$config
 
 runfile=${OUT}/etcd/etcd.sh
 echo "#!/bin/bash" > $runfile

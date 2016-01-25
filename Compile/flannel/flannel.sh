@@ -24,9 +24,9 @@ cd $GOPATH/src/${REPO}; ./build;\
 
 config=${OUT}/flanneld/config
 echo "declare -A CONFIGS" >$config
-echo "CONFIGS[etcd-endpoints]='-etcd-endpoints='"  >>$config
-echo "CONFIGS[etcd-prefix]='-etcd-prefix='"  >>$config
-echo "CONFIGS[iface]='-iface='"  >>$config
+echo "CONFIGS[etcd-endpoints]='-etcd-endpoints=http://localhost:2379'"  >>$config
+echo "CONFIGS[etcd-prefix]='-etcd-prefix=kubernetes/network/flannel'"  >>$config
+echo "CONFIGS[iface]='-iface=eth1'"  >>$config
 
 runfile=${OUT}/flanneld/flanneld.sh
 echo "#!/bin/bash" > $runfile
