@@ -39,4 +39,4 @@ challengePassword_max          = 20
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer:always
 basicConstraints = CA:true
-subjectAltName=IP:{COMMONNAME},IP:172.16.0.1
+subjectAltName=IP:{COMMONNAME}

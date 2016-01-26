@@ -1,0 +1,24 @@
+kind: Config
+apiVersion: v1
+preferences:
+  colors: true
+clusters:
+- name: allinone
+  cluster:
+    server: https://192.168.40.99:6443
+    api-version: v1
+    insecure-skip-tls-verify: false
+    certificate-authority:  ../../../../AuthnAuthz/apiserver/ca/ca.pem
+users:
+- name: kube-scheduler
+  user:
+    client-certificate: ../../../../AuthnAuthz/authn/users/kube-scheduler/Cert/cert.pem
+    client-key: ../../../../AuthnAuthz/authn/users/kube-scheduler/Cert/key.pem
+contexts:
+- name: allinone-kube-scheduler
+  context:
+    cluster: allinone
+    user: kube-scheduler
+    namespace: default
+
+current-context: allinone-kube-scheduler

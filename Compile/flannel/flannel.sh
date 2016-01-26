@@ -2,25 +2,27 @@
 
 REPO="github.com/coreos/flannel"
 TAG="v0.5.5"
-PWD=`pwd`
-OUT=${PWD}/out/
+RUNPATH=`pwd`
+OUT=${RUNPATH}/out/
 ###############################################################
 RELY="github.com/lijiaocn/LinuxShell"
 TAG="master"
 go get $RELY 2>/dev/null
-cd $GOPATH/src/$RELY; git pull;git checkout $TAG;cd $PWD
+cd $GOPATH/src/$RELY; git pull;git checkout $TAG;cd $RUNPATH
 source $GOPATH/src/$RELY/library.sh
 
 SUBDIRS="
 	$OUT/flanneld
 "
 func_create_dirs $OUT $SUBDIRS
+cp -f ./flannel.json $OUT/flanneld
+cp -f ./net_init_config.sh $OUT/flanneld
 
 go get $REPO
 cd $GOPATH/src/${REPO}; git pull; git checkout  $TAG
 cd $GOPATH/src/${REPO}; ./build;\
 	cp -f bin/flanneld ${OUT}/flanneld;\
-	cd $PWD;
+	cd $RUNPATH;
 
 config=${OUT}/flanneld/config
 echo "declare -A CONFIGS" >$config
