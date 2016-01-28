@@ -23,11 +23,6 @@ SUBDIRS="
 
 func_create_dirs $OUT $SUBDIRS
 
-for i in $SUBDIRS
-do
-	cp -f ./kubeconf.yml $i/
-done
-
 go get $REPO 2>/dev/null
 cd $GOPATH/src/$REPO; git pull; git checkout  $TAG
 cd $GOPATH/src/$REPO/hack; ./build-go.sh; \
@@ -47,7 +42,7 @@ do
 	fi
 	runfile=$i/${basename}.sh
 	config=$i/config
-	func_gen_config_k8s $config $i/$basename -h
+#	func_gen_config_k8s $config $i/$basename -h
 
 	echo "#!/bin/bash" > $runfile
 	echo "wget -O library.sh https://raw.githubusercontent.com/lijiaocn/LinuxShell/master/library.sh"  >>$runfile

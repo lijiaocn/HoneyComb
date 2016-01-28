@@ -15,8 +15,6 @@ SUBDIRS="
 	$OUT/flanneld
 "
 func_create_dirs $OUT $SUBDIRS
-cp -f ./flannel.json $OUT/flanneld
-cp -f ./net_init_config.sh $OUT/flanneld
 
 go get $REPO
 cd $GOPATH/src/${REPO}; git pull; git checkout  $TAG
@@ -24,11 +22,11 @@ cd $GOPATH/src/${REPO}; ./build;\
 	cp -f bin/flanneld ${OUT}/flanneld;\
 	cd $RUNPATH;
 
-config=${OUT}/flanneld/config
-echo "declare -A CONFIGS" >$config
-echo "CONFIGS[etcd-endpoints]='-etcd-endpoints=http://localhost:2379'"  >>$config
-echo "CONFIGS[etcd-prefix]='-etcd-prefix=kubernetes/network/flannel'"  >>$config
-echo "CONFIGS[iface]='-iface=eth1'"  >>$config
+#config=${OUT}/flanneld/config
+#echo "declare -A CONFIGS" >$config
+#echo "CONFIGS[etcd-endpoints]='-etcd-endpoints=http://localhost:2379'"  >>$config
+#echo "CONFIGS[etcd-prefix]='-etcd-prefix=kubernetes/network/flannel'"  >>$config
+#echo "CONFIGS[iface]='-iface=eth1'"  >>$config
 
 runfile=${OUT}/flanneld/flanneld.sh
 echo "#!/bin/bash" > $runfile

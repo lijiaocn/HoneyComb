@@ -5,7 +5,7 @@ preferences:
 clusters:
 - name: allinone
   cluster:
-    server: https://192.168.183.59:6443
+    server: https://apiserver.local:6443
     api-version: v1
     insecure-skip-tls-verify: false
     certificate-authority:  ../ca/ca.pem
