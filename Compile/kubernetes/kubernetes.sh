@@ -20,18 +20,26 @@ SUBDIRS="
 	$OUT/kubectl 
 	$OUT/kubelet
 "
+SUBDIRS_BIN="
+	$OUT/kube-apiserver/bin
+	$OUT/kube-controller-manager/bin
+	$OUT/kube-proxy/bin
+	$OUT/kube-scheduler/bin
+	$OUT/kubectl/bin
+	$OUT/kubelet/bin
+"
 
-func_create_dirs $OUT $SUBDIRS
+func_create_dirs $OUT $SUBDIRS $SUBDIRS_BIN
 
 go get $REPO 2>/dev/null
 cd $GOPATH/src/$REPO; git pull; git checkout  $TAG
 cd $GOPATH/src/$REPO/hack; ./build-go.sh; \
-	cp -f ../_output/local/go/bin/kube-apiserver           $OUT/kube-apiserver/; \
-	cp -f ../_output/local/go/bin/kube-controller-manager  $OUT/kube-controller-manager/;\
-	cp -f ../_output/local/go/bin/kube-proxy               $OUT/kube-proxy/; \
-	cp -f ../_output/local/go/bin/kube-scheduler           $OUT/kube-scheduler/; \
-	cp -f ../_output/local/go/bin/kubectl                  $OUT/kubectl/; \
-	cp -f ../_output/local/go/bin/kubelet                  $OUT/kubelet/; \
+	cp -f ../_output/local/go/bin/kube-apiserver           $OUT/kube-apiserver/bin/; \
+	cp -f ../_output/local/go/bin/kube-controller-manager  $OUT/kube-controller-manager/bin/;\
+	cp -f ../_output/local/go/bin/kube-proxy               $OUT/kube-proxy/bin/; \
+	cp -f ../_output/local/go/bin/kube-scheduler           $OUT/kube-scheduler/bin/; \
+	cp -f ../_output/local/go/bin/kubectl                  $OUT/kubectl/bin/; \
+	cp -f ../_output/local/go/bin/kubelet                  $OUT/kubelet/bin/; \
 	cd $PWD;
 
 for i in $SUBDIRS
@@ -49,7 +57,7 @@ do
 	echo ". ./config"     >>$runfile
 	echo ". ./library.sh" >>$runfile
 	echo "if [ ! -d ./log ];then mkdir ./log; fi" >>$runfile
-	echo "func_service_template_1 ./$basename ./log  CONFIGS  \$1" >>$runfile
+	echo "func_service_template_1 ./bin/$basename ./log  CONFIGS  \$1" >>$runfile
 	chmod +x $runfile
 done
 

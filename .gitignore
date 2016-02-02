@@ -5,6 +5,9 @@ out
 output
 *.pem
 *.csr
+log
+bin
+certs
 Release/*
 ThirdParty/*
 Tools/Registry/registry.tar.gz

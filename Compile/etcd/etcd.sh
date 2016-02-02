@@ -13,15 +13,17 @@ source $GOPATH/src/$RELY/library.sh
 
 SUBDIRS="
 	$OUT/etcd
+	$OUT/etcd/bin
 	$OUT/etcdctl
+	$OUT/etcdctl/bin
 "
 func_create_dirs $OUT $SUBDIRS
 
 go get $REPO
 cd $GOPATH/src/${REPO}; git pull; git checkout  $TAG
 cd $GOPATH/src/${REPO}; ./build; \
-	cp -f bin/etcd    ${OUT}/etcd; \
-	cp -f bin/etcdctl ${OUT}/etcdctl; \
+	cp -f bin/etcd    ${OUT}/etcd/bin/; \
+	cp -f bin/etcdctl ${OUT}/etcdctl/bin/; \
 	cd $PWD;
 
 #config=${OUT}/etcd/config
@@ -49,5 +51,5 @@ echo "wget -O library.sh https://raw.githubusercontent.com/lijiaocn/LinuxShell/m
 echo ". ./config"     >>$runfile
 echo ". ./library.sh" >>$runfile
 echo "if [ ! -d ./log ];then mkdir ./log; fi" >>$runfile
-echo "func_service_template_1 ./etcd ./log  CONFIGS  \$1" >>$runfile
+echo "func_service_template_1 ./bin/etcd ./log  CONFIGS  \$1" >>$runfile
 chmod +x $runfile

@@ -25,4 +25,4 @@ emailAddress           = {COMMONNAME}@k8s.com
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer:always
 basicConstraints = CA:true
-subjectAltName=IP:{COMMONNAME}
+#subjectAltName=IP:{COMMONNAME}

@@ -1,0 +1,18 @@
+{
+  "kind": "Namespace",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "first-namespace",
+    "generateName": "first-namespace",
+    "labels":{
+        "name": "FirstNameSpace",
+        "purpose": "Demonstration"
+    },
+    "annotations": {
+        "describe": "Just show how to create"
+    }
+  },
+  "status": {
+    "phase": ""
+  }
+}

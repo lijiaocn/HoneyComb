@@ -1,0 +1,35 @@
+{
+  "kind": "",
+  "apiVersion": "",
+  "metadata": {
+    "name": "",
+    "generateName": "",
+    "namespace": "",
+    "selfLink": "",
+    "uid": "",
+    "resourceVersion": "",
+    "generation": {},
+    "creationTimestamp": "",
+    "deletionTimestamp": "",
+    "deletionGracePeriodSeconds": {},
+    "labels": "any",
+    "annotations": "any"
+  },
+  "spec": {
+    "accessModes": [
+      {}
+    ],
+    "resources": {
+      "limits": "any",
+      "requests": "any"
+    },
+    "volumeName": ""
+  },
+  "status": {
+    "phase": "",
+    "accessModes": [
+      {}
+    ],
+    "capacity": "any"
+  }
+}

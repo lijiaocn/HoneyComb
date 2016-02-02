@@ -1,0 +1,68 @@
+{
+  "kind": "",
+  "apiVersion": "",
+  "metadata": {
+    "name": "",
+    "generateName": "",
+    "namespace": "",
+    "selfLink": "",
+    "uid": "",
+    "resourceVersion": "",
+    "generation": {},
+    "creationTimestamp": "",
+    "deletionTimestamp": "",
+    "deletionGracePeriodSeconds": {},
+    "labels": "any",
+    "annotations": "any"
+  },
+  "spec": {
+    "podCIDR": "",
+    "externalID": "",
+    "providerID": "",
+    "unschedulable": false
+  },
+  "status": {
+    "capacity": "any",
+    "allocatable": "any",
+    "phase": "",
+    "conditions": [
+      {
+        "type": "",
+        "status": "",
+        "lastHeartbeatTime": "",
+        "lastTransitionTime": "",
+        "reason": "",
+        "message": ""
+      }
+    ],
+    "addresses": [
+      {
+        "type": "",
+        "address": ""
+      }
+    ],
+    "daemonEndpoints": {
+      "kubeletEndpoint": {
+        "Port": {}
+      }
+    },
+    "nodeInfo": {
+      "machineID": "",
+      "systemUUID": "",
+      "bootID": "",
+      "kernelVersion": "",
+      "osImage": "",
+      "containerRuntimeVersion": "",
+      "kubeletVersion": "",
+      "kubeProxyVersion": ""
+    },
+    "images": [
+      {
+        "repoTags": [
+          ""
+        ],
+        "size": {}
+      }
+    ]
+  }
+}

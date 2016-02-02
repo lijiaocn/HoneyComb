@@ -1,0 +1,57 @@
+{
+  "kind": "",
+  "apiVersion": "",
+  "metadata": {
+    "name": "",
+    "generateName": "",
+    "namespace": "",
+    "selfLink": "",
+    "uid": "",
+    "resourceVersion": "",
+    "generation": {},
+    "creationTimestamp": "",
+    "deletionTimestamp": "",
+    "deletionGracePeriodSeconds": {},
+    "labels": "any",
+    "annotations": "any"
+  },
+  "subsets": [
+    {
+      "addresses": [
+        {
+          "ip": "",
+          "targetRef": {
+            "kind": "",
+            "namespace": "",
+            "name": "",
+            "uid": "",
+            "apiVersion": "",
+            "resourceVersion": "",
+            "fieldPath": ""
+          }
+        }
+      ],
+      "notReadyAddresses": [
+        {
+          "ip": "",
+          "targetRef": {
+            "kind": "",
+            "namespace": "",
+            "name": "",
+            "uid": "",
+            "apiVersion": "",
+            "resourceVersion": "",
+            "fieldPath": ""
+          }
+        }
+      ],
+      "ports": [
+        {
+          "name": "",
+          "port": {},
+          "protocol": ""
+        }
+      ]
+    }
+  ]
+}

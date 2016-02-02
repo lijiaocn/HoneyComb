@@ -13,13 +13,14 @@ source $GOPATH/src/$RELY/library.sh
 
 SUBDIRS="
 	$OUT/registry
+	$OUT/registry/bin
 "
 func_create_dirs $OUT $SUBDIRS
 
 go get $REPO
 cd $GOPATH/src/${REPO}; git pull; git checkout  $TAG
 cd $GOPATH/src/${REPO}/cmd/registry; godep go build;\
-	cp -f  registry ${OUT}/registry; \
+	cp -f  registry ${OUT}/registry/bin; \
 	cp -rf *.yml ${OUT}/registry; \
 	cd $PWD;
 
@@ -33,5 +34,5 @@ echo "wget -O library.sh https://raw.githubusercontent.com/lijiaocn/LinuxShell/m
 echo ". ./config"     >>$runfile
 echo ". ./library.sh" >>$runfile
 echo "if [ ! -d ./log ];then mkdir ./log; fi" >>$runfile
-echo "func_service_template_1 ./registry ./log  CONFIGS  \$1" >>$runfile
+echo "func_service_template_1 ./bin/registry ./log  CONFIGS  \$1" >>$runfile
 chmod +x $runfile

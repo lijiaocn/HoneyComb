@@ -1,0 +1,30 @@
+{
+  "kind": "",
+  "apiVersion": "",
+  "metadata": {
+    "name": "",
+    "generateName": "",
+    "namespace": "",
+    "selfLink": "",
+    "uid": "",
+    "resourceVersion": "",
+    "generation": {},
+    "creationTimestamp": "",
+    "deletionTimestamp": "",
+    "deletionGracePeriodSeconds": {},
+    "labels": "any",
+    "annotations": "any"
+  },
+  "spec": {
+    "limits": [
+      {
+        "type": "",
+        "max": "any",
+        "min": "any",
+        "default": "any",
+        "defaultRequest": "any",
+        "maxLimitRequestRatio": "any"
+      }
+    ]
+  }
+}

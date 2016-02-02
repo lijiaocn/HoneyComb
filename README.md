@@ -6,7 +6,7 @@ title: README
 
 # README
 
-创建时间: 2015/06/26 11:43:54  修改时间: 2016/01/27 16:58:44 作者:lijiao
+创建时间: 2015/06/26 11:43:54  修改时间: 2016/01/29 18:28:12 作者:lijiao
 
 ----
 
@@ -45,27 +45,27 @@ master branch正在0.0.3的版本的整理过程中, 0.0.3对组件的组织方�
 
 >2015-09-27 00:18:46 现在的代码库中没有做好master分支和开发分支的规划, 在0.0.3结束,0.0.4开始的时候进行规划。
 
-[Release 0.0.4](./doc/0_release_0.0.4.md)
+[Release 0.0.4](./doc/v0.0.3/0_release_0.0.4.md)
 
-[Release 0.0.3](./doc/0_release_0.0.3.md)
+[Release 0.0.3](./doc/v0.0.3/0_release_0.0.3.md)
 
-[Release 0.0.2](./doc/0_release_0.0.2.md)
+[Release 0.0.2](./doc/v0.0.3/0_release_0.0.2.md)
 
-[Release 0.0.1](./doc/0_release_0.0.1.md)
+[Release 0.0.1](./doc/v0.0.3/0_release_0.0.1.md)
 
 ## 介绍
 
-[第一篇 在Kubernetes中使用Redis](./doc/1_example_redis.md)
+[第一篇 在Kubernetes中使用Redis](./doc/v0.0.3/1_example_redis.md)
 
-[第二篇 Namespace的使用](./doc/2_example_namespace.md)
+[第二篇 Namespace的使用](./doc/v0.0.3/2_example_namespace.md)
 
-[第三篇 Kubernetes的网络](./doc/3_example_networks.md)
+[第三篇 Kubernetes的网络](./doc/v0.0.3/3_example_networks.md)
 
-[第四篇 Kubernetes All-in-One 和Ui](./doc/4_example_allinone_and_ui.md)
+[第四篇 Kubernetes All-in-One 和Ui](./doc/v0.0.3/4_example_allinone_and_ui.md)
 
-[第五篇 认证与授权](./doc/5_example_authn_authz.md)
+[第五篇 认证与授权](./doc/v0.0.3/5_example_authn_authz.md)
 
-[第六篇 加密](./doc/6_example_encryption.md)
+[第六篇 加密](./doc/v0.0.3/6_example_encryption.md)
 
 ## 目录说明
 

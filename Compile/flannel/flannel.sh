@@ -13,13 +13,14 @@ source $GOPATH/src/$RELY/library.sh
 
 SUBDIRS="
 	$OUT/flanneld
+	$OUT/flanneld/bin
 "
 func_create_dirs $OUT $SUBDIRS
 
 go get $REPO
 cd $GOPATH/src/${REPO}; git pull; git checkout  $TAG
 cd $GOPATH/src/${REPO}; ./build;\
-	cp -f bin/flanneld ${OUT}/flanneld;\
+	cp -f bin/flanneld ${OUT}/flanneld/bin/;\
 	cd $RUNPATH;
 
 #config=${OUT}/flanneld/config
@@ -34,5 +35,5 @@ echo "wget -O library.sh https://raw.githubusercontent.com/lijiaocn/LinuxShell/m
 echo ". ./config"     >>$runfile
 echo ". ./library.sh" >>$runfile
 echo "if [ ! -d ./log ];then mkdir ./log; fi" >>$runfile
-echo "func_service_template_1 ./flanneld ./log  CONFIGS  \$1" >>$runfile
+echo "func_service_template_1 ./bin/flanneld ./log  CONFIGS  \$1" >>$runfile
 chmod +x $runfile
