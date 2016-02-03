@@ -1,30 +1,17 @@
 ---
 layout: default
-title: AuthzAuthn
+title: Authz
 
 ---
 
-# AuthzAuthn
-创建时间: 2016/02/02 11:46:15  修改时间: 2016/02/02 16:58:53 作者:lijiao
+# Authz
+创建时间: 2016/02/02 11:46:15  修改时间: 2016/02/03 18:00:52 作者:lijiao
 
 ----
 
 ## 摘要
 
-## 制作用户证书
-
-在AuthnAuthz/authn/users目录中创建以用户名命名的子目录, 然后在AuthnAuthz/authn/目录中执行gen.sh。
-
-gen.sh会提示选择证书的模版和用户，制作结束后，会生成如下的文件：
-
-	user-alice/
-	├── Cert
-	│   ├── ca.csr
-	│   ├── cert.pem      <-－用户的证书
-	│   └── key.pem       <-- 用户的密钥
-	└── req.config
-
-## 制作授权策略
+## 授权策略
 
 在AuthnAuthz/authz中编辑policy.json文件，apiserver启动的时候。
 

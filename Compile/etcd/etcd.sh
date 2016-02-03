@@ -6,9 +6,9 @@ PWD=`pwd`
 OUT=${PWD}/out/
 ###############################################################
 RELY="github.com/lijiaocn/LinuxShell"
-TAG="master"
+SHELLTAG="master"
 go get $RELY 2>/dev/null
-cd $GOPATH/src/$RELY; git pull;git checkout $TAG;cd $PWD
+cd $GOPATH/src/$RELY; git pull;git checkout $SHELLTAG;cd $PWD
 source $GOPATH/src/$RELY/library.sh
 
 SUBDIRS="

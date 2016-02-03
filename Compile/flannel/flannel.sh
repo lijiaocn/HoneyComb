@@ -6,9 +6,9 @@ RUNPATH=`pwd`
 OUT=${RUNPATH}/out/
 ###############################################################
 RELY="github.com/lijiaocn/LinuxShell"
-TAG="master"
+SHELLTAG="master"
 go get $RELY 2>/dev/null
-cd $GOPATH/src/$RELY; git pull;git checkout $TAG;cd $RUNPATH
+cd $GOPATH/src/$RELY; git pull;git checkout $SHELLTAG;cd $RUNPATH
 source $GOPATH/src/$RELY/library.sh
 
 SUBDIRS="

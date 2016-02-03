@@ -50,7 +50,7 @@ CONFIGS[authorization-mode]='--authorization-mode=ABAC'
 CONFIGS[authorization-policy-file]='--authorization-policy-file=./policy.json'
 
 # The number of apiservers running in the cluster
-CONFIGS[apiserver-count]='--apiserver-count=1'
+#CONFIGS[apiserver-count]='--apiserver-count=1'
 
 #Ordered list of plug-ins to do admission control of resources into cluster. Comma-delimited list of:
 #	AlwaysAdmit, AlwaysDeny, AlwaysPullImages, DenyEscalatingExec, DenyExecOnPrivileged, InitialResources, LimitRanger,
