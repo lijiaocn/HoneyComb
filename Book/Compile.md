@@ -5,7 +5,7 @@ title: Compile
 ---
 
 # Compile
-创建时间: 2016/02/01 11:12:56  修改时间: 2016/02/03 18:26:03 作者:lijiao
+创建时间: 2016/02/01 11:12:56  修改时间: 2016/02/14 10:29:59 作者:lijiao
 
 ----
 
@@ -27,7 +27,7 @@ title: Compile
 
 ## 编译
 
-compile.all.sh将完成Compile目录下所有组件的编译, 将编译后得到程序统一存放在./out目录中。
+compile.all.sh将完成Compile目录下所有组件的编译, 将编译后得到程序统一存放在子目录的./out目录中。
 
 	cd $GOPATH/src/github.com/lijiaocn/HoneyComb/Compile
 	./compile.all.sh

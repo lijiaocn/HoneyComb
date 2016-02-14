@@ -5,7 +5,7 @@ title: README
 ---
 
 # README
-创建时间: 2016/02/03 17:25:51  修改时间: 2016/02/03 18:10:39 作者:lijiao
+创建时间: 2016/02/03 17:25:51  修改时间: 2016/02/14 13:59:50 作者:lijiao
 
 ----
 
@@ -15,18 +15,36 @@ Kubernetes实战记录。
 
 以下章节中部署的是一个“All in One”、“启用了https加密”和“用户授权”的kubernetes系统。
 
-另外还存在一份[Deploy-all-in-one-unsecure](./Deploy-All-in-One-Unsecure.md)文档，这是刚开始的部署一个“All in One”的unsecure的系统。但是这份文档诞生较早，部分内容已经不使用，以后也不打算更新这篇文档了。
+另外还存在一份[Deploy-all-in-one-unsecure](./Deploy-All-in-One-Unsecure.md)文档，这是刚开始的部署一个“All in One”的unsecure的系统。这份文档诞生较早，其中部分内容已经不适用，以后也不打算更新这篇文档了。
 
-## 编译篇
+## 编译
 
-[编译](./Compile.md)
+[编译](./Compile.md)：完成相关kubernetes以及依赖的etcd的等程序（暂时不包含docker）的编译。
 
-## 部署篇
+## 规划
 
-[All In One 非加密模式](./Deploy-All-in-One-Unsecure.md)
+[加密](./Secure.md)：kubernetes组件之间的通信加密（暂时不包含kubernetes以外的组件）。
 
-[All In One 加密模式](./Deploy-All-in-One-Secure.md)
+[认证](./Authn.md)：kubernetes用户的认证。
 
-## 操作篇
+[授权](./Authz.md)：kubernetes对用户授权。
+
+## 部署
+
+[配置](./Config.md)：各个组件的配置。
+
+[准备](./Prepare.md)：安装文件汇总。
+
+[安装](./Install.md)：将组件安装到希望的位置。
+
+[运行](./Run.md)：启动。
+
+## 排错
+
+[日志](./Log.md)：日志。
+
+## 问题
+
+[问题](./Questions.md)：问题。
 
 ## 文献
