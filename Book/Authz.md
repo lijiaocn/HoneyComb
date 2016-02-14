@@ -5,7 +5,7 @@ title: Authz
 ---
 
 # Authz
-创建时间: 2016/02/02 11:46:15  修改时间: 2016/02/14 10:39:17 作者:lijiao
+创建时间: 2016/02/02 11:46:15  修改时间: 2016/02/14 14:04:41 作者:lijiao
 
 ----
 
@@ -13,7 +13,7 @@ title: Authz
 
 ## 授权策略
 
-在AuthnAuthz/authz中编辑policy.json文件，apiserver启动的时候。
+在AuthnAuthz/authz中编辑policy.json文件。
 
 	{"user":"admin-cluster", "resource": "nodes"}
 	{"user":"admin-project", "resource": "services"}
