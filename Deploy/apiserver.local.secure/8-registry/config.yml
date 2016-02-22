@@ -6,7 +6,7 @@ storage:
     cache:
         layerinfo: inmemory
     filesystem:
-        rootdirectory: ./Data/registry
+        rootdirectory: ./log/Data/registry
 http:
     addr: 192.168.40.99:5000
     tls: 
