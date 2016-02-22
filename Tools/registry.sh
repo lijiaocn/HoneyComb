@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#ADDR=127.0.0.1:5000/v2
-ADDR=https://localhost:5000/v2
-CURL_OPTIONS="-i --insecure"
+ADDR=https://registry.local:5000/v2
+#CURL_OPTIONS="-i --insecure"
+CURL_OPTIONS=" --insecure"
 
 repo(){
 	curl $CURL_OPTIONS  $ADDR/_catalog

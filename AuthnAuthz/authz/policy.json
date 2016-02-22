@@ -1,3 +1,4 @@
+{"user":"admin-super"}
 {"user":"admin-cluster", "resource": "nodes"}
 {"user":"admin-project", "resource": "services"}
 {"user":"kube-scheduler", "resource": "events"}

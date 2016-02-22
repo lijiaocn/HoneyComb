@@ -5,7 +5,7 @@ title: README
 ---
 
 # README
-创建时间: 2016/02/03 17:25:51  修改时间: 2016/02/14 13:59:50 作者:lijiao
+创建时间: 2016/02/03 17:25:51  修改时间: 2016/02/22 17:44:52 作者:lijiao
 
 ----
 
@@ -15,7 +15,11 @@ Kubernetes实战记录。
 
 以下章节中部署的是一个“All in One”、“启用了https加密”和“用户授权”的kubernetes系统。
 
-另外还存在一份[Deploy-all-in-one-unsecure](./Deploy-All-in-One-Unsecure.md)文档，这是刚开始的部署一个“All in One”的unsecure的系统。这份文档诞生较早，其中部分内容已经不适用，以后也不打算更新这篇文档了。
+## 准备
+
+[自建Registry](./Registry.md)
+
+[计算节点](./ComputeNode.md)
 
 ## 编译
 
@@ -38,6 +42,10 @@ Kubernetes实战记录。
 [安装](./Install.md)：将组件安装到希望的位置。
 
 [运行](./Run.md)：启动。
+
+## 命令行
+
+[命令行](./Cli.md)
 
 ## 排错
 

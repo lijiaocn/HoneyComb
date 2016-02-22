@@ -22,9 +22,11 @@ CONFIGS[kubeconfig]='--kubeconfig=./kubeconfig.yml'
 #CONFIGS[node-ip]='--node-ip=192.168.40.99'
 
 # <Warning: Alpha feature> Labels to add when registering the node in the cluster.  Labels must are key=value pairs seperated by ','.
-CONFIGS[node-labels]='--node-labels=zone=allinone' 
+#CONFIGS[node-labels]='--node-labels=zone=allinone' 
 
 # If non-empty, will use this string as identification instead of the actual hostname.
 CONFIGS[hostname-override]='--hostname-override=kubelet.local'
 # Log
 CONFIGS[v]='--v=3'
+# The image whose network/ipc namespaces containers in each pod will use.
+CONFIGS[pod-infra-container-image]='--pod-infra-container-image="registry.local:5000/kubernetes/pause:latest'
