@@ -56,7 +56,7 @@ CONFIGS[authorization-policy-file]='--authorization-policy-file=./policy.json'
 #	AlwaysAdmit, AlwaysDeny, AlwaysPullImages, DenyEscalatingExec, DenyExecOnPrivileged, InitialResources, LimitRanger,
 #	NamespaceAutoProvision, NamespaceExists, NamespaceLifecycle, PersistentVolumeLabel, ResourceQuota, SecurityContextDeny, 
 #	ServiceAccount
-#CONFIGS[admission-control]='--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota'
+CONFIGS[admission-control]='--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota'
 
 # A set of key=value pairs that describe runtime configuration that may be passed to apiserver.
 # apis/<groupVersion> key can be used to turn on/off specific api versions. 

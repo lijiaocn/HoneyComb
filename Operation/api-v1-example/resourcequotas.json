@@ -1,0 +1,24 @@
+{
+  "kind": "ResourceQuota",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "first-quota",
+    "namespace": "first-namespace",
+    "deletionGracePeriodSeconds": 5,
+    "annotations": {
+        "describe":"first-quota for first-namespace"
+    }
+  },
+  "spec": {
+    "hard": {
+        "cpu": "10",
+        "memory": "128Mi",
+        "pods": "5",
+        "services": "3",
+        "replicationcontrollers": "3",
+        "resourcequotas": "1",
+        "secrets": "3",
+        "persistentvolumeclaims": "3"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 #config.kube-controller-manager.unsecure
 declare -A CONFIGS
 # The IP address to serve on (set to 0.0.0.0 for all interfaces)
-CONFIGS[address]='--address=192.168.40.99'
+CONFIGS[address]='--address=0.0.0.0'
 # Should CIDRs for Pods be allocated and set on the cloud provider.
 CONFIGS[allocate-node-cidrs]='--allocate-node-cidrs=false'
 # CIDR Range for Pods in cluster.

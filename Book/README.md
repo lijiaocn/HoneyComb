@@ -5,7 +5,7 @@ title: README
 ---
 
 # README
-创建时间: 2016/02/03 17:25:51  修改时间: 2016/02/22 17:44:52 作者:lijiao
+创建时间: 2016/02/03 17:25:51  修改时间: 2016/02/24 17:26:52 作者:lijiao
 
 ----
 
@@ -50,6 +50,14 @@ Kubernetes实战记录。
 ## 排错
 
 [日志](./Log.md)：日志。
+
+## 操作
+
+[操作前准备](./Operation/Prepare.md)：操作前准备。
+
+[Namespace](./Operation/Namespace.md)：Namespace操作。
+
+[Pod](./Operation/Pod.md)
 
 ## 问题
 

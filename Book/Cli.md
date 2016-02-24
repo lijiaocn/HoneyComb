@@ -5,7 +5,7 @@ title: Cli
 ---
 
 # Cli
-创建时间: 2016/02/14 14:32:20  修改时间: 2016/02/22 17:53:38 作者:lijiao
+创建时间: 2016/02/14 14:32:20  修改时间: 2016/02/24 09:58:37 作者:lijiao
 
 ----
 
@@ -13,11 +13,12 @@ title: Cli
 
 Deploy/apiserver.local.secure中的cmd-etcdctl和cmd-kubectl是两个命令行工具。
 
-## etcd
+## cmd-etcdctl
 
-	./etcd ls
+	$cd Deploy/apiserver.local.secure/cmd-etcdctl
+	$./etcd.sh ls
 
-## kubectl
+## cmd-kubectl
 
 cmd-kubectl中存在两个子目录路: secure和unsecure。在不同的子目录下，会使用不同的身份向kubernetes发起请求。
 
