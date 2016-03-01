@@ -5,7 +5,7 @@ title: Namespace
 ---
 
 # Namespace
-创建时间: 2016/02/01 11:09:14  修改时间: 2016/02/24 16:08:19 作者:lijiao
+创建时间: 2016/02/01 11:09:14  修改时间: 2016/02/25 11:48:34 作者:lijiao
 
 ----
 
@@ -47,7 +47,11 @@ Namespace操作。
 	status:
 	  phase: Active
 
-## 为Namespace设置配额(Quota)
+## 为Namespace设置资源配额(Quota)
+
+[可以设置配额的资源](https://github.com/kubernetes/kubernetes/blob/release-1.1/docs/design/resources.md#resource-specifications)
+
+>CPU的单位是“KCU”，Kubernetes将计算能力统一转化用“KCU”计量的数值。1个KCPU的计算能力约等于x86处理器的一个超线程。
 
 配额是一个Namespace能够使用的最大的资源数量。
 

@@ -29,4 +29,4 @@ CONFIGS[hostname-override]='--hostname-override=kubelet.local'
 # Log
 CONFIGS[v]='--v=3'
 # The image whose network/ipc namespaces containers in each pod will use.
-CONFIGS[pod-infra-container-image]='--pod-infra-container-image="registry.local:5000/kubernetes/pause:latest'
+CONFIGS[pod-infra-container-image]='--pod-infra-container-image=registry.local:5000/kubernetes/pause:latest'

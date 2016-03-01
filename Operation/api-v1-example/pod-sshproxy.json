@@ -3,266 +3,48 @@
   "apiVersion": "v1",
   "metadata": {
     "name": "sshproxy",
-    "generateName": "",
     "namespace": "first-namespace",
     "deletionGracePeriodSeconds": 5,
     "labels": {
-		"type": "Independent"
-	},
+        "type": "Independent",
+        "name":"sshproxy",
+        "owner":"first-namespace"
+    },
     "annotations": {
-		"describe": "just sshd servcie"
-	}
+        "describe": "just sshd servcie"
+    }
   },
   "spec": {
-    "volumes": [
-      {
-        "name": "",
-        "hostPath": {
-          "path": ""
-        },
-        "emptyDir": {
-          "medium": ""
-        },
-        "gcePersistentDisk": {
-          "pdName": "",
-          "fsType": "",
-          "partition": {},
-          "readOnly": false
-        },
-        "awsElasticBlockStore": {
-          "volumeID": "",
-          "fsType": "",
-          "partition": {},
-          "readOnly": false
-        },
-        "gitRepo": {
-          "repository": "",
-          "revision": "",
-          "directory": ""
-        },
-        "secret": {
-          "secretName": ""
-        },
-        "nfs": {
-          "server": "",
-          "path": "",
-          "readOnly": false
-        },
-        "iscsi": {
-          "targetPortal": "",
-          "iqn": "",
-          "lun": {},
-          "iscsiInterface": "",
-          "fsType": "",
-          "readOnly": false
-        },
-        "glusterfs": {
-          "endpoints": "",
-          "path": "",
-          "readOnly": false
-        },
-        "persistentVolumeClaim": {
-          "claimName": "",
-          "readOnly": false
-        },
-        "rbd": {
-          "monitors": [
-            ""
-          ],
-          "image": "",
-          "fsType": "",
-          "pool": "",
-          "user": "",
-          "keyring": "",
-          "secretRef": {
-            "name": ""
-          },
-          "readOnly": false
-        },
-        "flexVolume": {
-          "driver": "",
-          "fsType": "",
-          "secretRef": {
-            "name": ""
-          },
-          "readOnly": false,
-          "options": "any"
-        },
-        "cinder": {
-          "volumeID": "",
-          "fsType": "",
-          "readOnly": false
-        },
-        "cephfs": {
-          "monitors": [
-            ""
-          ],
-          "user": "",
-          "secretFile": "",
-          "secretRef": {
-            "name": ""
-          },
-          "readOnly": false
-        },
-        "flocker": {
-          "datasetName": ""
-        },
-        "downwardAPI": {
-          "items": [
-            {
-              "path": "",
-              "fieldRef": {
-                "apiVersion": "",
-                "fieldPath": ""
-              }
-            }
-          ]
-        },
-        "fc": {
-          "targetWWNs": [
-            ""
-          ],
-          "lun": {},
-          "fsType": "",
-          "readOnly": false
-        }
-      }
-    ],
     "containers": [
       {
         "name": "sshproxy",
         "image": "registry.local:5000/sshproxy:1.0",
-        "command": [
-          ""
-        ],
-        "args": [
-          ""
-        ],
-        "workingDir": "",
-        "ports": [
-          {
-            "name": "",
-            "hostPort": {},
-            "containerPort": {},
-            "protocol": "",
-            "hostIP": ""
-          }
-        ],
         "env": [
           {
             "name": "ROOTPASS",
-            "value": "123456",
+            "value": "123456"
           }
         ],
         "resources": {
           "limits": {
-			  "":
-		  },
+              "cpu": 3.0,
+              "memory": "128Mi"
+          },
           "requests": {
-			  "":
-        },
-        "volumeMounts": [
-          {
-            "name": "",
-            "readOnly": false,
-            "mountPath": ""
+              "cpu": 1.0,
+              "memory": "32Mi"
           }
-        ],
+        },
         "livenessProbe": {
-          "exec": {
-            "command": [
-              ""
-            ]
-          },
-          "httpGet": {
-            "path": "",
-            "port": "",
-            "host": "",
-            "scheme": ""
-          },
           "tcpSocket": {
-            "port": ""
+            "port": 22
           },
-          "initialDelaySeconds": {},
-          "timeoutSeconds": {},
-          "periodSeconds": {},
-          "successThreshold": {},
-          "failureThreshold": {}
+          "initialDelaySeconds": 5,
+          "timeoutSeconds": 5
         },
-        "readinessProbe": {
-          "exec": {
-            "command": [
-              ""
-            ]
-          },
-          "httpGet": {
-            "path": "",
-            "port": "",
-            "host": "",
-            "scheme": ""
-          },
-          "tcpSocket": {
-            "port": ""
-          },
-          "initialDelaySeconds": {},
-          "timeoutSeconds": {},
-          "periodSeconds": {},
-          "successThreshold": {},
-          "failureThreshold": {}
-        },
-        "lifecycle": {
-          "postStart": {
-            "exec": {
-              "command": [
-                ""
-              ]
-            },
-            "httpGet": {
-              "path": "",
-              "port": "",
-              "host": "",
-              "scheme": ""
-            },
-            "tcpSocket": {
-              "port": ""
-            }
-          },
-          "preStop": {
-            "exec": {
-              "command": [
-                ""
-              ]
-            },
-            "httpGet": {
-              "path": "",
-              "port": "",
-              "host": "",
-              "scheme": ""
-            },
-            "tcpSocket": {
-              "port": ""
-            }
-          }
-        },
-        "terminationMessagePath": "",
-        "imagePullPolicy": "",
+        "imagePullPolicy": "Always",
         "securityContext": {
-          "capabilities": {
-            "add": [
-              {}
-            ],
-            "drop": [
-              {}
-            ]
-          },
           "privileged": false,
-          "seLinuxOptions": {
-            "user": "",
-            "role": "",
-            "type": "",
-            "level": ""
-          },
-          "runAsUser": {},
           "runAsNonRoot": false
         },
         "stdin": false,
@@ -270,99 +52,11 @@
         "tty": false
       }
     ],
-    "restartPolicy": "",
-    "terminationGracePeriodSeconds": {},
-    "activeDeadlineSeconds": {},
-    "dnsPolicy": "",
-    "nodeSelector": "any",
-    "serviceAccountName": "",
-    "serviceAccount": "",
-    "nodeName": "",
+    "restartPolicy": "Never",
+    "dnsPolicy": "Default",
+    "serviceAccountName": "default",
     "hostNetwork": false,
     "hostPID": false,
-    "hostIPC": false,
-    "securityContext": {
-      "seLinuxOptions": {
-        "user": "",
-        "role": "",
-        "type": "",
-        "level": ""
-      },
-      "runAsUser": {},
-      "runAsNonRoot": false,
-      "supplementalGroups": [
-        {}
-      ],
-      "fsGroup": {}
-    },
-    "imagePullSecrets": [
-      {
-        "name": ""
-      }
-    ]
-  },
-  "status": {
-    "phase": "",
-    "conditions": [
-      {
-        "type": "",
-        "status": "",
-        "lastProbeTime": "",
-        "lastTransitionTime": "",
-        "reason": "",
-        "message": ""
-      }
-    ],
-    "message": "",
-    "reason": "",
-    "hostIP": "",
-    "podIP": "",
-    "startTime": "",
-    "containerStatuses": [
-      {
-        "name": "",
-        "state": {
-          "waiting": {
-            "reason": "",
-            "message": ""
-          },
-          "running": {
-            "startedAt": ""
-          },
-          "terminated": {
-            "exitCode": {},
-            "signal": {},
-            "reason": "",
-            "message": "",
-            "startedAt": "",
-            "finishedAt": "",
-            "containerID": ""
-          }
-        },
-        "lastState": {
-          "waiting": {
-            "reason": "",
-            "message": ""
-          },
-          "running": {
-            "startedAt": ""
-          },
-          "terminated": {
-            "exitCode": {},
-            "signal": {},
-            "reason": "",
-            "message": "",
-            "startedAt": "",
-            "finishedAt": "",
-            "containerID": ""
-          }
-        },
-        "ready": false,
-        "restartCount": {},
-        "image": "",
-        "imageID": "",
-        "containerID": ""
-      }
-    ]
+    "hostIPC": false
   }
 }
