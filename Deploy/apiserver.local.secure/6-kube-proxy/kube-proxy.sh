@@ -1,5 +1,5 @@
 #!/bin/bash
-wget -O library.sh https://raw.githubusercontent.com/lijiaocn/LinuxShell/master/library.sh
+#wget -O library.sh https://raw.githubusercontent.com/lijiaocn/LinuxShell/master/library.sh
 . ./config
 . ./library.sh
 if [ ! -d ./log ];then mkdir ./log; fi

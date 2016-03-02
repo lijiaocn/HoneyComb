@@ -5,7 +5,7 @@ cd ..
 
 cd 2-flannel
 #./net_init_config.sh 
-sudo ./flannel.sh restart
+sudo ./flanneld.sh restart
 cd ..
 
 cd 3-kube-apiserver
@@ -30,4 +30,8 @@ cd ..
 
 cd 8-registry
 ./registry.sh restart
+cd ..
+
+cd 9-docker
+sudo ./docker.sh restart
 cd ..

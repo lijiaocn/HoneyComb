@@ -1,0 +1,10 @@
+#config.kubelet.unsecure
+declare -A CONFIGS
+
+#### For docker 1.10.2
+CONFIGS[debug]="--debug=false"
+CONFIGS[storage-driver]="--storage-driver=aufs"
+#CONFIGS[graph]="--graph=./log/DockerData"
+CONFIGS[bip]="--bip=$FLANNEL_SUBNET"
+CONFIGS[mtu]="--mtu=$FLANNEL_MTU"
+CONFIGS[debug]="--debug=true"

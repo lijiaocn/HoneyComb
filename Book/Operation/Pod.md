@@ -5,7 +5,7 @@ title: Pod
 ---
 
 # Pod
-创建时间: 2016/02/24 16:25:09  修改时间: 2016/03/01 19:26:58 作者:lijiao
+创建时间: 2016/02/24 16:25:09  修改时间: 2016/03/02 18:23:53 作者:lijiao
 
 ----
 
@@ -105,7 +105,139 @@ Pod文件说明:
 	  }
 	}
 
+## 查看Pod详情
+
+	$../kubectl.sh get pods/sshproxy -o=json  --namespace=first-namespace
+	{
+	    "kind": "Pod",
+	    "apiVersion": "v1",
+	    "metadata": {
+	        "name": "sshproxy",
+	        "namespace": "first-namespace",
+	        "selfLink": "/api/v1/namespaces/first-namespace/pods/sshproxy",
+	        "uid": "300c8bb6-e05c-11e5-aa39-080027d4b3b6",
+	        "resourceVersion": "25019",
+	        "creationTimestamp": "2016-03-02T09:50:25Z",
+	        "labels": {
+	            "name": "sshproxy",
+	            "owner": "first-namespace",
+	            "type": "Independent"
+	        },
+	        "annotations": {
+	            "describe": "just sshd servcie"
+	        }
+	    },
+	    "spec": {
+	        "volumes": [
+	            {
+	                "name": "default-token-qn3t7",
+	                "secret": {
+	                    "secretName": "default-token-qn3t7"
+	                }
+	            }
+	        ],
+	        "containers": [
+	            {
+	                "name": "sshproxy",
+	                "image": "registry.local:5000/sshproxy:1.0",
+	                "env": [
+	                    {
+	                        "name": "ROOTPASS",
+	                        "value": "123456"
+	                    }
+	                ],
+	                "resources": {
+	                    "limits": {
+	                        "cpu": "3",
+	                        "memory": "128Mi"
+	                    },
+	                    "requests": {
+	                        "cpu": "1",
+	                        "memory": "32Mi"
+	                    }
+	                },
+	                "volumeMounts": [
+	                    {
+	                        "name": "default-token-qn3t7",
+	                        "readOnly": true,
+	                        "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount"
+	                    }
+	                ],
+	                "livenessProbe": {
+	                    "tcpSocket": {
+	                        "port": 22
+	                    },
+	                    "initialDelaySeconds": 5,
+	                    "timeoutSeconds": 5
+	                },
+	                "terminationMessagePath": "/dev/termination-log",
+	                "imagePullPolicy": "Always",
+	                "securityContext": {
+	                    "privileged": false
+	                }
+	            }
+	        ],
+	        "restartPolicy": "Never",
+	        "terminationGracePeriodSeconds": 30,
+	        "dnsPolicy": "Default",
+	        "serviceAccountName": "default",
+	        "serviceAccount": "default",
+	        "nodeName": "kubelet.local"
+	    },
+	    "status": {
+	        "phase": "Running",
+	        "conditions": [
+	            {
+	                "type": "Ready",
+	                "status": "True",
+	                "lastProbeTime": null,
+	                "lastTransitionTime": null
+	            }
+	        ],
+	        "hostIP": "192.168.40.99",
+	        "podIP": "172.16.222.1",
+	        "startTime": "2016-03-02T09:50:25Z",
+	        "containerStatuses": [
+	            {
+	                "name": "sshproxy",
+	                "state": {
+	                    "running": {
+	                        "startedAt": "2016-03-02T09:50:36Z"
+	                    }
+	                },
+	                "lastState": {},
+	                "ready": true,
+	                "restartCount": 0,
+	                "image": "registry.local:5000/sshproxy:1.0",
+	                "imageID": "docker://sha256:b90ac41616bf161bfc37afdd73a3f29ea441356bb921191d437839edf3a7be99",
+	                "containerID": "docker://bc7cdf7be0edf75878b0093817d24854e56db9303774246e1bb23337b35eb256"
+	            }
+	        ]
+	    }
+	}
+
+从上面的输出可以看到pod的IP是172.16.222.1，位于节点192.168.40.99上。尝试登陆:
+
+	$ssh root@172.16.222.1
+	root@172.16.222.1's password:
+	Last login: Wed Mar  2 10:07:00 from 172.16.222.101
+	[root@sshproxy ~]# pwd
+	/root
+	[root@sshproxy ~]# ls
+	anaconda-ks.cfg  entrypoint.sh  sshd_config  sshd_log
+
+## 通过kubectl在POD中执行命令
 
 
+
+
+## 停止Pod
+
+kubernetes里没有暂停一个Pod的概念，停止一个Pod，就是从kubernetes中删除这个pod。
+
+	$../kubectl.sh stop  pods sshproxy --namespace=first-namespace
+	 pod "sshproxy" deleted
+
+>因此需要考虑将用户的Pod文件保存在kubernetes外部，避免用户重复的配置pod。其它的资源也是类似的。
 
 ## 文献
