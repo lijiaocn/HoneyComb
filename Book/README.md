@@ -5,7 +5,7 @@ title: README
 ---
 
 # README
-创建时间: 2016/02/03 17:25:51  修改时间: 2016/02/25 17:03:06 作者:lijiao
+创建时间: 2016/02/03 17:25:51  修改时间: 2016/03/03 16:21:07 作者:lijiao
 
 ----
 
@@ -60,6 +60,10 @@ Kubernetes实战记录。
 [Namespace](./Operation/Namespace.md)：Namespace操作。
 
 [Pod](./Operation/Pod.md)
+
+## 进阶
+
+[对接keystone](./Advanced/keystone.md)
 
 ## 问题
 

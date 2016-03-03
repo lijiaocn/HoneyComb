@@ -5,7 +5,7 @@ title: Pod
 ---
 
 # Pod
-创建时间: 2016/02/24 16:25:09  修改时间: 2016/03/02 18:23:53 作者:lijiao
+创建时间: 2016/02/24 16:25:09  修改时间: 2016/03/03 16:20:52 作者:lijiao
 
 ----
 
@@ -226,10 +226,17 @@ Pod文件说明:
 	[root@sshproxy ~]# ls
 	anaconda-ks.cfg  entrypoint.sh  sshd_config  sshd_log
 
-## 通过kubectl在POD中执行命令
+## 在POD的指定容器中执行命令
 
+	$../kubectl.sh exec sshproxy -c sshproxy --namespace=first-namespace date 
 
+## 编辑POD
 
+	$../kubectl.sh edit pod/sshproxy --namespace=first-namespace
+
+## Attach
+
+	$../kubectl.sh attach sshproxy -c sshproxy --namespace=first-namespace
 
 ## 停止Pod
 
