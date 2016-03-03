@@ -1,0 +1,5 @@
+#config.flanneld.local
+declare -A CONFIGS
+CONFIGS[etcd-endpoints]='-etcd-endpoints=http://etcd.local:2379'
+CONFIGS[etcd-prefix]='-etcd-prefix=kubernetes/unsecure/flannel'
+CONFIGS[iface]='-iface=eth1'

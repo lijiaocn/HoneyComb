@@ -1,0 +1,122 @@
+{
+  "kind": "",
+  "apiVersion": "",
+  "metadata": {
+    "name": "",
+    "generateName": "",
+    "namespace": "",
+    "selfLink": "",
+    "uid": "",
+    "resourceVersion": "",
+    "generation": {},
+    "creationTimestamp": "",
+    "deletionTimestamp": "",
+    "deletionGracePeriodSeconds": {},
+    "labels": "any",
+    "annotations": "any"
+  },
+  "spec": {
+    "capacity": "any",
+    "gcePersistentDisk": {
+      "pdName": "",
+      "fsType": "",
+      "partition": {},
+      "readOnly": false
+    },
+    "awsElasticBlockStore": {
+      "volumeID": "",
+      "fsType": "",
+      "partition": {},
+      "readOnly": false
+    },
+    "hostPath": {
+      "path": ""
+    },
+    "glusterfs": {
+      "endpoints": "",
+      "path": "",
+      "readOnly": false
+    },
+    "nfs": {
+      "server": "",
+      "path": "",
+      "readOnly": false
+    },
+    "rbd": {
+      "monitors": [
+        ""
+      ],
+      "image": "",
+      "fsType": "",
+      "pool": "",
+      "user": "",
+      "keyring": "",
+      "secretRef": {
+        "name": ""
+      },
+      "readOnly": false
+    },
+    "iscsi": {
+      "targetPortal": "",
+      "iqn": "",
+      "lun": {},
+      "iscsiInterface": "",
+      "fsType": "",
+      "readOnly": false
+    },
+    "cinder": {
+      "volumeID": "",
+      "fsType": "",
+      "readOnly": false
+    },
+    "cephfs": {
+      "monitors": [
+        ""
+      ],
+      "user": "",
+      "secretFile": "",
+      "secretRef": {
+        "name": ""
+      },
+      "readOnly": false
+    },
+    "fc": {
+      "targetWWNs": [
+        ""
+      ],
+      "lun": {},
+      "fsType": "",
+      "readOnly": false
+    },
+    "flocker": {
+      "datasetName": ""
+    },
+    "flexVolume": {
+      "driver": "",
+      "fsType": "",
+      "secretRef": {
+        "name": ""
+      },
+      "readOnly": false,
+      "options": "any"
+    },
+    "accessModes": [
+      {}
+    ],
+    "claimRef": {
+      "kind": "",
+      "namespace": "",
+      "name": "",
+      "uid": "",
+      "apiVersion": "",
+      "resourceVersion": "",
+      "fieldPath": ""
+    },
+    "persistentVolumeReclaimPolicy": ""
+  },
+  "status": {
+    "phase": "",
+    "message": "",
+    "reason": ""
+  }
+}

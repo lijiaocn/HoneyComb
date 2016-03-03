@@ -1,0 +1,2 @@
+declare -A CONFIGS
+CONFIGS[config]='config-example.yml'

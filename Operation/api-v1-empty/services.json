@@ -1,0 +1,50 @@
+{
+  "kind": "",
+  "apiVersion": "",
+  "metadata": {
+    "name": "",
+    "generateName": "",
+    "namespace": "",
+    "selfLink": "",
+    "uid": "",
+    "resourceVersion": "",
+    "generation": {},
+    "creationTimestamp": "",
+    "deletionTimestamp": "",
+    "deletionGracePeriodSeconds": {},
+    "labels": "any",
+    "annotations": "any"
+  },
+  "spec": {
+    "ports": [
+      {
+        "name": "",
+        "protocol": "",
+        "port": {},
+        "targetPort": "",
+        "nodePort": {}
+      }
+    ],
+    "selector": "any",
+    "clusterIP": "",
+    "type": "",
+    "externalIPs": [
+      ""
+    ],
+    "deprecatedPublicIPs": [
+      ""
+    ],
+    "sessionAffinity": "",
+    "loadBalancerIP": ""
+  },
+  "status": {
+    "loadBalancer": {
+      "ingress": [
+        {
+          "ip": "",
+          "hostname": ""
+        }
+      ]
+    }
+  }
+}

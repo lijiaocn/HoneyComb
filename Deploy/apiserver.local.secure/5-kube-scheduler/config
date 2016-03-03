@@ -1,0 +1,13 @@
+#config.kube-scheduler.unsecure
+declare -A CONFIGS
+# The IP address to serve on (set to 0.0.0.0 for all interfaces)
+CONFIGS[address]='--address=0.0.0.0'
+# The port that the scheduler's http service runs on
+CONFIGS[port]='--port=10251'
+# If non-empty, write log files in this directory
+CONFIGS[log-dir]='--log-dir=./log'
+# log level for V logs
+CONFIGS[v]='--v=3'
+
+# Path to kubeconfig file with authorization and master location information.
+CONFIGS[kubeconfig]='--kubeconfig=./kubeconfig.yml'

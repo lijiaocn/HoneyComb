@@ -1,0 +1,25 @@
+{
+  "kind": "",
+  "apiVersion": "",
+  "metadata": {
+    "name": "",
+    "generateName": "",
+    "namespace": "",
+    "selfLink": "",
+    "uid": "",
+    "resourceVersion": "",
+    "generation": {},
+    "creationTimestamp": "",
+    "deletionTimestamp": "",
+    "deletionGracePeriodSeconds": {},
+    "labels": "any",
+    "annotations": "any"
+  },
+  "spec": {
+    "hard": "any"
+  },
+  "status": {
+    "hard": "any",
+    "used": "any"
+  }
+}

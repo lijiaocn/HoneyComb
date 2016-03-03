@@ -1,0 +1,62 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "sshproxy",
+    "namespace": "first-namespace",
+    "deletionGracePeriodSeconds": 5,
+    "labels": {
+        "type": "Independent",
+        "name":"sshproxy",
+        "owner":"first-namespace"
+    },
+    "annotations": {
+        "describe": "just sshd servcie"
+    }
+  },
+  "spec": {
+    "containers": [
+      {
+        "name": "sshproxy",
+        "image": "registry.local:5000/sshproxy:1.0",
+        "env": [
+          {
+            "name": "ROOTPASS",
+            "value": "123456"
+          }
+        ],
+        "resources": {
+          "limits": {
+              "cpu": 3.0,
+              "memory": "128Mi"
+          },
+          "requests": {
+              "cpu": 1.0,
+              "memory": "32Mi"
+          }
+        },
+        "livenessProbe": {
+          "tcpSocket": {
+            "port": 22
+          },
+          "initialDelaySeconds": 5,
+          "timeoutSeconds": 5
+        },
+        "imagePullPolicy": "Always",
+        "securityContext": {
+          "privileged": false,
+          "runAsNonRoot": false
+        },
+        "stdin": false,
+        "stdinOnce": false,
+        "tty": false
+      }
+    ],
+    "restartPolicy": "Never",
+    "dnsPolicy": "Default",
+    "serviceAccountName": "default",
+    "hostNetwork": false,
+    "hostPID": false,
+    "hostIPC": false
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "kind": "",
+  "apiVersion": "",
+  "metadata": {
+    "name": "",
+    "generateName": "",
+    "namespace": "",
+    "selfLink": "",
+    "uid": "",
+    "resourceVersion": "",
+    "generation": {},
+    "creationTimestamp": "",
+    "deletionTimestamp": "",
+    "deletionGracePeriodSeconds": {},
+    "labels": "any",
+    "annotations": "any"
+  },
+  "target": {
+    "kind": "",
+    "namespace": "",
+    "name": "",
+    "uid": "",
+    "apiVersion": "",
+    "resourceVersion": "",
+    "fieldPath": ""
+  }
+}

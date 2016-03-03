@@ -1,0 +1,23 @@
+{"user":"admin-super"}
+{"user":"admin-cluster", "resource": "nodes"}
+{"user":"admin-project", "resource": "services"}
+{"user":"kube-scheduler", "resource": "events"}
+{"user":"kube-scheduler", "resource": "endpoints"}
+{"user":"kube-scheduler", "resource": "pods"}
+{"user":"kube-scheduler", "resource": "bindings"}
+{"user":"kube-scheduler", "resource": "services"}
+{"user":"kube-scheduler", "resource": "nodes"}
+{"user":"kube-kubelet", "readonly": true, "resource": "secrets"}
+{"user":"kube-kubelet", "resource": "nodes"}
+{"user":"kube-kubelet", "resource": "pods"}
+{"user":"kube-kubelet", "readonly": true, "resource": "services"}
+{"user":"kube-kubelet", "readonly": true, "resource": "endpoints"}
+{"user":"kube-kubelet", "resource": "events"}
+{"user":"kube-proxy", "readonly":true, "resource":"services"}
+{"user":"kube-proxy", "readonly":true, "resource":"endpoints"}
+{"user":"kube-controller-manager"}
+{"user":"user-alice", "namespace": "user_alice"}
+{"user":"user-bob",   "namespace": "user_bob"}
+{"user":"user-guest", "readonly": true, "namespace":"user_guest"}
+{"user":"system:serviceaccount:kube-system:default"}
+{"user":"kube2sky", "readonly":true}

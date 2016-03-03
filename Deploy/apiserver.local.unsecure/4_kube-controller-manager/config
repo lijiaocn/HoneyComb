@@ -1,0 +1,18 @@
+#config.kube-controller-manager.unsecure
+declare -A CONFIGS
+# The IP address to serve on (set to 0.0.0.0 for all interfaces)
+CONFIGS[address]='--address=192.168.40.99'
+# The address of the Kubernetes API server (overrides any value in kubeconfig)
+CONFIGS[master]='--master=http://apiserver.local:8080'
+# Should CIDRs for Pods be allocated and set on the cloud provider.
+CONFIGS[allocate-node-cidrs]='--allocate-node-cidrs=false'
+# CIDR Range for Pods in cluster.
+CONFIGS[cluster-cidr]='--cluster-cidr=172.16.1.0/17'
+# The instance prefix for the cluster
+CONFIGS[cluster-name]='--cluster-name=kubernetes'
+# If non-empty, write log files in this directory
+CONFIGS[log-dir]='--log-dir=./log'
+# The port that the controller-manager's http service runs on
+CONFIGS[port]='--port=10252'
+# log level for V logs
+CONFIGS[v]='--v=0'

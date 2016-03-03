@@ -1,0 +1,65 @@
+#config.apiserver.unsecure
+declare -A CONFIGS
+# log to standard error instead of files
+CONFIGS[logtostderr]='--logtostderr=true'
+# log level for V logs
+CONFIGS[v]='--v=10'
+# The prefix for all resource paths in etcd.
+CONFIGS[etcd-prefix]='--etcd-prefix=/kubernetes/secure/apiserver'
+# List of etcd servers to watch (http://ip:port), comma separated. Mutually exclusive with -etcd-config
+CONFIGS[etcd-servers]='--etcd-servers=http://etcd.local:2379'
+# The IP address on which to serve the --insecure-port (set to 0.0.0.0 for all interfaces). Defaults to etcd.local.
+CONFIGS[insecure-bind-address]='--insecure-bind-address=192.168.40.99'
+# The port on which to serve unsecured, unauthenticated access. Default 8080. It is assumed that firewall rules are set up such that this port is not reachable from outside of the cluster and that port 443 on the cluster's public address is proxied to this port. This is performed by nginx in the default setup.
+CONFIGS[insecure-port]='--insecure-port=8080'
+# Use https for kubelet connections
+CONFIGS[kubelet-https]='--kubelet-https=false'
+# A CIDR notation IP range from which to assign service cluster IPs. This must not overlap with any IP ranges assigned to nodes for pods.
+CONFIGS[service-cluster-ip-range]='--service-cluster-ip-range=172.16.0.0/17'
+
+# File containing x509 Certificate for HTTPS.  (CA cert, if any, concatenated after server cert). 
+# If HTTPS serving is enabled, and --tls-cert-file and --tls-private-key-file are not provided, a self-signed certificate and key are generated for the public address and saved to /var/run/kubernetes.
+CONFIGS[tls-cert-file]='--tls-cert-file=./certs/apiserver.local.cert'
+# File containing x509 private key matching --tls-cert-file
+CONFIGS[tls-private-key-file]='--tls-private-key-file=./certs/apiserver.local.key'
+
+# Path to a cert. file for the certificate authority.
+CONFIGS[kubelet-certificate-authority]='--kubelet-certificate-authority=./certs/kubelet.ca'
+# Path to a client cert file for TLS.
+CONFIGS[kubelet-client-certificate]='--kubelet-client-certificate=./certs/apiserver.kubelet.cert' 
+# Path to a client key file for TLS.
+CONFIGS[kubelet-client-key]='--kubelet-client-key=./certs/apiserver.kubelet.key' 
+# Use https for kubelet connections
+CONFIGS[kubelet-https]='--kubelet-https=true'
+
+# If set, any request presenting a client certificate signed by one of the authorities in the client-ca-file is authenticated with an identity corresponding to the CommonName of the client certificate.
+CONFIGS[client-ca-file]='--client-ca-file=./certs/apiserver.auth.ca' 
+
+# The port on which to serve HTTPS with authentication and authorization. If 0, don't serve HTTPS at all.
+CONFIGS[secure-port]='--secure-port=443' 
+#The IP address on which to listen for the --secure-port port. The associated interface(s) must be reachable by the rest of the cluster, and by CLI/web clients. If blank, all interfaces will be used (0.0.0.0).
+CONFIGS[bind-address]='--bind-address=192.168.40.99'
+
+# File containing PEM-encoded x509 RSA private or public key, used to verify ServiceAccount tokens. If unspecified, --tls-private-key-file is used.
+CONFIG[service-account-key-file]='--service-account-key-file=./certs/service.account.cert'
+
+# Ordered list of plug-ins to do authorization on secure port. Comma-delimited list of: AlwaysAllow,AlwaysDeny,ABAC
+CONFIGS[authorization-mode]='--authorization-mode=ABAC'
+
+# File with authorization policy in csv format, used with --authorization-mode=ABAC, on the secure port
+CONFIGS[authorization-policy-file]='--authorization-policy-file=./policy.json'
+
+# The number of apiservers running in the cluster
+#CONFIGS[apiserver-count]='--apiserver-count=1'
+
+#Ordered list of plug-ins to do admission control of resources into cluster. Comma-delimited list of:
+#	AlwaysAdmit, AlwaysDeny, AlwaysPullImages, DenyEscalatingExec, DenyExecOnPrivileged, InitialResources, LimitRanger,
+#	NamespaceAutoProvision, NamespaceExists, NamespaceLifecycle, PersistentVolumeLabel, ResourceQuota, SecurityContextDeny, 
+#	ServiceAccount
+CONFIGS[admission-control]='--admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota'
+
+# A set of key=value pairs that describe runtime configuration that may be passed to apiserver.
+# apis/<groupVersion> key can be used to turn on/off specific api versions. 
+# apis/<groupVersion>/<resource> can be used to turn on/off specific resources. 
+# api/all and api/legacy are special keys to control all and legacy api versions respectively.
+CONFIGS[runtime-config]='--runtime-config=/api=true,api/all=true,apis=true,apis/v1=true':

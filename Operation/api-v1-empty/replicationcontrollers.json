@@ -1,0 +1,341 @@
+{
+  "kind": "",
+  "apiVersion": "",
+  "metadata": {
+    "name": "",
+    "generateName": "",
+    "namespace": "",
+    "selfLink": "",
+    "uid": "",
+    "resourceVersion": "",
+    "generation": {},
+    "creationTimestamp": "",
+    "deletionTimestamp": "",
+    "deletionGracePeriodSeconds": {},
+    "labels": "any",
+    "annotations": "any"
+  },
+  "spec": {
+    "replicas": {},
+    "selector": "any",
+    "template": {
+      "metadata": {
+        "name": "",
+        "generateName": "",
+        "namespace": "",
+        "selfLink": "",
+        "uid": "",
+        "resourceVersion": "",
+        "generation": {},
+        "creationTimestamp": "",
+        "deletionTimestamp": "",
+        "deletionGracePeriodSeconds": {},
+        "labels": "any",
+        "annotations": "any"
+      },
+      "spec": {
+        "volumes": [
+          {
+            "name": "",
+            "hostPath": {
+              "path": ""
+            },
+            "emptyDir": {
+              "medium": ""
+            },
+            "gcePersistentDisk": {
+              "pdName": "",
+              "fsType": "",
+              "partition": {},
+              "readOnly": false
+            },
+            "awsElasticBlockStore": {
+              "volumeID": "",
+              "fsType": "",
+              "partition": {},
+              "readOnly": false
+            },
+            "gitRepo": {
+              "repository": "",
+              "revision": "",
+              "directory": ""
+            },
+            "secret": {
+              "secretName": ""
+            },
+            "nfs": {
+              "server": "",
+              "path": "",
+              "readOnly": false
+            },
+            "iscsi": {
+              "targetPortal": "",
+              "iqn": "",
+              "lun": {},
+              "iscsiInterface": "",
+              "fsType": "",
+              "readOnly": false
+            },
+            "glusterfs": {
+              "endpoints": "",
+              "path": "",
+              "readOnly": false
+            },
+            "persistentVolumeClaim": {
+              "claimName": "",
+              "readOnly": false
+            },
+            "rbd": {
+              "monitors": [
+                ""
+              ],
+              "image": "",
+              "fsType": "",
+              "pool": "",
+              "user": "",
+              "keyring": "",
+              "secretRef": {
+                "name": ""
+              },
+              "readOnly": false
+            },
+            "flexVolume": {
+              "driver": "",
+              "fsType": "",
+              "secretRef": {
+                "name": ""
+              },
+              "readOnly": false,
+              "options": "any"
+            },
+            "cinder": {
+              "volumeID": "",
+              "fsType": "",
+              "readOnly": false
+            },
+            "cephfs": {
+              "monitors": [
+                ""
+              ],
+              "user": "",
+              "secretFile": "",
+              "secretRef": {
+                "name": ""
+              },
+              "readOnly": false
+            },
+            "flocker": {
+              "datasetName": ""
+            },
+            "downwardAPI": {
+              "items": [
+                {
+                  "path": "",
+                  "fieldRef": {
+                    "apiVersion": "",
+                    "fieldPath": ""
+                  }
+                }
+              ]
+            },
+            "fc": {
+              "targetWWNs": [
+                ""
+              ],
+              "lun": {},
+              "fsType": "",
+              "readOnly": false
+            }
+          }
+        ],
+        "containers": [
+          {
+            "name": "",
+            "image": "",
+            "command": [
+              ""
+            ],
+            "args": [
+              ""
+            ],
+            "workingDir": "",
+            "ports": [
+              {
+                "name": "",
+                "hostPort": {},
+                "containerPort": {},
+                "protocol": "",
+                "hostIP": ""
+              }
+            ],
+            "env": [
+              {
+                "name": "",
+                "value": "",
+                "valueFrom": {
+                  "fieldRef": {
+                    "apiVersion": "",
+                    "fieldPath": ""
+                  },
+                  "configMapKeyRef": {
+                    "name": "",
+                    "key": ""
+                  },
+                  "secretKeyRef": {
+                    "name": "",
+                    "key": ""
+                  }
+                }
+              }
+            ],
+            "resources": {
+              "limits": "any",
+              "requests": "any"
+            },
+            "volumeMounts": [
+              {
+                "name": "",
+                "readOnly": false,
+                "mountPath": ""
+              }
+            ],
+            "livenessProbe": {
+              "exec": {
+                "command": [
+                  ""
+                ]
+              },
+              "httpGet": {
+                "path": "",
+                "port": "",
+                "host": "",
+                "scheme": ""
+              },
+              "tcpSocket": {
+                "port": ""
+              },
+              "initialDelaySeconds": {},
+              "timeoutSeconds": {},
+              "periodSeconds": {},
+              "successThreshold": {},
+              "failureThreshold": {}
+            },
+            "readinessProbe": {
+              "exec": {
+                "command": [
+                  ""
+                ]
+              },
+              "httpGet": {
+                "path": "",
+                "port": "",
+                "host": "",
+                "scheme": ""
+              },
+              "tcpSocket": {
+                "port": ""
+              },
+              "initialDelaySeconds": {},
+              "timeoutSeconds": {},
+              "periodSeconds": {},
+              "successThreshold": {},
+              "failureThreshold": {}
+            },
+            "lifecycle": {
+              "postStart": {
+                "exec": {
+                  "command": [
+                    ""
+                  ]
+                },
+                "httpGet": {
+                  "path": "",
+                  "port": "",
+                  "host": "",
+                  "scheme": ""
+                },
+                "tcpSocket": {
+                  "port": ""
+                }
+              },
+              "preStop": {
+                "exec": {
+                  "command": [
+                    ""
+                  ]
+                },
+                "httpGet": {
+                  "path": "",
+                  "port": "",
+                  "host": "",
+                  "scheme": ""
+                },
+                "tcpSocket": {
+                  "port": ""
+                }
+              }
+            },
+            "terminationMessagePath": "",
+            "imagePullPolicy": "",
+            "securityContext": {
+              "capabilities": {
+                "add": [
+                  {}
+                ],
+                "drop": [
+                  {}
+                ]
+              },
+              "privileged": false,
+              "seLinuxOptions": {
+                "user": "",
+                "role": "",
+                "type": "",
+                "level": ""
+              },
+              "runAsUser": {},
+              "runAsNonRoot": false
+            },
+            "stdin": false,
+            "stdinOnce": false,
+            "tty": false
+          }
+        ],
+        "restartPolicy": "",
+        "terminationGracePeriodSeconds": {},
+        "activeDeadlineSeconds": {},
+        "dnsPolicy": "",
+        "nodeSelector": "any",
+        "serviceAccountName": "",
+        "serviceAccount": "",
+        "nodeName": "",
+        "hostNetwork": false,
+        "hostPID": false,
+        "hostIPC": false,
+        "securityContext": {
+          "seLinuxOptions": {
+            "user": "",
+            "role": "",
+            "type": "",
+            "level": ""
+          },
+          "runAsUser": {},
+          "runAsNonRoot": false,
+          "supplementalGroups": [
+            {}
+          ],
+          "fsGroup": {}
+        },
+        "imagePullSecrets": [
+          {
+            "name": ""
+          }
+        ]
+      }
+    }
+  },
+  "status": {
+    "replicas": {},
+    "observedGeneration": {}
+  }
+}
