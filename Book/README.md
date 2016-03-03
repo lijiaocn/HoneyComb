@@ -5,7 +5,7 @@ title: README
 ---
 
 # README
-创建时间: 2016/02/03 17:25:51  修改时间: 2016/03/03 18:50:21 作者:lijiao
+创建时间: 2016/02/03 17:25:51  修改时间: 2016/03/03 18:58:06 作者:lijiao
 
 ----
 
@@ -19,7 +19,7 @@ Kubernetes实战记录。
 
 组件的安装规划与配置位于[Deploy/apiserver.local.secure](../Deploy/apiserver.local.secure)目录中。
 
->下面章节中贴出的操作过程中，不是从"/"开始的路径，都是相对于[HoneyComb](../)的路径。
+>下面章节中贴出的操作过程中，不是从"/"开始的路径，都是相对于[HoneyComb](https://github.com/lijiaocn/HoneyComb/tree/v0.0.4)的路径。
 
 ## 准备
 
@@ -27,7 +27,7 @@ Kubernetes实战记录。
 
 [计算节点](./Basic/ComputeNode.md)：在计算节点上配置好host、准备docker等。
 
-[管理节点](./Basic/ApiServerNode)：在ApiServerNode上配置好host等。
+[管理节点](./Basic/ApiServerNode.md)：在ApiServerNode上配置好host等。
 
 ## 基础
 
