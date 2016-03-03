@@ -5,13 +5,15 @@ title: Deploy
 ---
 
 # Deploy
-创建时间: 2016/02/03 17:56:59  修改时间: 2016/02/22 17:38:12 作者:lijiao
+创建时间: 2016/02/03 17:56:59  修改时间: 2016/03/03 18:34:48 作者:lijiao
 
 ----
 
 ## 摘要
 
-## 准备
+在前面的编译、证书制作等环节中，生成等文件都还位于各自出生等目录中，需要将它们按照组件进行汇集。
+
+## 汇集
 
 在Deploy/apiserver.local.secure的子目录中依次执行prepare.sh。
 
@@ -26,6 +28,6 @@ title: Deploy
 	./Deploy/apiserver.local.secure/cmd-etcdctl/prepare.sh
 	./Deploy/apiserver.local.secure/cmd-kubectl/prepare.sh
 
-prepare.sh会自动将相应的证书和程序复制到带有编号的子目录中。
+prepare.sh会自动将相应的证书和程序复制到带有编号的子目录中，并准备相应的目录。
 
 ## 文献

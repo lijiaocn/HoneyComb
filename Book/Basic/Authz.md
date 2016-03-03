@@ -5,7 +5,7 @@ title: Authz
 ---
 
 # Authz
-创建时间: 2016/02/02 11:46:15  修改时间: 2016/02/14 16:04:33 作者:lijiao
+创建时间: 2016/02/02 11:46:15  修改时间: 2016/03/03 18:29:39 作者:lijiao
 
 ----
 
@@ -39,7 +39,11 @@ title: Authz
 	{"user":"system:serviceaccount:kube-system:default"}
 	{"user":"kube2sky", "readonly":true}
 
-启动apiserver的时候，将授权模式设置为ABAC，同时指定授权策略文件（即上面的policy.json）。
+## 说明
+
+启动apiserver的时候，会将授权模式设置为ABAC，同时指定授权策略文件（即上面的policy.json）（在apiserver的配置文件设置）。
+
+对应的如下的命令行参数：
 
 	Ordered list of plug-ins to do authorization on secure port. Comma-delimited list of: AlwaysAllow,AlwaysDeny,ABAC
 	--authorization-mode=ABAC

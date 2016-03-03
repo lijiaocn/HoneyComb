@@ -5,13 +5,17 @@ title: Cli
 ---
 
 # Cli
-创建时间: 2016/02/14 14:32:20  修改时间: 2016/02/24 09:58:37 作者:lijiao
+创建时间: 2016/02/14 14:32:20  修改时间: 2016/03/03 18:46:23 作者:lijiao
 
 ----
 
 ## 摘要
 
-Deploy/apiserver.local.secure中的cmd-etcdctl和cmd-kubectl是两个命令行工具。
+Deploy/apiserver.local.secure中有两个命令行工具:
+
+	cmd-etcdctl    //etcd命令行工具
+	cmd-kubectl    //kubernetes命令行工具
+	cmd-registry   //registry查看工具
 
 ## cmd-etcdctl
 
@@ -63,5 +67,22 @@ cmd-kubectl中存在两个子目录路: secure和unsecure。在不同的子目�
 	                "labels": {
 	                    "kubernetes.io/hostname": "kubelet.local"
 	....（省略）....
+
+也可以使用admin-super用户，admin-super用户有全部权限，不受这个文件的影响:
+
+	cd ./secure/admin-suer
+	../kubectl.sh get nodes
+
+## registry-cmd
+
+用来查看repo以及tag。
+
+	$ cd cmd-registry/
+	
+	$ ./registry.sh repo
+	{"repositories":["kubernetes/pause"]}
+	
+	$ ./registry.sh tags kubernetes/pause
+	{"name":"kubernetes/pause","tags":["latest"]}
 
 ## 文献

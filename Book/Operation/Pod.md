@@ -5,7 +5,7 @@ title: Pod
 ---
 
 # Pod
-创建时间: 2016/02/24 16:25:09  修改时间: 2016/03/03 16:20:52 作者:lijiao
+创建时间: 2016/02/24 16:25:09  修改时间: 2016/03/03 18:48:53 作者:lijiao
 
 ----
 
@@ -245,6 +245,6 @@ kubernetes里没有暂停一个Pod的概念，停止一个Pod，就是从kuberne
 	$../kubectl.sh stop  pods sshproxy --namespace=first-namespace
 	 pod "sshproxy" deleted
 
->因此需要考虑将用户的Pod文件保存在kubernetes外部，避免用户重复的配置pod。其它的资源也是类似的。
+>如果想基于kubernetes做一套系统，可以考虑将用户的Pod文件保存在kubernetes外部，避免用户重复的配置pod。其它的资源也是类似的。
 
 ## 文献

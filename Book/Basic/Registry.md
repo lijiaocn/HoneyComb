@@ -5,7 +5,7 @@ title: Registry
 ---
 
 # Registry
-创建时间: 2016/02/14 17:24:37  修改时间: 2016/02/22 17:28:57 作者:lijiao
+创建时间: 2016/02/14 17:24:37  修改时间: 2016/03/03 18:04:37 作者:lijiao
 
 ----
 
@@ -14,6 +14,10 @@ title: Registry
 kubelet将从自建的Registry中获取pause镜像，示例中为registry分配的地址是registry.local:5000。
 
 >注意，这里自建的registry.local非常简陋，只用作演示。
+
+计算节点依赖的pause镜像，将存放在registry.local中，正如kubelet中配置的那样：
+
+	--pod-infra-container-image="registry.local:5000/kubernetes/pause:latest
 
 ## 编译
 
@@ -27,7 +31,7 @@ kubelet将从自建的Registry中获取pause镜像，示例中为registry分配�
 
 ## 准备
 
-	cd Deploy/apiserver.local/secure/8-registry/
+	cd Deploy/apiserver.local.secure/8-registry/
 	./prepare.sh
 
 ## 部署
@@ -37,6 +41,8 @@ kubelet将从自建的Registry中获取pause镜像，示例中为registry分配�
 	./registry.sh start
 
 ## 提交pause镜像
+
+>计算节点上的kubelet需要pause镜像。
 
 找一台安装有docker的机器，并配置hosts：
 

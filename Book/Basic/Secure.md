@@ -5,7 +5,7 @@ title: Secure
 ---
 
 # Secure
-创建时间: 2016/02/02 10:38:44  修改时间: 2016/02/14 10:54:19 作者:lijiao
+创建时间: 2016/02/02 10:38:44  修改时间: 2016/03/03 18:17:35 作者:lijiao
 
 ----
 
@@ -19,20 +19,27 @@ title: Secure
 	192.168.40.99 etcd.local
 	192.168.40.99 kubelet.local
 
+>需要根据分配的域名制作证书。
+
 ## 证书
 
->用户认证使用的证书单独在“认证”一章中阐述。
-
 只需要在AuthnAuthz目录中执行对应的gen.sh脚本即可。
+
+	$cd  Authnauthz
+	$./gen.sh
+
+## 说明
+
+用户认证使用的证书单独在“认证”一章中阐述，这里只说明kubeletes自身需要的证书。
 
 规划如下:
 
 	1. 用于签署Apiserver的公钥的自签署CA， 位于AuthnAuthz/apiserver/ca；
 	2. Apiserver用于https的服务的密钥对，位于AuthnAuthz/apiserver/apiservers/{域名 or IP}；
-		apiserver.local
+	   apiserver.local
 	3. 用与签署kubelet的公钥的密钥对，位于AuthnAuthz/kubeletes/ca；
 	4. kubelet用作身份凭证的密钥对，位于AuthnAuthz/kubeletes/kubeletes/{Hostname or IP}；
-		kubelet.local
+	   kubelet.local
 	5. 用于签署Service Token的CA，位于AuthnAuthz/serviceAccount/ca；
 
 示例，apiserver.local的证书制作过程：

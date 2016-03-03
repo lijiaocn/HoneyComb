@@ -5,7 +5,7 @@ title: README
 ---
 
 # README
-创建时间: 2016/02/03 17:25:51  修改时间: 2016/03/03 16:21:07 作者:lijiao
+创建时间: 2016/02/03 17:25:51  修改时间: 2016/03/03 18:50:21 作者:lijiao
 
 ----
 
@@ -13,57 +13,67 @@ title: README
 
 Kubernetes实战记录。
 
-以下章节中部署的是一个“All in One”、“启用了https加密”和“用户授权”的kubernetes系统。
+以下章节中部署了一个“All in One”、“启用了https加密”和“用户授权”的kubernetes系统。
+
+>分开部署也可以，只需要修改ApiServerNode和ComputeNode的host文件中的IP，并修改每个组件的配置文件中与IP相关的配置即可。
+
+组件的安装规划与配置位于[Deploy/apiserver.local.secure](../Deploy/apiserver.local.secure)目录中。
+
+>下面章节中贴出的操作过程中，不是从"/"开始的路径，都是相对于[HoneyComb](../)的路径。
 
 ## 准备
 
-[自建Registry](./Registry.md)
+[自建Registry](./Basic/Registry.md)：不是必须的，可以使用其它的registry服务。
 
-[计算节点](./ComputeNode.md)
+[计算节点](./Basic/ComputeNode.md)：在计算节点上配置好host、准备docker等。
 
-## 编译
+[管理节点](./Basic/ApiServerNode)：在ApiServerNode上配置好host等。
 
-[编译](./Compile.md)：完成相关kubernetes以及依赖的etcd的等程序（暂时不包含docker）的编译。
+## 基础
 
-## 规划
+### 编译
 
-[加密](./Secure.md)：kubernetes组件之间的通信加密（暂时不包含kubernetes以外的组件）。
+[编译](./Basic/Compile.md)：完成相关kubernetes以及依赖的etcd的等程序（不包含docker）的编译。
 
-[认证](./Authn.md)：kubernetes用户的认证。
+### 规划
 
-[授权](./Authz.md)：kubernetes对用户授权。
+[加密](./Basic/Secure.md)：kubernetes组件之间的通信加密（暂时不包含kubernetes以外的组件）。
 
-## 部署
+[认证](./Basic/Authn.md)：kubernetes用户的认证。
 
-[配置](./Config.md)：各个组件的配置。
+[授权](./Basic/Authz.md)：kubernetes对用户授权。
 
-[准备](./Prepare.md)：安装文件汇总。
+### 部署
 
-[安装](./Install.md)：将组件安装到希望的位置。
+[配置](./Basic/Config.md)：各个组件的配置。
 
-[运行](./Run.md)：启动。
+[汇集](./Basic/Prepare.md)：组件需要的文件汇集。
 
-## 命令行
+[安装](./Basic/Install.md)：将组件安装到希望的位置。
 
-[命令行](./Cli.md)
+[运行](./Basic/Run.md)：启动。
 
-## 排错
+### 命令行
 
-[日志](./Log.md)：日志。
+[命令行](./Basic/Cli.md)
 
-[事件](./Events.md)：事件。
+### 排错
 
-## 操作
+[日志](./Basic/Log.md)：日志。
+
+[事件](./Basic/Events.md)：事件。
+
+### 操作
 
 [操作前准备](./Operation/Prepare.md)：操作前准备。
 
 [Namespace](./Operation/Namespace.md)：Namespace操作。
 
-[Pod](./Operation/Pod.md)
+[Pod](./Operation/Pod.md)：Pod操作。
 
 ## 进阶
 
-[对接keystone](./Advanced/keystone.md)
+[对接keystone](./Advanced/keystone.md)：通过keystone认证。
 
 ## 问题
 

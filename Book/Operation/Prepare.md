@@ -5,7 +5,7 @@ title: Prepare
 ---
 
 # Prepare
-创建时间: 2016/02/24 11:03:10  修改时间: 2016/02/24 15:07:12 作者:lijiao
+创建时间: 2016/02/24 11:03:10  修改时间: 2016/03/03 18:47:12 作者:lijiao
 
 ----
 
@@ -36,10 +36,10 @@ pause的镜像是Pod创建时需要的镜像，在kubelet的配置文件中指�
 
 	$ cd cmd-registry/
 	
-	./registry.sh repo
+	$ ./registry.sh repo
 	{"repositories":["kubernetes/pause"]}
 	
-	./registry.sh tags kubernetes/pause
+	$ ./registry.sh tags kubernetes/pause
 	{"name":"kubernetes/pause","tags":["latest"]}
 
 ## 查看组件状态
@@ -111,10 +111,10 @@ kubelet.local是节点的hostname，可以在kubelet的配置文件中设置:
 	# If non-empty, will use this string as identification instead of the actual hostname.
 	CONFIGS[hostname-override]='--hostname-override=kubelet.local'
 
-## 确定default namespace是否存在
+## 确定default namespace存在
 
 	$ cd cmd-kubectl/secure/admin-super
-	$ ../kubectl.sh get nodes
+	$ ../kubectl.sh get namespace
 	NAME      LABELS    STATUS    AGE
 	default   <none>    Active    20d
 

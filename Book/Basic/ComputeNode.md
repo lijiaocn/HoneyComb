@@ -5,23 +5,25 @@ title: ComputeNode
 ---
 
 # ComputeNode
-创建时间: 2016/02/14 17:07:10  修改时间: 2016/02/22 17:30:30 作者:lijiao
+创建时间: 2016/02/14 17:07:10  修改时间: 2016/03/03 18:01:19 作者:lijiao
 
 ----
 
 ## 摘要
 
-ComputeNode是运行任务容器的节点，上面将运行有docker、kubelete、kube-proxy、flanneld。
+ComputeNode是运行任务容器的节点，上面将运行有docker、kubelete、kube-proxy、flanneld，需要做好一下准备。
 
 ## Apiserver可达
 
-确保计算节点能够访问控制节点。
+确保计算节点能够访问控制节点的apiserver.local。
 
-这里的示例在hosts中配置apiserver.local的地址:
+在hosts中配置apiserver.local的地址:
 
 	192.168.40.99 apiserver.local
 
-## docker
+>IP地址请根据自己的环境修改。
+
+## 容器
 
 容器可以是docker或者rkt，这里使用的是docker。
 
@@ -36,8 +38,5 @@ ComputeNode是运行任务容器的节点，上面将运行有docker、kubelete�
 
 	registry.local  192.168.40.99
 
-计算节点依赖的pause镜像，需要在kubelete的config文件中指定，如下：
-
-	--pod-infra-container-image="registry.local:5000/kubernetes/pause:latest
 
 ## 文献
