@@ -1,7 +1,0 @@
-#config.kube-proxy.unsecure
-declare -A CONFIGS
-CONFIGS[bind-address]='--bind-address=192.168.40.99'
-CONFIGS[log-dir]='--log-dir=./log'
-CONFIGS[master]='--master=http://apiserver.local:8080'
-CONFIGS[proxy-mode]='--proxy-mode=iptables'
-CONFIGS[v]='--v=0'
