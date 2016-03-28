@@ -1,7 +1,7 @@
 #!/bin/bash
 
 REPO="github.com/coreos/etcd"
-TAG="v2.2.4"
+TAG="v2.3.0"
 PWD=`pwd`
 OUT=${PWD}/out/
 ###############################################################
