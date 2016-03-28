@@ -1,7 +1,7 @@
 #!/bin/bash
 
 REPO="github.com/kubernetes/kubernetes"
-TAG="v1.1.7"
+TAG="v1.2.0"
 PWD=`pwd`
 OUT=$PWD/out/
 ###############################################################
