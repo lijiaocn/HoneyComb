@@ -1,0 +1,32 @@
+#config.kubelet.unsecure
+declare -A CONFIGS
+# The IP address for the Kubelet to serve on (set to 0.0.0.0 for all interfaces)
+CONFIGS[address]='--address=192.168.40.99'
+# If non-empty, will use this string as identification instead of the actual hostname.
+#CONFIGS[hostname-override]='--hostname-override='
+# The port for the Kubelet to serve on.
+CONFIGS[port]='--port=10250'
+# List of Kubernetes API servers for publishing events, and reading pods and services. (ip:port), comma separated.
+CONFIGS[api-servers]='--api-servers=http://apiserver.local'
+
+# File containing x509 Certificate for HTTPS.  (CA cert, if any, concatenated after server cert). 
+# If HTTPS serving is enabled, and --tls-cert-file and --tls-private-key-file are not provided, a self-signed certificate and key are generated for the public address and saved to /var/run/kubernetes.
+#CONFIGS[tls-cert-file]='--tls-cert-file=./certs/kubelet.local.cert'
+# File containing x509 private key matching --tls-cert-file
+#CONFIGS[tls-private-key-file]='--tls-private-key-file=./certs/kubelet.local.key'
+
+# Path to kubeconfig file with authorization and master location information.
+CONFIGS[kubeconfig]='--kubeconfig=./kubeconfig.yml'
+
+# IP address of the node. If set, kubelet will use this IP address for the node
+#CONFIGS[node-ip]='--node-ip=192.168.40.99'
+
+# <Warning: Alpha feature> Labels to add when registering the node in the cluster.  Labels must are key=value pairs seperated by ','.
+#CONFIGS[node-labels]='--node-labels=zone=allinone' 
+
+# If non-empty, will use this string as identification instead of the actual hostname.
+CONFIGS[hostname-override]='--hostname-override=kubelet.local'
+# Log
+CONFIGS[v]='--v=3'
+# The image whose network/ipc namespaces containers in each pod will use.
+CONFIGS[pod-infra-container-image]='--pod-infra-container-image=registry.local:5000/kubernetes/pause:latest'

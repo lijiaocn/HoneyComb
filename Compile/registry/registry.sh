@@ -24,9 +24,9 @@ cd $GOPATH/src/${REPO}/cmd/registry; godep go build;\
 	cp -rf *.yml ${OUT}/registry; \
 	cd $PWD;
 
-config=${OUT}/registry/config
-echo "declare -A CONFIGS" >$config
-echo "CONFIGS[config]=''"  >>$config
+#config=${OUT}/registry/config
+#echo "declare -A CONFIGS" >$config
+#echo "CONFIGS[config]=''"  >>$config
 
 runfile=${OUT}/registry/registry.sh
 echo "#!/bin/bash" > $runfile

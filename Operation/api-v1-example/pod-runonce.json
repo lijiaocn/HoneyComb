@@ -1,0 +1,56 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "runonce",
+    "namespace": "first-namespace",
+    "deletionGracePeriodSeconds": 5,
+    "labels": {
+        "type": "Independent",
+        "name":"runonce",
+        "owner":"first-namespace"
+    },
+    "annotations": {
+        "describe": "run once"
+    }
+  },
+  "spec": {
+    "containers": [
+      {
+        "name": "runonce",
+        "image": "registry.local:5000/runonce:1.0",
+        "env": [
+          {
+            "name": "SECONDS",
+            "value": "20"
+          }
+        ],
+        "resources": {
+          "limits": {
+              "cpu": 3.0,
+              "memory": "128Mi"
+          },
+          "requests": {
+              "cpu": 1.0,
+              "memory": "32Mi"
+          }
+        },
+        "imagePullPolicy": "Always",
+        "securityContext": {
+          "privileged": false,
+          "runAsNonRoot": false
+        },
+        "stdin": false,
+        "stdinOnce": false,
+        "tty": false
+      }
+    ],
+    "restartPolicy": "Never",
+    "terminationGracePeriodSeconds": 10,
+    "dnsPolicy": "Default",
+    "serviceAccountName": "default",
+    "hostNetwork": true,
+    "hostPID": false,
+    "hostIPC": false
+  }
+}

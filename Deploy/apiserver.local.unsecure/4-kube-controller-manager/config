@@ -1,0 +1,27 @@
+#config.kube-controller-manager.unsecure
+declare -A CONFIGS
+# The IP address to serve on (set to 0.0.0.0 for all interfaces)
+CONFIGS[address]='--address=0.0.0.0'
+# Should CIDRs for Pods be allocated and set on the cloud provider.
+CONFIGS[allocate-node-cidrs]='--allocate-node-cidrs=false'
+# CIDR Range for Pods in cluster.
+CONFIGS[cluster-cidr]='--cluster-cidr=172.16.1.0/17'
+# The instance prefix for the cluster
+CONFIGS[cluster-name]='--cluster-name=kubernetes'
+# If non-empty, write log files in this directory
+CONFIGS[log-dir]='--log-dir=./log'
+# The port that the controller-manager's http service runs on
+CONFIGS[port]='--port=10252'
+# log level for V logs
+CONFIGS[v]='--v=2'
+
+# Path to kubeconfig file with authorization and master location information.
+CONFIGS[kubeconfig]='--kubeconfig=./kubeconfig.yml'
+
+# If set, this root certificate authority will be included in service account's token secret. This must be a valid PEM-encoded CA bundle.
+#CONFIGS[root-ca-file]='--root-ca-file=./certs/apiserver.ca'
+# Filename containing a PEM-encoded private RSA key used to sign service account tokens.
+#CONFIGS[service-account-private-key-file]='--service-account-private-key-file=./certs/service.account.key'
+
+#Number of terminated pods that can exist before the terminated pod garbage collector starts deleting terminated pods. If <= 0, the terminated pod garbage collector is disabled.
+CONFIGS[terminated-pod-gc-threshold]='--terminated-pod-gc-threshold=1'
