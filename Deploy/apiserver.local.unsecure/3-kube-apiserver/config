@@ -15,7 +15,7 @@ CONFIGS[insecure-port]='--insecure-port=80'
 # Use https for kubelet connections
 CONFIGS[kubelet-https]='--kubelet-https=false'
 # A CIDR notation IP range from which to assign service cluster IPs. This must not overlap with any IP ranges assigned to nodes for pods.
-CONFIGS[service-cluster-ip-range]='--service-cluster-ip-range=172.16.0.0/17'
+CONFIGS[service-cluster-ip-range]='--service-cluster-ip-range=200.10.0.0/16'
 
 # File containing x509 Certificate for HTTPS.  (CA cert, if any, concatenated after server cert). 
 # If HTTPS serving is enabled, and --tls-cert-file and --tls-private-key-file are not provided, a self-signed certificate and key are generated for the public address and saved to /var/run/kubernetes.
