@@ -1,10 +1,11 @@
 #!/bin/bash
+#wget -O library.sh https://raw.githubusercontent.com/lijiaocn/LinuxShell/master/library.sh
 
-. ../Shell/library.sh
+. ./library.sh
 
 PASSWORD=""
 MACHINES_LST=""
-Cluster=""
+MachinesFile=""
 
 start(){
 	./dish -e "cd /export/Shell && /bin/bash ./start.sh" -g ${MACHINES_LST} -p ${PASSWORD}
@@ -27,17 +28,17 @@ upload(){
 }
 
 
-if [[ ! $1 == "-c" ]];then
-	func_yellow_str "`ls ../Config`"
-	echo -n "Choose the Cluster:"
-	read Cluster
+if [[ ! $1 == "-f" ]];then
+	func_yellow_str "`cd ./machines/; ls ;cd ../`"
+	echo -n "Choose the machines.lst:"
+	read MachinesFile
 else 
 	shift 1
-	Cluster=$1
+	MachinesFile=$1
 	shift 1
 fi
 
-MACHINES_LST="../Config/$Cluster/machines.lst"
+MACHINES_LST="./machines/${MachinesFile}"
 if [ ! -e ${MACHINES_LST} ];then
 	func_red_str "Not found: ${MACHINES_LST}"
 	exit
