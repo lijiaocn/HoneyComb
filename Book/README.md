@@ -5,9 +5,16 @@ title: README
 ---
 
 # README
-创建时间: 2016/02/03 17:25:51  修改时间: 2016/03/03 18:58:06 作者:lijiao
+创建时间: 2016/02/03 17:25:51  修改时间: 2016/04/04 19:49:19 作者:lijiao
 
 ----
+## 注意
+
+在向kuberntes提交json文件时，可能会经常遇到json文件格式不对或者错误的情况，kuberntes会告知在时在json文件的第几个字节处出错的
+
+	unable to decode "../../../../Operation/api-v1-example/webshell-rc.json": [pos 2710]: json: expect char '{' but got char '"'
+
+上面的提示第2710个字节的取值错误，如果使用vim编辑器，使用命令":2710go"就可以跳转到第2710个字节处。
 
 ## 摘要
 
@@ -71,6 +78,8 @@ Kubernetes实战记录。
 
 [Pod](./Operation/Pod.md)：Pod操作。
 
+[Service](./Operation/Service): Service操作。
+
 ## 进阶
 
 [对接keystone](./Advanced/keystone.md)：通过keystone认证。
@@ -78,5 +87,7 @@ Kubernetes实战记录。
 ## 问题
 
 [问题](./Questions.md)：问题。
+
+
 
 ## 文献
