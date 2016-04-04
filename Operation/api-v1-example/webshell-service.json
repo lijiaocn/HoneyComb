@@ -1,0 +1,38 @@
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "webshell-service",
+    "namespace": "first-namespace",
+    "deletionGracePeriodSeconds": 5,
+    "labels": {
+        "type": "service",
+        "name": "webshell-service"
+    },
+    "annotations": {
+        "describe": "webshell service"
+    }
+  },
+  "spec": {
+    "ports": [
+      {
+        "name": "http",
+        "protocol": "TCP",
+        "port": 80,
+        "targetPort": 80
+      },
+      {
+        "name": "ssh",
+        "protocol": "TCP",
+        "port": 22,
+        "targetPort": 22
+      }
+    ],
+    "selector": {
+        "name": "webshell",
+        "type": "pod"
+    },
+    "type": "ClusterIP",
+    "sessionAffinity": "ClientIP"
+  }
+}

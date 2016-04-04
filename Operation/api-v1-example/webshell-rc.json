@@ -1,0 +1,113 @@
+{
+  "kind": "ReplicationController",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "webshell-rc",
+    "namespace": "first-namespace",
+    "deletionGracePeriodSeconds": 5,
+    "labels": {
+        "type":"rc",
+        "name":"webshell-rc"
+    },
+    "annotations": {
+        "describe": "webshell rc"
+    }
+  },
+  "spec": {
+    "replicas": 3,
+    "selector": {
+        "name": "webshell",
+        "type": "pod"
+    },
+    "template": {
+      "metadata": {
+        "name": "webshell",
+        "namespace": "first-namespace",
+        "labels": {
+            "name": "webshell",
+            "type": "pod"
+        },
+        "annotations": {
+            "describe": "webshell pod"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "webshell",
+            "image": "registry.local:5000/webshell:1.0",
+            "resources": {
+              "limits": {
+                  "cpu": 3.0,
+                  "memory": "128Mi"
+              },
+              "requests": {
+                  "cpu": 1.0,
+                  "memory": "32Mi"
+              }
+            },
+            "livenessProbe": {
+              "tcpSocket": {
+                "port": 80
+              },
+              "initialDelaySeconds": 5,
+              "timeoutSeconds": 5,
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "failureThreshold": 3
+            },
+            "imagePullPolicy": "Always",
+            "securityContext": {
+              "privileged": false,
+              "runAsNonRoot": false
+            },
+            "stdin": false,
+            "stdinOnce": false,
+            "tty": false
+          },
+         {
+            "name": "sshproxy",
+            "image": "registry.local:5000/sshproxy:1.0",
+            "env": [
+              {
+                "name": "ROOTPASS",
+                "value": "123456"
+              }
+            ],
+            "resources": {
+              "limits": {
+                  "cpu": 3.0,
+                  "memory": "128Mi"
+              },
+              "requests": {
+                  "cpu": 1.0,
+                  "memory": "32Mi"
+              }
+            },
+            "livenessProbe": {
+              "tcpSocket": {
+                "port": 22
+              },
+              "initialDelaySeconds": 5,
+              "timeoutSeconds": 5
+            },
+            "imagePullPolicy": "Always",
+            "securityContext": {
+              "privileged": false,
+              "runAsNonRoot": false
+            },
+            "stdin": false,
+            "stdinOnce": false,
+            "tty": false
+          }
+        ],
+        "restartPolicy": "Always",
+        "dnsPolicy": "Default",
+        "serviceAccountName": "default",
+        "hostNetwork": false,
+        "hostPID": false,
+        "hostIPC": false
+      }
+    }
+  }
+}
