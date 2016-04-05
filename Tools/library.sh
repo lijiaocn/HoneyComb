@@ -120,9 +120,11 @@ func_green_str(){
 }
 
 func_yellow_str(){
-	echo  -n -e "\e[33m"
+	#echo  -n -e "\e[33m"
+	echo  -n -e "\033[33m"
 	echo  -e "$*"
-	echo  -n -e "\e[0m"
+	#echo  -n -e "\e[0m"
+	echo  -n -e "\033[0m"
 }
 
 #Input is a string.
