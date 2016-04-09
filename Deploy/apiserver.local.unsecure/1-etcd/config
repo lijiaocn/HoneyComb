@@ -2,28 +2,28 @@
 declare -A CONFIGS
 
 ## member config
-CONFIGS[name]='--name=default'
+CONFIGS[name]="--name=${HOSTNAME}"
 CONFIGS[data-dir]='--data-dir=./log/localnode.etcd'
 CONFIGS[wal-dir]='--wal-dir=./log/localnode.wal'
 CONFIGS[snapshot-count]='--snapshot-count=10000'
 CONFIGS[heartbeat-interval]='--heartbeat-interval=100'
 CONFIGS[election-timeout]='--election-timeout=1000'
 ### 用于member之间通信的地址, 可以填写多个, 从而在本地开启多个端口
-CONFIGS[listen-peer-urls]='--listen-peer-urls=http://etcd.local:2380'
+CONFIGS[listen-peer-urls]="--listen-peer-urls=http://etcd-${HOSTNAME}.local:2380"
 ### 用于响应client的地址, 可以填写多个, 从而在本地开启多个端口
-CONFIGS[listen-client-urls]='--listen-client-urls=http://etcd.local:2379'
+CONFIGS[listen-client-urls]="--listen-client-urls=http://etcd-${HOSTNAME}.local:2379"
 CONFIGS[max-snapshots]='--max-snapshots=5'
 CONFIGS[max-wals]='--max-wals=5'
 CONFIGS[cors]='-cors='
 
 ## cluster config
 ### 初始的集群成员地址列表
-CONFIGS[initial-cluster]='--initial-cluster=default=http://etcd.local:2380'
+CONFIGS[initial-cluster]="--initial-cluster=${HOSTNAME}=http://etcd-${HOSTNAME}.local:2380"
 ### 该member用来进行member间通信的地址
-CONFIGS[initial-advertise-peer-urls]='--initial-advertise-peer-urls=http://etcd.local:2380'
+CONFIGS[initial-advertise-peer-urls]="--initial-advertise-peer-urls=http://etcd-${HOSTNAME}.local:2380"
 ### 发现已经存在的集群或者创建新集群
 CONFIGS[initial-cluster-state]='--initial-cluster-state=new'
 ### 该member用来服务client的地址, 这些地址会被通报给其他成员
-CONFIGS[advertise-client-urls]='--advertise-client-urls=http://etcd.local:2379'
-CONFIGS[initial-cluster-token]='--initial-cluster-token=etcd.local'
+CONFIGS[advertise-client-urls]="--advertise-client-urls=http://etcd-${HOSTNAME}.local:2379"
+CONFIGS[initial-cluster-token]="--initial-cluster-token=etcd-${HOSTNAME}.local"
 CONFIGS[strict-reconfig-check]='--strict-reconfig-check'
