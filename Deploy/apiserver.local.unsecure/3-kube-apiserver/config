@@ -7,7 +7,7 @@ CONFIGS[v]='--v=10'
 # The prefix for all resource paths in etcd.
 CONFIGS[etcd-prefix]='--etcd-prefix=/kubernetes/unsecure/apiserver'
 # List of etcd servers to watch (http://ip:port), comma separated. Mutually exclusive with -etcd-config
-CONFIGS[etcd-servers]='--etcd-servers=http://etcd.local:2379'
+CONFIGS[etcd-servers]='--etcd-servers=http://etcd-proxy.local:2378'
 # The IP address on which to serve the --insecure-port (set to 0.0.0.0 for all interfaces). Defaults to etcd.local.
 CONFIGS[insecure-bind-address]='--insecure-bind-address=192.168.40.99'
 # The port on which to serve unsecured, unauthenticated access. Default 8080. It is assumed that firewall rules are set up such that this port is not reachable from outside of the cluster and that port 443 on the cluster's public address is proxied to this port. This is performed by nginx in the default setup.

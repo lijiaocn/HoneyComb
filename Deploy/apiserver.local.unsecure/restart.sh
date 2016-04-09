@@ -3,6 +3,10 @@ cd 1-etcd
 ./etcd.sh restart
 cd ..
 
+cd ./A-etcd-proxy
+./etcd-proxy.sh restart
+cd ..
+
 cd 2-flannel
 #./net_init_config.sh 
 sudo ./flanneld.sh restart

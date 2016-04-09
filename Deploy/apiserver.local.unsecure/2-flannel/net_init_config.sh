@@ -1,6 +1,6 @@
 #!/bin/bash
-IP_FOR_ETCD=etcd.local
-ETCD_PORT=2379
+IP_FOR_ETCD=etcd-proxy.local
+ETCD_PORT=2378
 FLANNEL_PREFIX=kubernetes/unsecure/flannel
 FLANNEL_CONFIG=./flannel.json
 #ret=`curl http://${IP_FOR_ETCD}:${ETCD_PORT}/v2/keys/${FLANNEL_PREFIX}?recursive=true -XDELETE 2>/dev/null`

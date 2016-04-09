@@ -3,6 +3,10 @@ cd 1-etcd
 ./etcd.sh stop
 cd ..
 
+cd ./A-etcd-proxy
+./etcd-proxy.sh stop
+cd ..
+
 cd 2-flannel
 sudo ./flanneld.sh stop
 cd ..

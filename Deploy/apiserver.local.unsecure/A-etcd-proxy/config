@@ -1,0 +1,6 @@
+#config.etcd.unsecure
+declare -A CONFIGS
+CONFIGS[proxy]='--proxy=on'
+CONFIGS[listen-client-urls]='--listen-client-urls=http://etcd-proxy.local:2378'
+#CONFIGS[initial-cluster]='--initial-cluster=etcd1=http://etcd-1.local:2380,etcd2=http://etcd-2.local:2380,etcd3=http://etcd-3.local'
+CONFIGS[initial-cluster]='--initial-cluster=etcd=http://etcd.local:2380'
