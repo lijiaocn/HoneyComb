@@ -3,13 +3,13 @@ declare -A CONFIGS
 # log to standard error instead of files
 CONFIGS[logtostderr]='--logtostderr=true'
 # log level for V logs
-CONFIGS[v]='--v=10'
+CONFIGS[v]='--v=0'
 # The prefix for all resource paths in etcd.
 CONFIGS[etcd-prefix]='--etcd-prefix=/kubernetes/unsecure/apiserver'
 # List of etcd servers to watch (http://ip:port), comma separated. Mutually exclusive with -etcd-config
 CONFIGS[etcd-servers]='--etcd-servers=http://etcd-proxy.local:2378'
 # The IP address on which to serve the --insecure-port (set to 0.0.0.0 for all interfaces). Defaults to etcd.local.
-CONFIGS[insecure-bind-address]='--insecure-bind-address=192.168.40.99'
+CONFIGS[insecure-bind-address]='--insecure-bind-address=0.0.0.0'
 # The port on which to serve unsecured, unauthenticated access. Default 8080. It is assumed that firewall rules are set up such that this port is not reachable from outside of the cluster and that port 443 on the cluster's public address is proxied to this port. This is performed by nginx in the default setup.
 CONFIGS[insecure-port]='--insecure-port=80'
 # Use https for kubelet connections
@@ -38,7 +38,7 @@ CONFIGS[service-cluster-ip-range]='--service-cluster-ip-range=200.10.0.0/16'
 # The port on which to serve HTTPS with authentication and authorization. If 0, don't serve HTTPS at all.
 #CONFIGS[secure-port]='--secure-port=443' 
 #The IP address on which to listen for the --secure-port port. The associated interface(s) must be reachable by the rest of the cluster, and by CLI/web clients. If blank, all interfaces will be used (0.0.0.0).
-CONFIGS[bind-address]='--bind-address=192.168.40.99'
+CONFIGS[bind-address]='--bind-address=0.0.0.0'
 
 # File containing PEM-encoded x509 RSA private or public key, used to verify ServiceAccount tokens. If unspecified, --tls-private-key-file is used.
 #CONFIG[service-account-key-file]='--service-account-key-file=./certs/service.account.cert'

@@ -13,7 +13,7 @@ CONFIGS[log-dir]='--log-dir=./log'
 # The port that the controller-manager's http service runs on
 CONFIGS[port]='--port=10252'
 # log level for V logs
-CONFIGS[v]='--v=2'
+CONFIGS[v]='--v=0'
 
 # Path to kubeconfig file with authorization and master location information.
 CONFIGS[kubeconfig]='--kubeconfig=./kubeconfig.yml'

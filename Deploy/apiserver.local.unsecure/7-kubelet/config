@@ -1,7 +1,7 @@
 #config.kubelet.unsecure
 declare -A CONFIGS
 # The IP address for the Kubelet to serve on (set to 0.0.0.0 for all interfaces)
-CONFIGS[address]='--address=192.168.40.99'
+CONFIGS[address]='--address=0.0.0.0'
 # If non-empty, will use this string as identification instead of the actual hostname.
 #CONFIGS[hostname-override]='--hostname-override='
 # The port for the Kubelet to serve on.
@@ -25,8 +25,8 @@ CONFIGS[kubeconfig]='--kubeconfig=./kubeconfig.yml'
 #CONFIGS[node-labels]='--node-labels=zone=allinone' 
 
 # If non-empty, will use this string as identification instead of the actual hostname.
-CONFIGS[hostname-override]='--hostname-override=kubelet.local'
+#CONFIGS[hostname-override]='--hostname-override=kubelet.local'
 # Log
-CONFIGS[v]='--v=3'
+CONFIGS[v]='--v=0'
 # The image whose network/ipc namespaces containers in each pod will use.
 CONFIGS[pod-infra-container-image]='--pod-infra-container-image=registry.local:5000/kubernetes/pause:latest'

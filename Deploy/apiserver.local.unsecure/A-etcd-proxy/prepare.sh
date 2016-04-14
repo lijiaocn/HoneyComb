@@ -1,2 +1,2 @@
 #!/bin/bash
-cp -rf ../../../Compile/etcd/out/etcd/*   .
+cp -rf ../../../Compile/etcd/out/etcd/bin   .

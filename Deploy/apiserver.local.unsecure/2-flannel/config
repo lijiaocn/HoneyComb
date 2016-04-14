@@ -2,4 +2,4 @@
 declare -A CONFIGS
 CONFIGS[etcd-endpoints]='-etcd-endpoints=http://etcd-proxy.local:2378'
 CONFIGS[etcd-prefix]='-etcd-prefix=kubernetes/unsecure/flannel'
-CONFIGS[iface]='-iface=eth1'
+CONFIGS[iface]='-iface=eno49'

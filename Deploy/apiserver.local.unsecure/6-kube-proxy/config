@@ -1,7 +1,7 @@
 #config.kube-proxy.unsecure
 declare -A CONFIGS
-CONFIGS[bind-address]='--bind-address=192.168.40.99'
+CONFIGS[bind-address]='--bind-address=0.0.0.0'
 CONFIGS[log-dir]='--log-dir=./log'
 CONFIGS[proxy-mode]='--proxy-mode=iptables'
-CONFIGS[v]='--v=3'
+CONFIGS[v]='--v=0'
 CONFIGS[kubeconfig]='--kubeconfig=./kubeconfig.yml'

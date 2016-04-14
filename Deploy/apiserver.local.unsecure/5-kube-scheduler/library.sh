@@ -69,9 +69,9 @@ func_nic_names(){
 ###############################################################################
 #$1: message
 func_fatal(){
-	echo  -n -e "\e[31m"
+	echo  -n -e "\033[31m"
 	echo "Fatal Error: $1"
-	echo  -n -e "\e[0m"
+	echo  -n -e "\033[0m"
 	exit
 }
 
@@ -84,17 +84,17 @@ func_fatal(){
 #Input is the command.
 #The command's execute output will use red color
 func_red_cmd(){
-	echo  -n -e "\e[31m"
+	echo  -n -e "\033[31m"
 	$*
-	echo  -n -e "\e[0m"
+	echo  -n -e "\033[0m"
 }
 
 #Input is the command.
 #The command's execute output will use yellow color
 func_yellow_cmd(){
-	echo  -n -e "\e[33m"
+	echo  -n -e "\033[33m"
 	$*
-	echo  -n -e "\e[0m"
+	echo  -n -e "\033[0m"
 }
 
 #Input is the command
@@ -103,9 +103,9 @@ func_error_cmd(){
 	$*
 	local ret=$?
 	if [ ! $ret -eq 0 ];then
-		echo  -n -e "\e[41;37m"
+		echo  -n -e "\033[41;37m"
 		echo "Error: [$ret] $*"
-		echo  -n -e "\e[0m"
+		echo  -n -e "\033[0m"
 		exit 1
 	fi
 	return 0
@@ -114,23 +114,23 @@ func_error_cmd(){
 #Input is a string.
 #The string  will be displayed with green color
 func_green_str(){
-	echo  -n -e "\e[32m"
+	echo  -n -e "\033[32m"
 	echo  -e "$*"
-	echo  -n -e "\e[0m"
+	echo  -n -e "\033[0m"
 }
 
 func_yellow_str(){
-	echo  -n -e "\e[33m"
+	echo  -n -e "\033[33m"
 	echo  -e "$*"
-	echo  -n -e "\e[0m"
+	echo  -n -e "\033[0m"
 }
 
 #Input is a string.
 #The string  will be displayed with red color
 func_red_str(){
-	echo  -n -e "\e[31m"
+	echo  -n -e "\033[31m"
 	echo  -e "$*"
-	echo  -n -e "\e[0m"
+	echo  -n -e "\033[0m"
 }
 
 ###############################################################################

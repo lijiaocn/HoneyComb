@@ -7,7 +7,7 @@ CONFIGS[port]='--port=10251'
 # If non-empty, write log files in this directory
 CONFIGS[log-dir]='--log-dir=./log'
 # log level for V logs
-CONFIGS[v]='--v=3'
+CONFIGS[v]='--v=0'
 
 # Path to kubeconfig file with authorization and master location information.
 CONFIGS[kubeconfig]='--kubeconfig=./kubeconfig.yml'

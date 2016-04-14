@@ -8,7 +8,7 @@ storage:
     filesystem:
         rootdirectory: ./log/Data/registry
 http:
-    addr: 192.168.40.99:5000
+    addr: 0.0.0.0:5000
     tls: 
         certificate: ./certs/registry.local/cert.pem
         key: ./certs/registry.local/key.pem
