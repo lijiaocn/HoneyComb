@@ -17,8 +17,6 @@ CONFIGS[max-wals]='--max-wals=5'
 CONFIGS[cors]='-cors='
 
 ## cluster config
-### 初始的集群成员地址列表
-CONFIGS[initial-cluster]="--initial-cluster=${HOSTNAME}=http://etcd-${HOSTNAME}.local:2380"
 ### 该member用来进行member间通信的地址
 CONFIGS[initial-advertise-peer-urls]="--initial-advertise-peer-urls=http://etcd-${HOSTNAME}.local:2380"
 ### 发现已经存在的集群或者创建新集群
@@ -27,3 +25,6 @@ CONFIGS[initial-cluster-state]='--initial-cluster-state=new'
 CONFIGS[advertise-client-urls]="--advertise-client-urls=http://etcd-${HOSTNAME}.local:2379"
 CONFIGS[initial-cluster-token]="--initial-cluster-token=etcd-${HOSTNAME}.local"
 CONFIGS[strict-reconfig-check]='--strict-reconfig-check'
+
+### 初始的集群成员地址列表
+CONFIGS[initial-cluster]="--initial-cluster=${HOSTNAME}=http://etcd-${HOSTNAME}.local:2380"
