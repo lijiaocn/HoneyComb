@@ -5,7 +5,7 @@ if [ ! $# -eq 1 ];then
 	exit
 fi
 
-for i in A-etcd-proxy 4-kube-controller-manager
+for i in A-etcd-proxy 2-flannel
 do
 	echo "============== $i =============="
 	cmd=`echo ${i} |sed -e "s/.-//"`.sh

@@ -7,6 +7,7 @@ fi
 
 for i in 5-kube-scheduler
 do
+	echo "============== $i =============="
 	cmd=`echo ${i} |sed -e "s/.-//"`.sh
 	cd $i; ./${cmd}  $1 ;cd ..
 done
