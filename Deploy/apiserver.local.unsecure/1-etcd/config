@@ -23,8 +23,8 @@ CONFIGS[initial-advertise-peer-urls]="--initial-advertise-peer-urls=http://etcd-
 CONFIGS[initial-cluster-state]='--initial-cluster-state=new'
 ### 该member用来服务client的地址, 这些地址会被通报给其他成员
 CONFIGS[advertise-client-urls]="--advertise-client-urls=http://etcd-${HOSTNAME}.local:2379"
-CONFIGS[initial-cluster-token]="--initial-cluster-token=etcd-${HOSTNAME}.local"
 CONFIGS[strict-reconfig-check]='--strict-reconfig-check'
 
 ### 初始的集群成员地址列表
 CONFIGS[initial-cluster]="--initial-cluster=${HOSTNAME}=http://etcd-${HOSTNAME}.local:2380"
+CONFIGS[initial-cluster-token]="--initial-cluster-token=etcd-${HOSTNAME}.local"
