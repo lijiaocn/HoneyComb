@@ -1,0 +1,10 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+127.0.0.1       etcd-proxy.local
+192.168.183.60  phy60 etcd-phy60.local  registry.local
+192.168.183.61  phy61 etcd-phy61.local  
+192.168.183.62  phy62 etcd-phy62.local  apiserver.local
+192.168.183.63  phy63 
+192.168.183.64  phy64 
+192.168.183.65  phy65 

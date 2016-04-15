@@ -1,5 +1,5 @@
 #!/bin/bash
-#wget -O library.sh https://raw.githubusercontent.com/lijiaocn/LinuxShell/master/library.sh
+#wget -O library.sh https://raw.githubusercontent.com/lijiaocn/LinuxShell/master/library.sh 2>/dev/null
 
 . ./library.sh
 
@@ -7,17 +7,21 @@ PASSWORD=""
 MACHINES_LST=""
 MachinesFile=""
 
-start(){
-	./dish -e "cd /export/Shell && /bin/bash ./start.sh" -g ${MACHINES_LST} -p ${PASSWORD}
+roles(){
+	./dish -e "cd /export/apiserver.local.unsecure/ && /bin/bash ./role.sh $1" -g ${MACHINES_LST} -p ${PASSWORD}
 }
 
-stop(){
-	./dish -e "cd /export/Shell && /bin/bash ./stop.sh" -g ${MACHINES_LST} -p ${PASSWORD}
-}
-
-update(){
-	./dish -e "cd /export/Shell && /bin/bash ./update.sh" -g ${MACHINES_LST} -p ${PASSWORD}
-}
+#start(){
+#	./dish -e "cd /export/Shell && /bin/bash ./start.sh" -g ${MACHINES_LST} -p ${PASSWORD}
+#}
+#
+#stop(){
+#	./dish -e "cd /export/Shell && /bin/bash ./stop.sh" -g ${MACHINES_LST} -p ${PASSWORD}
+#}
+#
+#update(){
+#	./dish -e "cd /export/Shell && /bin/bash ./update.sh" -g ${MACHINES_LST} -p ${PASSWORD}
+#}
 
 upload(){
 	machines=`cat ./${MACHINES_LST} |grep -v "#"`
@@ -48,9 +52,9 @@ func_secret_input PASSWORD "PASSWORD:"
 
 case $1 in
 	(start)
-		start;;
+		roles start;;
 	(stop)
-		stop;;
+		roles stop;;
 	(update)
 		update;;
 	(upload)
